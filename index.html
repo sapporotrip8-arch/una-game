@@ -828,16 +828,20 @@ function renderMap(){
         const keyBadge=(rid==='b1-1'&&G.k<G.tk)?`<span class="map-key-badge">🗝️</span>`:'';
         const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?`<span style="position:absolute;top:1px;left:2px;font-size:12px;opacity:.7">🪜</span>`:'';
         const onclick=isReach&&!isCur?`onclick="selectRoom('${rid}')"`:''
-        // 出口は未訪問かつ鍵未達成なら霧で隠す
-        const isExitHidden=r.isExit&&!isVisited&&!G.bossReady;
-        if(isExitHidden){
-          // 出口を霧で隠す（???表示）
-          return`<div class="map-room unvisited" style="opacity:.4">
+        // 出口は鍵未達成なら霧で隠す＆クリック不可
+        if(r.isExit&&!G.bossReady){
+          return`<div class="map-room unvisited" style="opacity:.4;cursor:default">
             <span class="mr-e">🌫️</span>
             <div class="mr-n">???</div>
           </div>`;
         }
-        return`<div class="${cls}" ${onclick}>
+        // 出口かつbossReady：必ずクリック可能にする
+        const exitOnclick=r.isExit&&G.bossReady?`onclick="selectRoom('${rid}')"`:'';
+        const finalOnclick=exitOnclick||onclick;
+        if(r.isExit&&G.bossReady){
+          cls=cls.replace('unvisited','').replace('reachable','')+' exit-room reachable';
+        }
+        return`<div class="${cls}" ${finalOnclick}>
           <span class="mr-e">${r.e}</span>
           <div class="mr-n">${r.n}</div>
           ${ghostBadge}${keyBadge}${stairBadge}
