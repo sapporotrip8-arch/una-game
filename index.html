@@ -54,7 +54,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .btn-stage-next:disabled{opacity:.4;cursor:not-allowed}
 
 /* 仲間ボタン（ゲーム中） */
-#buddy-btn{display:none;position:fixed;bottom:20px;right:16px;z-index:800;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#1a3a1a,#2a5a2a);border:2px solid var(--gn);font-size:28px;cursor:pointer;box-shadow:0 0 16px #70c89060;animation:fp 2s ease-in-out infinite;transition:all .2s}
+#buddy-btn{display:none;position:fixed;bottom:20px;right:16px;z-index:800;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#1a3a1a,#2a5a2a);border:2px solid var(--gn);font-size:28px;cursor:pointer;box-shadow:0 0 16px #70c89060;animation:fp 2s ease-in-out infinite;transition:all .2s;pointer-events:none}
 #buddy-btn:hover{transform:scale(1.1)}
 #buddy-btn:disabled{opacity:.4;animation:none;cursor:not-allowed}
 
@@ -160,7 +160,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .btn-win:hover{transform:translateY(-2px);box-shadow:0 0 28px #c070d080}
 
 /* ── タイトル ── */
-#sc-title{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px;position:relative;z-index:1}
+#sc-title{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px;position:relative;z-index:10}
 .t-house{font-size:78px;animation:fl 3s ease-in-out infinite;filter:drop-shadow(0 0 20px #e8a0d050)}
 .t-title{font-family:'Zen Kurenaido',cursive;font-size:40.5px;color:var(--gd);text-shadow:0 0 20px #f0d06060;line-height:1.4}
 .t-sub{font-size:16.5px;color:var(--ac);letter-spacing:3px}
@@ -171,7 +171,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .ttab.on{background:#1e0840;border-color:var(--ac);color:var(--wh)}
 .tc{display:none;width:100%}.tc.on{display:block}
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
-.cbtn{background:var(--bc);border:2px solid transparent;border-radius:13px;padding:11px 7px;cursor:pointer;transition:all .2s;text-align:center;color:var(--wh);font-family:inherit}
+.cbtn{background:var(--bc);border:2px solid transparent;border-radius:13px;padding:11px 7px;cursor:pointer;transition:all .2s;text-align:center;color:var(--wh);font-family:inherit;position:relative;z-index:11}
 .cbtn:hover{transform:translateY(-3px)}.cbtn.sel{border-color:var(--gd);background:#1e1042}
 .cbtn .ce{font-size:36px;display:block;margin-bottom:4px}
 .cbtn .cn{font-family:'Zen Kurenaido',cursive;font-size:21px;color:var(--gd)}
@@ -544,8 +544,7 @@ const STAGES = {
     targetKeys: 3,
     bossHp: 4,
     fearLimit: 3,
-    desc: '1F〜2F・鍵3本・ボスHP4
-まずは屋敷に慣れよう！',
+    desc: '1F〜2F・鍵3本・ボスHP4\nまずは屋敷に慣れよう！',
     exitFloors: ['2F'],
     bgColor: '#0a0318',
   },
@@ -558,8 +557,7 @@ const STAGES = {
     targetKeys: 5,
     bossHp: 6,
     fearLimit: 3,
-    desc: '全フロア・鍵5本・ボスHP6
-仲間が助けてくれる！',
+    desc: '全フロア・鍵5本・ボスHP6\n仲間が助けてくれる！',
     exitFloors: ['2F','3F'],
     bgColor: '#070210',
     hasBuddy: true,
@@ -573,9 +571,7 @@ const STAGES = {
     targetKeys: 7,
     bossHp: 10,
     fearLimit: 2, // より厳しい
-    desc: '全フロア・鍵7本・ボスHP10
-恐怖2個でお化け登場！
-最後の戦いだ！',
+    desc: '全フロア・鍵7本・ボスHP10\n恐怖2個でお化け登場！\n最後の戦いだ！',
     exitFloors: ['3F'],
     bgColor: '#050108',
   },
@@ -724,10 +720,13 @@ function renderRank(id){
 // ════════════════════════════════════════
 function initChars(){
   document.getElementById('cgrid').innerHTML=CHARS.map(ch=>`
-    <div class="cbtn" onclick="selChar('${ch.id}')" id="cb-${ch.id}" style="border-color:${ch.col}20">
+    <div class="cbtn" data-id="${ch.id}" id="cb-${ch.id}" style="border-color:${ch.col}20">
       <span class="ce">${ch.emoji}</span><div class="cn">${ch.name}</div>
       <div class="cr">${ch.role}</div><div class="ca">${ch.ability}</div>
     </div>`).join('');
+  document.querySelectorAll('.cbtn').forEach(el=>{
+    el.addEventListener('click',()=>selChar(el.dataset.id));
+  });
   renderColl('coll-grid');renderRank('rank-list');
 }
 function selChar(id){
@@ -1213,8 +1212,7 @@ function stageClear(){
       friendArea.style.display='none';
       _selectedBuddy=null;
       document.getElementById('btn-stage-next').disabled=false;
-      document.getElementById('stage-desc').textContent=nextStage.desc+'
-（仲間はまだいません）';
+      document.getElementById('stage-desc').textContent=nextStage.desc+'\n（仲間はまだいません）';
     }
   } else {
     // ステージ3：仲間引き継ぎ（前ステージの仲間を引き継ぐ）
@@ -1234,11 +1232,14 @@ function stageClear(){
       document.getElementById('stage-friend-area').style.display='block';
       friendList.innerHTML=owned.map(id=>{
         const g=GHOSTS.find(g=>g.id===id);if(!g)return'';
-        return`<div class="sfl-item" id="sfl-${id}" onclick="selectBuddy('${id}')">
+        return`<div class="sfl-item" id="sfl-${id}" data-id="${id}">
           <span class="sfl-e">${g.emoji}</span>
           <div class="sfl-n">${g.name}</div>
         </div>`;
       }).join('');
+      friendList.querySelectorAll('.sfl-item').forEach(el=>{
+        el.addEventListener('click',()=>selectBuddy(el.dataset.id));
+      });
       lg(`👻 【${gh.name}】が仲間になった！次のステージに連れていこう！`,'gld');
     },300);
   }
@@ -1468,9 +1469,11 @@ function upStat(){
   if(bb){
     if(G.buddy&&!G.buddyUsed&&G.stage>=2){
       bb.style.display='block';
-      bb.textContent=G.buddy.emoji;
+      bb.style.pointerEvents='auto';
+      bb.textContent=typeof G.buddy==='object'?G.buddy.emoji:GHOSTS.find(g=>g.id===G.buddy)?.emoji||'👻';
     } else {
       bb.style.display='none';
+      bb.style.pointerEvents='none';
     }
   }
   updateFP();
