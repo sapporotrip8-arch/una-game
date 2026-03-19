@@ -31,6 +31,53 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 @keyframes dice-pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes room-enter{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
 
+
+/* ── ステージクリアモーダル ── */
+#stage-modal{position:fixed;inset:0;z-index:1050;display:none;align-items:center;justify-content:center;background:#000000f0;backdrop-filter:blur(10px);padding:20px}
+#stage-modal.show{display:flex;animation:fi .3s ease}
+.stage-card{background:linear-gradient(160deg,#0a1a30,#040d18);border:3px solid var(--gd);border-radius:22px;padding:28px 22px;text-align:center;max-width:320px;width:100%;box-shadow:0 0 60px #f0d06080}
+.stage-e{font-size:72px;display:block;animation:friend-pop .6s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
+.stage-clear-badge{font-size:20px;color:var(--gd);letter-spacing:2px;margin:10px 0 4px;font-family:'Zen Kurenaido',cursive}
+.stage-next-title{font-family:'Zen Kurenaido',cursive;font-size:28px;color:var(--wh);margin-bottom:8px}
+.stage-desc{font-size:18px;color:#c8d8e8;line-height:1.85;margin-bottom:14px}
+.stage-friend-area{background:#0a1828;border:1.5px solid var(--ac);border-radius:12px;padding:12px;margin-bottom:14px;display:none}
+.stage-friend-title{font-size:16px;color:var(--ac);margin-bottom:8px;font-family:'Zen Kurenaido',cursive}
+.stage-friend-list{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sfl-item{text-align:center;background:#060f1a;border:1px solid #2a3a5a;border-radius:10px;padding:8px 10px;cursor:pointer;transition:all .2s;min-width:80px}
+.sfl-item:hover{border-color:var(--gd);background:#0e1a2a;transform:translateY(-2px)}
+.sfl-item.selected{border-color:var(--gd);background:#141e00;box-shadow:0 0 10px #f0d06040}
+.sfl-e{font-size:32px;display:block}
+.sfl-n{font-size:14px;color:var(--gd);margin-top:4px}
+.sfl-ability{font-size:11px;color:var(--gr);margin-top:2px;line-height:1.4}
+.btn-stage-next{width:100%;border-radius:12px;padding:13px;background:linear-gradient(135deg,#1a3a1a,#2a5a2a);border:2px solid var(--gn);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:20px;cursor:pointer;transition:all .2s}
+.btn-stage-next:hover{background:linear-gradient(135deg,#2a4a2a,#3a6a3a);box-shadow:0 0 18px #70c89060}
+.btn-stage-next:disabled{opacity:.4;cursor:not-allowed}
+
+/* 仲間ボタン（ゲーム中） */
+#buddy-btn{display:none;position:fixed;bottom:20px;right:16px;z-index:800;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#1a3a1a,#2a5a2a);border:2px solid var(--gn);font-size:28px;cursor:pointer;box-shadow:0 0 16px #70c89060;animation:fp 2s ease-in-out infinite;transition:all .2s}
+#buddy-btn:hover{transform:scale(1.1)}
+#buddy-btn:disabled{opacity:.4;animation:none;cursor:not-allowed}
+
+/* 仲間発動モーダル */
+#buddy-modal{position:fixed;inset:0;z-index:950;display:none;align-items:center;justify-content:center;background:#000000e0;backdrop-filter:blur(8px);padding:20px}
+#buddy-modal.show{display:flex;animation:fi .25s ease}
+.buddy-card{background:linear-gradient(160deg,#0a2030,#040d18);border:2px solid var(--gn);border-radius:20px;padding:24px 20px;text-align:center;max-width:300px;width:100%;box-shadow:0 0 40px #70c89060}
+.buddy-title{font-family:'Zen Kurenaido',cursive;font-size:22px;color:var(--gn);margin-bottom:12px}
+.buddy-options{display:flex;flex-direction:column;gap:8px}
+.buddy-opt{border-radius:12px;padding:14px 16px;cursor:pointer;font-family:'Zen Kurenaido',cursive;font-size:18px;border:1.5px solid;color:var(--wh);text-align:left;display:flex;align-items:center;gap:10px;transition:all .2s}
+.buddy-opt:hover{transform:translateX(4px)}
+.buddy-opt.hp{background:#0a2010;border-color:var(--gn)}.buddy-opt.hp:hover{background:#0e2a16}
+.buddy-opt.fear{background:#1a0828;border-color:var(--pu)}.buddy-opt.fear:hover{background:#200e32}
+.buddy-opt.boss{background:#200a08;border-color:var(--rd)}.buddy-opt.boss:hover{background:#2a0e0a}
+.buddy-opt-icon{font-size:28px;flex-shrink:0}
+.buddy-opt-text{flex:1}
+.buddy-opt-name{font-size:16px;display:block}
+.buddy-opt-desc{font-size:12px;color:var(--gr);display:block;margin-top:2px}
+.btn-buddy-cancel{margin-top:10px;width:100%;padding:9px;border-radius:10px;background:#0a0318;border:1px solid #2a1a4a;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:14px;cursor:pointer}
+
+/* ステージ表示バッジ */
+#stage-badge{font-size:20px;color:var(--wh);background:#1a3a1a;border:1px solid var(--gn);border-radius:8px;padding:2px 10px;font-family:'Zen Kurenaido',cursive;flex-shrink:0}
+
 /* ── フラッシュ ── */
 #flash{position:fixed;inset:0;z-index:1000;pointer-events:none;opacity:0}
 #flash.red{background:radial-gradient(ellipse at center,#ff000070,#ff000025);animation:flash-red .55s ease forwards}
@@ -247,6 +294,55 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <body>
 <div id="flash"></div>
 
+<!-- ステージクリアモーダル -->
+<div id="stage-modal">
+  <div class="stage-card">
+    <span class="stage-e" id="stage-e">🎉</span>
+    <div class="stage-clear-badge" id="stage-clear-badge">STAGE 1 クリア！</div>
+    <div class="stage-next-title" id="stage-next-title">次のステージへ</div>
+    <div class="stage-desc" id="stage-desc">次のステージの説明</div>
+    <div class="stage-friend-area" id="stage-friend-area">
+      <div class="stage-friend-title">👻 連れていく仲間を1体選んでください</div>
+      <div class="stage-friend-list" id="stage-friend-list"></div>
+    </div>
+    <button class="btn-stage-next" id="btn-stage-next" onclick="startNextStage()" disabled>次のステージへ →</button>
+  </div>
+</div>
+
+<!-- 仲間発動ボタン -->
+<button id="buddy-btn" onclick="showBuddyModal()" title="仲間に助けてもらう！">👻</button>
+
+<!-- 仲間発動モーダル -->
+<div id="buddy-modal">
+  <div class="buddy-card">
+    <div class="buddy-title" id="buddy-title">👻 仲間を呼ぶ！</div>
+    <div class="buddy-options">
+      <button class="buddy-opt hp" onclick="useBuddy('hp')">
+        <span class="buddy-opt-icon">💚</span>
+        <div class="buddy-opt-text">
+          <span class="buddy-opt-name">体力を全回復</span>
+          <span class="buddy-opt-desc">HPをMAXまで回復してくれる</span>
+        </div>
+      </button>
+      <button class="buddy-opt fear" onclick="useBuddy('fear')">
+        <span class="buddy-opt-icon">😌</span>
+        <div class="buddy-opt-text">
+          <span class="buddy-opt-name">恐怖をリセット</span>
+          <span class="buddy-opt-desc">恐怖トークンを0にしてくれる</span>
+        </div>
+      </button>
+      <button class="buddy-opt boss" onclick="useBuddy('boss')" id="buddy-boss-opt">
+        <span class="buddy-opt-icon">⚔️</span>
+        <div class="buddy-opt-text">
+          <span class="buddy-opt-name">ボスに3ダメージ</span>
+          <span class="buddy-opt-desc">ボス戦中のみ使用可能</span>
+        </div>
+      </button>
+    </div>
+    <button class="btn-buddy-cancel" onclick="document.getElementById('buddy-modal').classList.remove('show')">キャンセル</button>
+  </div>
+</div>
+
 <!-- お化けモーダル -->
 <div id="ghost-modal" class="modal">
   <div class="mcard">
@@ -360,6 +456,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="kw"><span class="ki">🗝️</span><div id="kps" style="display:flex;gap:2px"></div></div>
     <div class="sdv"></div>
     <div class="fpw"><span style="font-size:13.5px;color:var(--gr)">😨</span><div id="fps" style="display:flex;gap:2px"></div></div>
+    <div id="stage-badge">ST1</div>
     <div id="floor-badge">1F</div>
     <div id="tb">ターン1</div>
   </div>
@@ -433,6 +530,57 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </div>
 
 <script>
+
+// ════════════════════════════════════════
+// ステージ定義
+// ════════════════════════════════════════
+const STAGES = {
+  1: {
+    name: 'ステージ1',
+    subtitle: 'お化け屋敷の入口',
+    emoji: '🏚️',
+    floors: ['2F','1F','B1'], // 使用するフロア
+    startPos: '1f-0',
+    targetKeys: 3,
+    bossHp: 4,
+    fearLimit: 3, // 恐怖X個でお化け登場
+    desc: '1F〜2F・鍵3本・ボスHP4
+まずは屋敷に慣れよう！',
+    exitFloors: ['2F'],
+    bgColor: '#0a0318',
+  },
+  2: {
+    name: 'ステージ2',
+    subtitle: 'お化け屋敷の深部',
+    emoji: '🌑',
+    floors: ['3F','2F','1F','B1'],
+    startPos: '1f-0',
+    targetKeys: 5,
+    bossHp: 6,
+    fearLimit: 3,
+    desc: '全フロア・鍵5本・ボスHP6
+仲間が助けてくれる！',
+    exitFloors: ['2F','3F'],
+    bgColor: '#070210',
+    hasBuddy: true,
+  },
+  3: {
+    name: 'ステージ3',
+    subtitle: 'お化け屋敷の最深部',
+    emoji: '💀',
+    floors: ['3F','2F','1F','B1'],
+    startPos: '1f-0',
+    targetKeys: 7,
+    bossHp: 10,
+    fearLimit: 2, // より厳しい
+    desc: '全フロア・鍵7本・ボスHP10
+恐怖2個でお化け登場！
+最後の戦いだ！',
+    exitFloors: ['3F'],
+    bgColor: '#050108',
+  },
+};
+
 // ════════════════════════════════════════
 // マップ定義
 // ════════════════════════════════════════
@@ -590,10 +738,12 @@ function selChar(id){
 // ════════════════════════════════════════
 // ゲーム開始
 // ════════════════════════════════════════
-function startGame(){
-  const ch=sel;if(!ch)return;
-  // 出口フロアをランダム決定
-  const exitFloor=['2F','3F'][Math.floor(Math.random()*2)];
+function startGame(stageNum=1, prevData=null){
+  const ch=sel||prevData?.ch;if(!ch)return;
+  const stage=STAGES[stageNum];
+  // 出口フロアをステージ定義からランダム決定
+  const exitFloors=stage.exitFloors;
+  const exitFloor=exitFloors[Math.floor(Math.random()*exitFloors.length)];
   // 出口部屋を追加
   const exitId='exit-room';
   const exitRoom=exitFloor==='2F'?{...EXIT_ROOM_2F}:{...EXIT_ROOM_3F};
@@ -605,12 +755,14 @@ function startGame(){
     CONNECTIONS[exitLink].push(exitId);
   FLOOR_ROOMS[exitFloor].push(exitId);
 
+  const stageData=STAGES[stageNum];
   G={
     c:{...ch,hp:ch.hp,mhp:ch.hp},
-    k:0,tk:5,fear:0,turn:1,
-    pos:'1f-0',
-    visited:new Set(['1f-0']),
-    ghosts:{'1f-2':1,'2f-1':1},// 部屋IDをキー、体数を値
+    k:0,tk:stageData.targetKeys,
+    fear:0,turn:1,
+    pos:stageData.startPos,
+    visited:new Set([stageData.startPos]),
+    ghosts:{'1f-2':1,'2f-1':1,'3f-1':1},
     canChange:ch.id==='una',
     peek:ch.id==='kon'?3:0,
     done:false,st:Date.now(),
@@ -618,13 +770,21 @@ function startGame(){
     boss:null,bossHp:0,bossReady:false,
     exitFloor,exitId,
     selectedRoom:null,
+    stage:stageNum,
+    stageData,
+    fearLimit:stageData.fearLimit,
+    // 仲間システム
+    buddy: prevData?.buddy||null,
+    buddyUsed: false,
   };
 
   document.getElementById('sc-title').style.display='none';
   document.getElementById('sc-game').style.display='block';
-  lg('🏚️ unaはお化け屋敷の扉を開けた…','imp');
+  lg(`${stageData.emoji} ${stageData.name}「${stageData.subtitle}」開始！`,'imp');
   lg(`👤 ${ch.name}（${ch.ability}）`,'pu');
-  lg(`🏁 今回の出口は【${exitFloor}】！鍵5本集めて向かおう！`,'gld');
+  lg(`🏁 出口は【${exitFloor}】！鍵${stageData.targetKeys}本集めて向かおう！`,'gld');
+  if(stageData.fearLimit<3) lg(`⚠️ 恐怖${stageData.fearLimit}個でお化け登場！気をつけろ！`,'dng');
+  if(G.buddy) lg(`👻 仲間の【${G.buddy.name}】が一緒にいる！ピンチのとき呼ぼう！`,'pu');
   lg('💡 緑に光る部屋をタップして移動しよう！','');
   upStat();renderMap();
 }
@@ -635,7 +795,8 @@ function startGame(){
 function renderMap(){
   const reachable=getReachable();
   const container=document.getElementById('map-floors');
-  container.innerHTML=FLOOR_ORDER.map(fl=>{
+  const activeFloors=G&&G.stageData?G.stageData.floors:FLOOR_ORDER;
+  container.innerHTML=FLOOR_ORDER.filter(fl=>activeFloors.includes(fl)).map(fl=>{
     const rooms=FLOOR_ROOMS[fl]||[];
     if(!rooms.length)return'';
     return`<div class="map-floor map-floor-row f-${fl.toLowerCase().replace('b','b')}">
@@ -843,7 +1004,7 @@ function resolveRoom(rid,type,sb){
   }
   if(r.rs.f>0){
     const f=r.rs.f*mul;G.fear+=f;logs.push(`😨恐怖+${f}`);updateFP();
-    if(G.fear>=3){
+    if(G.fear>=G.fearLimit){
       const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
       let d=gh.dmg;if(G.c.id==='mea')d=Math.max(0,d-1);
       G.c.hp-=d;G.fear=0;logs.push(`👻【${gh.name}】体力-${d}`);
@@ -920,7 +1081,7 @@ function updateStreakBar(){
 // ════════════════════════════════════════
 function triggerBoss(){
   const boss=BOSSES[Math.floor(Math.random()*BOSSES.length)];
-  G.boss=boss;G.bossHp=boss.hp;
+  G.boss=boss;G.bossHp=G.stageData.bossHp;boss={...boss,hp:G.stageData.bossHp};
   document.getElementById('bm-e').textContent=boss.emoji;
   document.getElementById('bm-n').textContent=boss.name;
   document.getElementById('bm-d').textContent=boss.desc;
@@ -975,8 +1136,8 @@ function bossRoll(){
         if(G.bossHp<=0){
           document.getElementById('boss-modal').classList.remove('show');
           flashEl('gold');
-          lg(`🎉 【${G.boss.name}】を倒した！脱出成功！`,'gld');
-          setTimeout(()=>triggerFriend(),800);
+          lg(`🎉 【${G.boss.name}】を倒した！ステージ${G.stage}クリア！`,'gld');
+          setTimeout(()=>stageClear(),800);
         } else if(G.c.hp<=0){
           document.getElementById('boss-modal').classList.remove('show');
           setTimeout(()=>gameOver(),400);
@@ -996,6 +1157,162 @@ function bossEscape(){
   if(G.k>=G.tk)checkBoss();
   nextTurn();
 }
+
+
+// ════════════════════════════════════════
+// ステージクリア処理
+// ════════════════════════════════════════
+let _selectedBuddy=null;
+
+function stageClear(){
+  const stage=G.stage;
+  // 最終ステージならフレンドゲット→勝利
+  if(stage>=3){
+    triggerFriend();return;
+  }
+
+  // ステージクリアモーダル表示
+  const modal=document.getElementById('stage-modal');
+  document.getElementById('stage-e').textContent=stage===1?'🎊':'🌟';
+  document.getElementById('stage-clear-badge').textContent=`STAGE ${stage} クリア！`;
+  document.getElementById('stage-next-title').textContent=`ステージ${stage+1}へ進む`;
+  const nextStage=STAGES[stage+1];
+  document.getElementById('stage-desc').textContent=nextStage.desc;
+
+  // ステージ2に進む場合：仲間選択
+  if(stage===1){
+    const owned=getColl();
+    const friendArea=document.getElementById('stage-friend-area');
+    const friendList=document.getElementById('stage-friend-list');
+    if(owned.length>0){
+      friendArea.style.display='block';
+      _selectedBuddy=null;
+      document.getElementById('btn-stage-next').disabled=true;
+      friendList.innerHTML=owned.map(id=>{
+        const gh=GHOSTS.find(g=>g.id===id);
+        if(!gh)return'';
+        return`<div class="sfl-item" id="sfl-${id}" onclick="selectBuddy('${id}')">
+          <span class="sfl-e">${gh.emoji}</span>
+          <div class="sfl-n">${gh.name}</div>
+        </div>`;
+      }).join('');
+    } else {
+      friendArea.style.display='none';
+      _selectedBuddy=null;
+      document.getElementById('btn-stage-next').disabled=false;
+      document.getElementById('stage-desc').textContent=nextStage.desc+'
+（仲間はまだいません）';
+    }
+  } else {
+    // ステージ3：仲間引き継ぎ（前ステージの仲間を引き継ぐ）
+    document.getElementById('stage-friend-area').style.display='none';
+    _selectedBuddy=G.buddy;
+    document.getElementById('btn-stage-next').disabled=false;
+  }
+
+  // フレンドゲット（ステージ1クリア時にお化けが仲間になる）
+  if(stage===1){
+    const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
+    addColl(gh.id);
+    // 仲間リストを更新
+    setTimeout(()=>{
+      const owned=getColl();
+      const friendList=document.getElementById('stage-friend-list');
+      document.getElementById('stage-friend-area').style.display='block';
+      friendList.innerHTML=owned.map(id=>{
+        const g=GHOSTS.find(g=>g.id===id);if(!g)return'';
+        return`<div class="sfl-item" id="sfl-${id}" onclick="selectBuddy('${id}')">
+          <span class="sfl-e">${g.emoji}</span>
+          <div class="sfl-n">${g.name}</div>
+        </div>`;
+      }).join('');
+      lg(`👻 【${gh.name}】が仲間になった！次のステージに連れていこう！`,'gld');
+    },300);
+  }
+
+  modal.classList.add('show');
+  launchFW();
+}
+
+function selectBuddy(id){
+  _selectedBuddy=id;
+  document.querySelectorAll('.sfl-item').forEach(el=>el.classList.remove('selected'));
+  const el=document.getElementById('sfl-'+id);
+  if(el)el.classList.add('selected');
+  document.getElementById('btn-stage-next').disabled=false;
+}
+
+function startNextStage(){
+  document.getElementById('stage-modal').classList.remove('show');
+  document.getElementById('win-overlay').classList.remove('show');
+  const nextStageNum=G.stage+1;
+  const ch=G.c;
+  // HPを引き継ぎ（全回復して次ステージへ）
+  const prevData={
+    ch:{...ch,hp:ch.mhp,mhp:ch.mhp}, // 全回復
+    buddy: _selectedBuddy ? GHOSTS.find(g=>g.id===_selectedBuddy)||_selectedBuddy : null,
+  };
+  // 画面リセット
+  document.getElementById('sc-res').style.display='none';
+  document.getElementById('sc-game').style.display='none';
+  sel=prevData.ch;
+  startGame(nextStageNum, prevData);
+}
+
+// ════════════════════════════════════════
+// 仲間発動
+// ════════════════════════════════════════
+function showBuddyModal(){
+  if(!G.buddy||G.buddyUsed)return;
+  const gh=typeof G.buddy==='object'?G.buddy:GHOSTS.find(g=>g.id===G.buddy);
+  if(!gh)return;
+  document.getElementById('buddy-title').textContent=`👻 ${gh.name}を呼ぶ！`;
+  // ボス戦中でない場合はボスダメージを無効化
+  const bossOpt=document.getElementById('buddy-boss-opt');
+  if(bossOpt){
+    const inBoss=document.getElementById('boss-modal').classList.contains('show');
+    bossOpt.disabled=!inBoss;
+    bossOpt.style.opacity=inBoss?'1':'.4';
+  }
+  document.getElementById('buddy-modal').classList.add('show');
+}
+
+function useBuddy(type){
+  if(!G.buddy||G.buddyUsed)return;
+  G.buddyUsed=true;
+  document.getElementById('buddy-modal').classList.remove('show');
+  const gh=typeof G.buddy==='object'?G.buddy:GHOSTS.find(g=>g.id===G.buddy);
+  const name=gh?gh.name:'仲間';
+
+  if(type==='hp'){
+    G.c.hp=G.c.mhp;
+    flashEl('gold');
+    lg(`👻 ${name}が体力を全回復してくれた！`,'gld');
+    upStat();
+  } else if(type==='fear'){
+    G.fear=0;
+    updateFP();
+    flashEl('pu');
+    lg(`👻 ${name}が恐怖を払いのけてくれた！`,'pu');
+    upStat();
+  } else if(type==='boss'){
+    if(G.boss){
+      G.bossHp=Math.max(0,G.bossHp-3);
+      const pct=Math.max(0,G.bossHp/G.stageData.bossHp*100);
+      document.getElementById('bm-hp-fill').style.width=pct+'%';
+      document.getElementById('bm-hp-num').textContent=`${G.bossHp}/${G.stageData.bossHp}`;
+      flashEl('gold');
+      lg(`👻 ${name}がボスに3ダメージ！（残りHP${G.bossHp}）`,'gld');
+      if(G.bossHp<=0){
+        document.getElementById('boss-modal').classList.remove('show');
+        lg(`🎉 ボスを倒した！`,'gld');
+        setTimeout(()=>stageClear(),600);
+      }
+    }
+  }
+  upStat();
+}
+
 
 // ════════════════════════════════════════
 // フレンドゲット
@@ -1108,9 +1425,16 @@ function closeWin(){
 // UI更新
 // ════════════════════════════════════════
 function updateFP(){
-  for(let i=0;i<3;i++){const p=document.getElementById('fp'+i);if(p)p.className='fpip'+(G.fear>i?' lit':'');}
+  const lim=G?G.fearLimit:3;
+  for(let i=0;i<3;i++){
+    const p=document.getElementById('fp'+i);
+    if(p){
+      p.className='fpip'+(G.fear>i?' lit':'');
+      p.style.display=i<lim?'':'none';
+    }
+  }
   const bar=document.getElementById('fps');bar.innerHTML='';
-  for(let i=0;i<3;i++){const d=document.createElement('div');d.className='fps'+(G.fear>i?' lit':'');bar.appendChild(d);}
+  for(let i=0;i<lim;i++){const d=document.createElement('div');d.className='fps'+(G.fear>i?' lit':'');bar.appendChild(d);}
 }
 function upStat(){
   if(!G)return;
@@ -1123,6 +1447,19 @@ function upStat(){
   document.getElementById('hpn').textContent=`${Math.max(0,G.c.hp)}/${G.c.mhp}`;
   const kp=document.getElementById('kps');kp.innerHTML='';
   for(let i=0;i<G.tk;i++){const d=document.createElement('div');d.className='kpip'+(i<G.k?' got':'');kp.appendChild(d);}
+  // ステージバッジ
+  const sb=document.getElementById('stage-badge');
+  if(sb&&G.stage){sb.textContent=`ST${G.stage}`;sb.style.background=G.stage===1?'#1a3a1a':G.stage===2?'#1a1a3a':'#3a0a0a';}
+  // 仲間ボタン表示
+  const bb=document.getElementById('buddy-btn');
+  if(bb){
+    if(G.buddy&&!G.buddyUsed&&G.stage>=2){
+      bb.style.display='block';
+      bb.textContent=G.buddy.emoji;
+    } else {
+      bb.style.display='none';
+    }
+  }
   updateFP();
 }
 function enBtn(on){document.querySelectorAll('.cb').forEach(b=>b.disabled=!on);}
