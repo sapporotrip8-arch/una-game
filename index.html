@@ -539,11 +539,11 @@ const STAGES = {
     name: 'ステージ1',
     subtitle: 'お化け屋敷の入口',
     emoji: '🏚️',
-    floors: ['2F','1F','B1'], // 使用するフロア
+    floors: ['2F','1F'], // 1F・2Fのみ（B1なし）
     startPos: '1f-0',
     targetKeys: 3,
     bossHp: 4,
-    fearLimit: 3, // 恐怖X個でお化け登場
+    fearLimit: 3,
     desc: '1F〜2F・鍵3本・ボスHP4
 まずは屋敷に慣れよう！',
     exitFloors: ['2F'],
@@ -688,6 +688,9 @@ function switchTab(t){
   document.querySelectorAll('.ttab').forEach((el,i)=>el.className='ttab'+(t===['play','coll','rank'][i]?' on':''));
   document.querySelectorAll('.tc').forEach(el=>el.classList.remove('on'));
   document.getElementById('tc-'+t).classList.add('on');
+  // スタートボタンはplayタブのときのみ表示
+  const btnS=document.getElementById('btn-s');
+  if(btnS)btnS.style.display=t==='play'?'block':'none';
   if(t==='coll')renderColl('coll-grid');
   if(t==='rank')renderRank('rank-list');
 }
@@ -729,10 +732,12 @@ function initChars(){
 }
 function selChar(id){
   sel=CHARS.find(c=>c.id===id);
+  if(!sel)return;
   document.querySelectorAll('.cbtn').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('cb-'+id).classList.add('sel');
-  document.getElementById('cb-'+id).style.borderColor=sel.col;
-  document.getElementById('btn-s').disabled=false;
+  const cb=document.getElementById('cb-'+id);
+  if(cb){cb.classList.add('sel');cb.style.borderColor=sel.col;}
+  const btnS=document.getElementById('btn-s');
+  if(btnS){btnS.disabled=false;btnS.style.display='block';}
 }
 
 // ════════════════════════════════════════
@@ -744,15 +749,23 @@ function startGame(stageNum=1, prevData=null){
   // 出口フロアをステージ定義からランダム決定
   const exitFloors=stage.exitFloors;
   const exitFloor=exitFloors[Math.floor(Math.random()*exitFloors.length)];
-  // 出口部屋を追加
+  // 出口部屋を追加（重複防止）
   const exitId='exit-room';
   const exitRoom=exitFloor==='2F'?{...EXIT_ROOM_2F}:{...EXIT_ROOM_3F};
   MAP_ROOMS[exitId]=exitRoom;
-  // 出口の接続先（そのフロアの最後の部屋に接続）
   const exitLink=exitFloor==='2F'?'2f-3':'3f-3';
+  CONNECTIONS[exitId]=[exitLink];
+  // 既存の出口接続をリセットしてから追加
+  Object.keys(CONNECTIONS).forEach(k=>{
+    CONNECTIONS[k]=CONNECTIONS[k].filter(id=>id!=='exit-room');
+  });
   CONNECTIONS[exitId]=[exitLink];
   if(CONNECTIONS[exitLink]&&!CONNECTIONS[exitLink].includes(exitId))
     CONNECTIONS[exitLink].push(exitId);
+  // FLOOR_ROOMSの重複防止
+  Object.keys(FLOOR_ROOMS).forEach(f=>{
+    FLOOR_ROOMS[f]=FLOOR_ROOMS[f].filter(id=>id!=='exit-room');
+  });
   FLOOR_ROOMS[exitFloor].push(exitId);
 
   const stageData=STAGES[stageNum];
