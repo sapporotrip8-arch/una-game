@@ -79,6 +79,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* ステージ表示バッジ */
 #stage-badge{font-size:20px;color:var(--wh);background:#1a3a1a;border:1px solid var(--gn);border-radius:8px;padding:2px 10px;font-family:'Zen Kurenaido',cursive;flex-shrink:0}
 
+
+/* ボス戦選択肢 */
+#boss-choices{display:none;flex-direction:column;gap:8px;margin:10px 0}
+.boss-choice-btn{border-radius:12px;padding:12px 14px;cursor:pointer;font-family:'Zen Kurenaido',cursive;font-size:20px;border:2px solid;color:var(--wh);text-align:left;display:flex;align-items:center;gap:10px;transition:all .2s;width:100%}
+.boss-choice-btn:hover{transform:translateX(4px)}
+.boss-choice-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.bc-atk{background:#1e0808;border-color:var(--rd)}.bc-atk:hover{background:#280a0a;box-shadow:0 0 12px #e8607050}
+.bc-def{background:#0a1430;border-color:var(--bl)}.bc-def:hover{background:#0e1c40;box-shadow:0 0 12px #7090e050}
+.bc-heal{background:#0a1808;border-color:var(--gn)}.bc-heal:hover{background:#0e2010;box-shadow:0 0 12px #70c89050}
+.bc-icon{font-size:28px;flex-shrink:0}
+.bc-text{flex:1}
+.bc-name{display:block;font-size:18px}
+.bc-desc{display:block;font-size:13px;opacity:.7;margin-top:2px}
+.boss-def-count{font-size:13px;color:var(--bl);text-align:center;margin-top:4px;display:none}
+
 /* ── フラッシュ ── */
 #flash{position:fixed;inset:0;z-index:1000;pointer-events:none;opacity:0}
 #flash.red{background:radial-gradient(ellipse at center,#ff000070,#ff000025);animation:flash-red .55s ease forwards}
@@ -365,12 +380,40 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="boss-hp-lbl"><span>👹 ボスの体力</span><span id="bm-hp-num">6/6</span></div>
     <div class="boss-hp-bar"><div class="boss-hp-fill" id="bm-hp-fill" style="width:100%"></div></div>
     <div class="boss-php-lbl"><span>❤️ あなたの体力</span><span id="bm-php-num">10/10</span></div>
-    <div class="dice-area">
+    <!-- Step1: サイコロ -->
+    <div class="dice-area" id="dice-area">
       <span class="dice-face" id="dice-face">🎲</span>
-      <div class="dice-result" id="dice-result">サイコロを振って勝負！</div>
-      <div class="dice-hint">偶数の目 → ボスにダメージ🎯<br>奇数の目 → 自分にダメージ💥</div>
+      <div class="dice-result" id="dice-result">まずサイコロを振ろう！</div>
     </div>
     <button class="btn-roll" id="btn-roll" onclick="bossRoll()">🎲 サイコロを振る！</button>
+    <!-- Step2: 使い方を選ぶ -->
+    <div id="boss-choices">
+      <div style="font-size:18px;color:var(--gd);font-family:'Zen Kurenaido',cursive;text-align:center;margin-bottom:4px">
+        🎲 <span id="roll-result-num">4</span> の目！どう使う？
+      </div>
+      <button class="boss-choice-btn bc-atk" onclick="bossUseRoll('atk')">
+        <span class="bc-icon">⚔️</span>
+        <div class="bc-text">
+          <span class="bc-name">攻撃に使う</span>
+          <span class="bc-desc" id="bc-atk-desc">ボスに ? ダメージ</span>
+        </div>
+      </button>
+      <button class="boss-choice-btn bc-def" onclick="bossUseRoll('def')">
+        <span class="bc-icon">🛡️</span>
+        <div class="bc-text">
+          <span class="bc-name">防御に使う</span>
+          <span class="bc-desc" id="bc-def-desc">次の攻撃を ? 軽減</span>
+        </div>
+      </button>
+      <button class="boss-choice-btn bc-heal" onclick="bossUseRoll('heal')">
+        <span class="bc-icon">💚</span>
+        <div class="bc-text">
+          <span class="bc-name">回復に使う</span>
+          <span class="bc-desc" id="bc-heal-desc">体力を ? 回復</span>
+        </div>
+      </button>
+    </div>
+    <div class="boss-def-count" id="boss-def-count">🛡️ 防御中（次の攻撃を軽減）</div>
     <button class="boss-run" onclick="bossEscape()">💨 今は逃げる（鍵-1）</button>
   </div>
 </div>
@@ -1166,7 +1209,7 @@ function updateStreakBar(){
 function triggerBoss(){
   const bossBase=BOSSES[Math.floor(Math.random()*BOSSES.length)];
   const boss={...bossBase,hp:G.stageData.bossHp};
-  G.boss=boss;G.bossHp=G.stageData.bossHp;
+  G.boss=boss;G.bossHp=G.stageData.bossHp;G.bossDefense=0;
   document.getElementById('bm-e').textContent=boss.emoji;
   document.getElementById('bm-n').textContent=boss.name;
   document.getElementById('bm-d').textContent=boss.desc;
@@ -1175,18 +1218,25 @@ function triggerBoss(){
   document.getElementById('bm-php-num').textContent=`${G.c.hp}/${G.c.mhp}`;
   document.getElementById('dice-face').textContent='🎲';
   document.getElementById('dice-face').className='dice-face';
-  document.getElementById('dice-result').textContent='サイコロを振って勝負！';
+  document.getElementById('dice-result').textContent='まずサイコロを振ろう！';
   document.getElementById('dice-result').className='dice-result';
+  document.getElementById('boss-choices').style.display='none';
+  document.getElementById('boss-def-count').style.display='none';
   document.getElementById('btn-roll').disabled=false;
+  _bossRoll=0;
   document.getElementById('boss-modal').classList.add('show');
   flashEl('pu');
   lg(`👹 【${boss.name}】が現れた！ボス戦開始！`,'boss');
 }
+// ボス戦のサイコロの目を保存
+let _bossRoll=0;
+
 function bossRoll(){
   const btn=document.getElementById('btn-roll');
   const dEl=document.getElementById('dice-face');
   const rEl=document.getElementById('dice-result');
   btn.disabled=true;
+  document.getElementById('boss-choices').style.display='none';
   const FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
   dEl.className='dice-face rolling';
   let cnt=0;
@@ -1195,43 +1245,91 @@ function bossRoll(){
     if(++cnt>=10){
       clearInterval(spin);
       const roll=Math.floor(Math.random()*6)+1;
+      _bossRoll=roll;
       dEl.textContent=FACES[roll-1];
       dEl.className='dice-face popped';
-      const isEven=roll%2===0;
-      if(isEven){
-        G.bossHp=Math.max(0,G.bossHp-roll);
-        rEl.textContent=`${roll}（偶数）→ ボスに${roll}ダメージ！🎯`;
-        rEl.className='dice-result bdmg';
-        flashEl('gold');
-        lg(`🎲 ${roll}の目！偶数→ボスに${roll}ダメージ（残り${G.bossHp}）`,'gld');
-      } else {
-        let d=roll;if(G.c.id==='mea')d=Math.max(0,d-1);
-        G.c.hp=Math.max(0,G.c.hp-d);
-        rEl.textContent=`${roll}（奇数）→ 自分に${d}ダメージ！💥`;
-        rEl.className='dice-result pdmg';
-        flashEl('red');
-        lg(`🎲 ${roll}の目！奇数→自分に${d}ダメージ（残りHP${G.c.hp}）`,'dng');
-      }
-      const pct=Math.max(0,G.bossHp/G.boss.hp*100);
-      document.getElementById('bm-hp-fill').style.width=pct+'%';
-      document.getElementById('bm-hp-num').textContent=`${G.bossHp}/${G.boss.hp}`;
-      document.getElementById('bm-php-num').textContent=`${Math.max(0,G.c.hp)}/${G.c.mhp}`;
-      upStat();
+      rEl.textContent=roll+'の目が出た！どう使う？';
+      rEl.className='dice-result';
+      // 選択肢を更新して表示
+      document.getElementById('roll-result-num').textContent=roll;
+      document.getElementById('bc-atk-desc').textContent='ボスに '+roll+' ダメージ';
+      document.getElementById('bc-def-desc').textContent='次のボス攻撃を '+roll+' 軽減';
+      document.getElementById('bc-heal-desc').textContent='体力を '+roll+' 回復';
       setTimeout(()=>{
-        if(G.bossHp<=0){
-          document.getElementById('boss-modal').classList.remove('show');
-          flashEl('gold');
-          lg(`🎉 【${G.boss.name}】を倒した！ステージ${G.stage}クリア！`,'gld');
-          setTimeout(()=>stageClear(),800);
-        } else if(G.c.hp<=0){
-          document.getElementById('boss-modal').classList.remove('show');
-          setTimeout(()=>gameOver(),400);
-        } else {
-          btn.disabled=false;
-        }
-      },1200);
+        document.getElementById('boss-choices').style.display='flex';
+      },400);
     }
   },60);
+}
+
+function bossUseRoll(type){
+  const roll=_bossRoll;
+  if(!roll)return;
+  _bossRoll=0;
+  document.getElementById('boss-choices').style.display='none';
+
+  if(type==='atk'){
+    // 攻撃：ボスにダメージを与えるが、ボスも反撃する
+    const bossDmg=Math.floor(Math.random()*G.boss.hp/3)+1; // ボスの反撃
+    let playerDmg=bossDmg;
+    if(G.bossDefense>0){playerDmg=Math.max(0,playerDmg-G.bossDefense);G.bossDefense=0;updateBossDefDisplay();}
+    if(G.c.id==='mea')playerDmg=Math.max(0,playerDmg-1);
+    G.bossHp=Math.max(0,G.bossHp-roll);
+    G.c.hp=Math.max(0,G.c.hp-playerDmg);
+    flashEl('gold');
+    if(playerDmg>0)setTimeout(()=>flashEl('red'),300);
+    lg('⚔️ 攻撃！ボスに'+roll+'ダメージ！ボスの反撃で体力-'+playerDmg,'gld');
+  } else if(type==='def'){
+    // 防御：次のボス攻撃を軽減
+    G.bossDefense=(G.bossDefense||0)+roll;
+    updateBossDefDisplay();
+    flashEl('pu');
+    lg('🛡️ 防御！次のボス攻撃を'+roll+'軽減できる！','pu');
+  } else if(type==='heal'){
+    // 回復：体力を回復するが、ボスが攻撃してくる
+    const bossDmg=Math.floor(Math.random()*3)+1;
+    let playerDmg=bossDmg;
+    if(G.bossDefense>0){playerDmg=Math.max(0,playerDmg-G.bossDefense);G.bossDefense=0;updateBossDefDisplay();}
+    if(G.c.id==='mea')playerDmg=Math.max(0,playerDmg-1);
+    G.c.hp=Math.min(G.c.hp+roll,G.c.mhp);
+    G.c.hp=Math.max(0,G.c.hp-playerDmg);
+    flashEl('gold');
+    lg('💚 回復！体力+'+roll+'！でもボスの攻撃で体力-'+playerDmg,'gd');
+  }
+
+  // HP表示更新
+  const pct=Math.max(0,G.bossHp/G.stageData.bossHp*100);
+  document.getElementById('bm-hp-fill').style.width=pct+'%';
+  document.getElementById('bm-hp-num').textContent=G.bossHp+'/'+G.stageData.bossHp;
+  document.getElementById('bm-php-num').textContent=Math.max(0,G.c.hp)+'/'+G.c.mhp;
+  upStat();
+
+  setTimeout(()=>{
+    if(G.bossHp<=0){
+      document.getElementById('boss-modal').classList.remove('show');
+      flashEl('gold');
+      lg('🎉 【'+G.boss.name+'】を倒した！ステージ'+G.stage+'クリア！','gld');
+      setTimeout(()=>stageClear(),800);
+    } else if(G.c.hp<=0){
+      document.getElementById('boss-modal').classList.remove('show');
+      setTimeout(()=>gameOver(),400);
+    } else {
+      // 次のターンへ
+      document.getElementById('btn-roll').disabled=false;
+      document.getElementById('dice-result').textContent='次のサイコロを振ろう！';
+      document.getElementById('dice-face').textContent='🎲';
+    }
+  },1000);
+}
+
+function updateBossDefDisplay(){
+  const el=document.getElementById('boss-def-count');
+  if(G.bossDefense>0){
+    el.style.display='block';
+    el.textContent='🛡️ 防御中（次の攻撃を'+G.bossDefense+'軽減）';
+  } else {
+    el.style.display='none';
+  }
 }
 function bossEscape(){
   G.k=Math.max(0,G.k-1);
