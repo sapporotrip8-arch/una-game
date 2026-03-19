@@ -809,53 +809,51 @@ function renderMap(){
   const reachable=getReachable();
   const container=document.getElementById('map-floors');
   const activeFloors=G&&G.stageData?G.stageData.floors:FLOOR_ORDER;
-  container.innerHTML=FLOOR_ORDER.filter(fl=>activeFloors.includes(fl)).map(fl=>{
+  let html='';
+  FLOOR_ORDER.filter(function(fl){return activeFloors.includes(fl);}).forEach(function(fl){
     const rooms=FLOOR_ROOMS[fl]||[];
-    if(!rooms.length)return'';
-    return`<div class="map-floor map-floor-row f-${fl.toLowerCase().replace('b','b')}">
-      <div class="map-fl-lbl">${fl}</div>
-      <div class="map-rooms">${rooms.map(rid=>{
-        const r=MAP_ROOMS[rid];if(!r)return'';
-        const isCur=G.pos===rid;
-        const isReach=reachable.includes(rid);
-        const hasGhost=G.ghosts[rid]>0;
-        const isVisited=G.visited.has(rid);
-        let cls='map-room';
-        if(isCur)cls+=' current';
-        if(isReach&&!isCur)cls+=' reachable';
-        if(isVisited)cls+=' visited';else cls+=' unvisited';
-        if(r.isExit)cls+=' exit-room';
-        const ghostBadge=hasGhost?`<span class="map-ghost">👻</span>`:'';
-        const keyBadge=(rid==='b1-1'&&G.k<G.tk)?`<span class="map-key-badge">🗝️</span>`:'';
-        const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?`<span style="position:absolute;top:1px;left:2px;font-size:12px;opacity:.7">🪜</span>`:'';
-        const onclick=isReach&&!isCur?`onclick="selectRoom('${rid}')"`:''
-        // 出口の表示制御
-        if(r.isExit){
-          if(!G.bossReady){
-            // 鍵未達成：霧で隠す
-            return`<div class="map-room unvisited" style="opacity:.4;cursor:default">
-              <span class="mr-e">🌫️</span>
-              <div class="mr-n">???</div>
-            </div>`;
-          } else {
-            // 鍵達成：常に緑で光らせてクリック可能
-            return`<div class="map-room exit-room reachable${isCur?' current':''}"
-              onclick="selectRoom('${rid}')"
-              style="cursor:pointer;animation:bounce 1s ease-in-out infinite">
-              <span class="mr-e">${r.e}</span>
-              <div class="mr-n">${r.n}</div>
-            </div>`;
-          }
+    if(!rooms.length)return;
+    let roomsHtml='';
+    rooms.forEach(function(rid){
+      const r=MAP_ROOMS[rid];if(!r)return;
+      const isCur=G.pos===rid;
+      const isReach=reachable.includes(rid);
+      const isVisited=G.visited.has(rid);
+      const hasGhost=G.ghosts[rid]>0;
+      // 出口の表示
+      if(r.isExit){
+        if(!G.bossReady){
+          roomsHtml+='<div class="map-room unvisited" style="opacity:.4;cursor:default"><span class="mr-e">🌫️</span><div class="mr-n">???</div></div>';
+        } else {
+          const curCls=isCur?' current':'';
+          roomsHtml+='<div class="map-room exit-room reachable'+curCls+'" onclick="selectRoom_exit()" style="cursor:pointer;border:2px solid #f0d060;box-shadow:0 0 12px #f0d06060"><span class="mr-e">'+r.e+'</span><div class="mr-n">'+r.n+'</div></div>';
         }
-        return`<div class="${cls}" ${onclick}>
-          <span class="mr-e">${r.e}</span>
-          <div class="mr-n">${r.n}</div>
-          ${ghostBadge}${keyBadge}${stairBadge}
-        </div>`;
-      }).join('')}</div>
-    </div>`;
-  }).join('');
+        return;
+      }
+      // 通常部屋
+      let cls='map-room';
+      if(isCur)cls+=' current';
+      if(isReach&&!isCur)cls+=' reachable';
+      if(isVisited)cls+=' visited';else cls+=' unvisited';
+      const ghostBadge=hasGhost?'<span class="map-ghost">👻</span>':'';
+      const keyBadge=(rid==='b1-1'&&G.k<G.tk)?'<span class="map-key-badge">🗝️</span>':'';
+      const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?'<span style="position:absolute;top:1px;left:2px;font-size:12px;opacity:.7">🪜</span>':'';
+      const clickAttr=(isReach&&!isCur)?(' onclick="selectRoom_id(this)" data-rid="'+rid+'"'):'';
+      roomsHtml+='<div class="'+cls+'"'+clickAttr+'><span class="mr-e">'+r.e+'</span><div class="mr-n">'+r.n+'</div>'+ghostBadge+keyBadge+stairBadge+'</div>';
+    });
+    html+='<div class="map-floor map-floor-row f-'+fl.toLowerCase()+'"><div class="map-fl-lbl">'+fl+'</div><div class="map-rooms">'+roomsHtml+'</div></div>';
+  });
+  container.innerHTML=html;
   updateFloorBadge();
+}
+
+// テンプレートリテラルのクォート問題を回避するための専用関数
+function selectRoom_exit(){
+  selectRoom('exit-room');
+}
+function selectRoom_id(el){
+  const rid=el.getAttribute('data-rid');
+  if(rid)selectRoom(rid);
 }
 
 function getReachable(){
