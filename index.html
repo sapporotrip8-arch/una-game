@@ -45,56 +45,56 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* お化けモーダル */
 #ghost-modal .mcard{background:linear-gradient(160deg,#1e0630,#080215);border:2px solid var(--rd);box-shadow:0 0 60px #e8607080}
 .gm-e{font-size:80px;display:block;animation:ghost-in .55s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
-.gm-n{font-family:'Zen Kurenaido',cursive;font-size:44px;color:var(--rd);margin:12px 0 5px;text-shadow:0 0 24px #e86070}
-.gm-d{font-size:22px;color:#f0b0b0;line-height:1.85;margin-bottom:12px}
+.gm-n{font-family:'Zen Kurenaido',cursive;font-size:33px;color:var(--rd);margin:12px 0 5px;text-shadow:0 0 24px #e86070}
+.gm-d{font-size:16.5px;color:#f0b0b0;line-height:1.85;margin-bottom:12px}
 .gm-dmg{font-family:'Zen Kurenaido',cursive;font-size:60px;color:var(--rd);text-shadow:0 0 18px #e86070;margin-bottom:16px}
-.btn-gok{border-radius:12px;padding:10px 28px;background:#2e0a14;border:2px solid var(--rd);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:28px;cursor:pointer;transition:all .2s}
+.btn-gok{border-radius:12px;padding:10px 28px;background:#2e0a14;border:2px solid var(--rd);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:21px;cursor:pointer;transition:all .2s}
 .btn-gok:hover{background:#3e1020;box-shadow:0 0 18px #e8607060}
 
 /* ボスモーダル */
 #boss-modal .mcard{background:linear-gradient(160deg,#250530,#0d0118);border:3px solid #ff4080;box-shadow:0 0 80px #ff408080}
 .boss-e{font-size:80px;display:block;animation:boss-in .7s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
-.boss-title{font-size:20px;color:#ff8080;letter-spacing:3px;margin:10px 0 3px}
-.boss-n{font-family:'Zen Kurenaido',cursive;font-size:48px;color:#ff6090;margin-bottom:6px;text-shadow:0 0 30px #ff4080}
-.boss-d{font-size:22px;color:#f0a0c0;line-height:1.8;margin-bottom:12px}
-.boss-hp-lbl{font-size:18px;color:#ff8080;display:flex;justify-content:space-between;margin-bottom:3px}
+.boss-title{font-size:15px;color:#ff8080;letter-spacing:3px;margin:10px 0 3px}
+.boss-n{font-family:'Zen Kurenaido',cursive;font-size:36px;color:#ff6090;margin-bottom:6px;text-shadow:0 0 30px #ff4080}
+.boss-d{font-size:16.5px;color:#f0a0c0;line-height:1.8;margin-bottom:12px}
+.boss-hp-lbl{font-size:13.5px;color:#ff8080;display:flex;justify-content:space-between;margin-bottom:3px}
 .boss-hp-bar{height:9px;background:#200a18;border-radius:5px;overflow:hidden;border:1px solid #ff4080;margin-bottom:4px}
 .boss-hp-fill{height:100%;background:linear-gradient(90deg,#ff4080,#ff80a0);border-radius:5px;transition:width .5s ease}
-.boss-php-lbl{font-size:18px;color:var(--gr);display:flex;justify-content:space-between;margin-bottom:12px}
+.boss-php-lbl{font-size:13.5px;color:var(--gr);display:flex;justify-content:space-between;margin-bottom:12px}
 .dice-area{margin:8px 0;display:flex;flex-direction:column;align-items:center;gap:7px}
 .dice-face{font-size:56px;display:block;line-height:1}
 .dice-face.rolling{animation:dice-roll .6s ease forwards}
 .dice-face.popped{animation:dice-pop .4s cubic-bezier(.34,1.56,.64,1) forwards}
-.dice-result{font-family:'Zen Kurenaido',cursive;font-size:30px;min-height:20px}
+.dice-result{font-family:'Zen Kurenaido',cursive;font-size:22.5px;min-height:20px}
 .dice-result.pdmg{color:var(--rd)}.dice-result.bdmg{color:var(--gn)}
-.dice-hint{font-size:20px;color:#c080a0;line-height:1.6}
-.btn-roll{width:100%;border-radius:12px;padding:13px;cursor:pointer;font-family:'Zen Kurenaido',cursive;font-size:32px;border:2px solid #ff4080;background:#200a18;color:var(--wh);transition:all .2s;margin-bottom:8px}
+.dice-hint{font-size:15px;color:#c080a0;line-height:1.6}
+.btn-roll{width:100%;border-radius:12px;padding:13px;cursor:pointer;font-family:'Zen Kurenaido',cursive;font-size:24px;border:2px solid #ff4080;background:#200a18;color:var(--wh);transition:all .2s;margin-bottom:8px}
 .btn-roll:hover{background:#2e0c22;box-shadow:0 0 18px #ff408060}
 .btn-roll:disabled{opacity:.4;cursor:not-allowed}
-.boss-run{width:100%;border-radius:10px;padding:9px;background:#0a1808;border:1.5px solid var(--gn);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:26px;cursor:pointer;transition:all .2s}
+.boss-run{width:100%;border-radius:10px;padding:9px;background:#0a1808;border:1.5px solid var(--gn);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:19.5px;cursor:pointer;transition:all .2s}
 .boss-run:hover{background:#0e2010;box-shadow:0 0 12px #70c89050}
 
 /* フレンドモーダル */
 #friend-modal .mcard{background:linear-gradient(160deg,#0a2030,#040d18);border:3px solid var(--gd);box-shadow:0 0 60px #f0d06080}
 .friend-e{font-size:80px;display:block;animation:friend-pop .6s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
-.friend-badge{font-size:20px;color:var(--gd);letter-spacing:3px;margin:10px 0 4px}
-.friend-n{font-family:'Zen Kurenaido',cursive;font-size:44px;color:var(--gd);margin-bottom:6px;text-shadow:0 0 20px #f0d060}
-.friend-d{font-size:22px;color:#e0d090;line-height:1.85;margin-bottom:16px}
-.btn-fok{border-radius:12px;padding:10px 28px;background:#1a1400;border:2px solid var(--gd);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:28px;cursor:pointer;transition:all .2s}
+.friend-badge{font-size:15px;color:var(--gd);letter-spacing:3px;margin:10px 0 4px}
+.friend-n{font-family:'Zen Kurenaido',cursive;font-size:33px;color:var(--gd);margin-bottom:6px;text-shadow:0 0 20px #f0d060}
+.friend-d{font-size:16.5px;color:#e0d090;line-height:1.85;margin-bottom:16px}
+.btn-fok{border-radius:12px;padding:10px 28px;background:#1a1400;border:2px solid var(--gd);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:21px;cursor:pointer;transition:all .2s}
 .btn-fok:hover{background:#261c00;box-shadow:0 0 18px #f0d06060}
 
 /* unaやり直しオーバーレイ */
 #undo-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:flex-end;justify-content:center;padding-bottom:40px;background:#000000a0;backdrop-filter:blur(3px)}
 #undo-overlay.show{display:flex;animation:fi .2s ease}
 .undo-card{background:linear-gradient(135deg,#1e0a40,#0e0520);border:2px solid var(--gd);border-radius:20px;padding:20px 22px;text-align:center;width:calc(100% - 32px);max-width:340px;box-shadow:0 0 40px #f0d06060}
-.undo-t{font-family:'Zen Kurenaido',cursive;font-size:28px;color:var(--gd);margin-bottom:5px}
-.undo-d{font-size:22px;color:#c8b0e8;margin-bottom:12px;line-height:1.7}
+.undo-t{font-family:'Zen Kurenaido',cursive;font-size:21px;color:var(--gd);margin-bottom:5px}
+.undo-d{font-size:16.5px;color:#c8b0e8;margin-bottom:12px;line-height:1.7}
 .undo-timer{height:4px;background:#1a0a30;border-radius:2px;overflow:hidden;margin-bottom:12px;border:1px solid #3a2a5a}
 .undo-fill{height:100%;background:linear-gradient(90deg,var(--gd),#f0a030);border-radius:2px;transition:width linear}
 .undo-btns{display:flex;gap:8px}
-.btn-undo-y{flex:1;border-radius:10px;padding:10px;background:#2a1800;border:2px solid var(--gd);color:var(--gd);font-family:'Zen Kurenaido',cursive;font-size:28px;cursor:pointer;transition:all .2s}
+.btn-undo-y{flex:1;border-radius:10px;padding:10px;background:#2a1800;border:2px solid var(--gd);color:var(--gd);font-family:'Zen Kurenaido',cursive;font-size:21px;cursor:pointer;transition:all .2s}
 .btn-undo-y:hover{background:#3a2200}
-.btn-undo-n{flex:1;border-radius:10px;padding:10px;background:#0a0318;border:1.5px solid #3a2a5a;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:26px;cursor:pointer;transition:all .2s}
+.btn-undo-n{flex:1;border-radius:10px;padding:10px;background:#0a0318;border:1.5px solid #3a2a5a;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:19.5px;cursor:pointer;transition:all .2s}
 .btn-undo-n:hover{background:#120820;color:var(--wh)}
 
 /* 勝利オーバーレイ */
@@ -105,47 +105,47 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .win-con{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px}
 .win-e{font-size:90px;animation:win-pop .6s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
 .win-t{font-family:'Zen Kurenaido',cursive;font-size:68px;color:var(--gd);text-shadow:0 0 40px #f0d060;opacity:0;animation:win-in .5s ease .4s forwards}
-.win-sub{font-size:24px;color:#e0d090;line-height:1.9;opacity:0;animation:win-in .5s ease .7s forwards}
-.win-stats{background:#ffffff18;border:1px solid var(--gd);border-radius:14px;padding:14px 20px;font-size:24px;color:var(--wh);text-align:left;opacity:0;animation:win-in .5s ease 1s forwards;min-width:220px}
+.win-sub{font-size:18px;color:#e0d090;line-height:1.9;opacity:0;animation:win-in .5s ease .7s forwards}
+.win-stats{background:#ffffff18;border:1px solid var(--gd);border-radius:14px;padding:14px 20px;font-size:18px;color:var(--wh);text-align:left;opacity:0;animation:win-in .5s ease 1s forwards;min-width:220px}
 .win-stats div{padding:4px 0;display:flex;justify-content:space-between;gap:14px}
 .win-stats span{color:var(--gd);font-family:'Zen Kurenaido',cursive}
-.btn-win{border-radius:50px;padding:12px 32px;background:linear-gradient(135deg,#4a1a6a,#8a3a9a);border:2px solid var(--ac);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:30px;cursor:pointer;opacity:0;animation:win-in .5s ease 1.3s forwards;box-shadow:0 0 18px #c070d040;transition:all .2s}
+.btn-win{border-radius:50px;padding:12px 32px;background:linear-gradient(135deg,#4a1a6a,#8a3a9a);border:2px solid var(--ac);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:22.5px;cursor:pointer;opacity:0;animation:win-in .5s ease 1.3s forwards;box-shadow:0 0 18px #c070d040;transition:all .2s}
 .btn-win:hover{transform:translateY(-2px);box-shadow:0 0 28px #c070d080}
 
 /* ── タイトル ── */
 #sc-title{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px;position:relative;z-index:1}
 .t-house{font-size:78px;animation:fl 3s ease-in-out infinite;filter:drop-shadow(0 0 20px #e8a0d050)}
-.t-title{font-family:'Zen Kurenaido',cursive;font-size:54px;color:var(--gd);text-shadow:0 0 20px #f0d06060;line-height:1.4}
-.t-sub{font-size:22px;color:var(--ac);letter-spacing:3px}
-.t-rule{background:#100420;border:1px solid #3a2a5a;border-radius:14px;padding:13px 15px;font-size:22px;line-height:1.9;color:#c8b8e8;width:100%;text-align:left}
+.t-title{font-family:'Zen Kurenaido',cursive;font-size:40.5px;color:var(--gd);text-shadow:0 0 20px #f0d06060;line-height:1.4}
+.t-sub{font-size:16.5px;color:var(--ac);letter-spacing:3px}
+.t-rule{background:#100420;border:1px solid #3a2a5a;border-radius:14px;padding:13px 15px;font-size:16.5px;line-height:1.9;color:#c8b8e8;width:100%;text-align:left}
 .t-rule b{color:var(--gd)}
 .ttabs{display:flex;gap:6px;width:100%}
-.ttab{flex:1;padding:8px;border-radius:10px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:24px;cursor:pointer;transition:all .2s}
+.ttab{flex:1;padding:8px;border-radius:10px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:18px;cursor:pointer;transition:all .2s}
 .ttab.on{background:#1e0840;border-color:var(--ac);color:var(--wh)}
 .tc{display:none;width:100%}.tc.on{display:block}
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 .cbtn{background:var(--bc);border:2px solid transparent;border-radius:13px;padding:11px 7px;cursor:pointer;transition:all .2s;text-align:center;color:var(--wh);font-family:inherit}
 .cbtn:hover{transform:translateY(-3px)}.cbtn.sel{border-color:var(--gd);background:#1e1042}
-.cbtn .ce{font-size:48px;display:block;margin-bottom:4px}
-.cbtn .cn{font-family:'Zen Kurenaido',cursive;font-size:28px;color:var(--gd)}
-.cbtn .cr{font-size:18px;color:var(--gr);margin-top:2px}
-.cbtn .ca{font-size:18px;color:var(--ac);margin-top:4px;font-style:italic;line-height:1.5}
-.btnp{background:linear-gradient(135deg,#4a1a6a,#8a3a9a);border:2px solid var(--ac);border-radius:50px;padding:12px 32px;color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:30px;cursor:pointer;box-shadow:0 0 18px #c070d040;transition:all .2s;width:100%}
+.cbtn .ce{font-size:36px;display:block;margin-bottom:4px}
+.cbtn .cn{font-family:'Zen Kurenaido',cursive;font-size:21px;color:var(--gd)}
+.cbtn .cr{font-size:13.5px;color:var(--gr);margin-top:2px}
+.cbtn .ca{font-size:13.5px;color:var(--ac);margin-top:4px;font-style:italic;line-height:1.5}
+.btnp{background:linear-gradient(135deg,#4a1a6a,#8a3a9a);border:2px solid var(--ac);border-radius:50px;padding:12px 32px;color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:22.5px;cursor:pointer;box-shadow:0 0 18px #c070d040;transition:all .2s;width:100%}
 .btnp:hover{transform:translateY(-2px);box-shadow:0 0 28px #c070d070}
 .btnp:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .coll-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .cslot{background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:8px 4px;text-align:center;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .cslot.owned{border-color:var(--gd);background:#120820}
-.cslot .cse{font-size:48px}.cslot .csn{font-size:16px;color:var(--gr);line-height:1.3}
-.cslot.owned .csn{color:var(--gd)}.cslot .csl{font-size:32px;color:#2a1a4a}
+.cslot .cse{font-size:36px}.cslot .csn{font-size:12px;color:var(--gr);line-height:1.3}
+.cslot.owned .csn{color:var(--gd)}.cslot .csl{font-size:24px;color:#2a1a4a}
 .rank-list{width:100%;display:flex;flex-direction:column;gap:5px}
 .rrow{display:flex;align-items:center;gap:8px;background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:8px 12px}
 .rrow.gold{border-color:var(--gd);background:#140e00}.rrow.silver{border-color:#a0a0c0;background:#0a0a18}.rrow.bronze{border-color:#a06030;background:#100800}
-.rnum{font-family:'Zen Kurenaido',cursive;font-size:36px;width:24px;flex-shrink:0}
-.rchar{font-size:36px;flex-shrink:0}.rinfo{flex:1}
-.rtime{font-family:'Zen Kurenaido',cursive;font-size:28px;color:var(--gd)}
-.rdetail{font-size:18px;color:var(--gr)}
-.rank-empty{text-align:center;color:var(--gr);font-size:22px;padding:20px}
+.rnum{font-family:'Zen Kurenaido',cursive;font-size:27px;width:24px;flex-shrink:0}
+.rchar{font-size:27px;flex-shrink:0}.rinfo{flex:1}
+.rtime{font-family:'Zen Kurenaido',cursive;font-size:21px;color:var(--gd)}
+.rdetail{font-size:13.5px;color:var(--gr)}
+.rank-empty{text-align:center;color:var(--gr);font-size:16.5px;padding:20px}
 
 /* ── ゲーム画面 ── */
 #sc-game{display:none;min-height:100vh;position:relative;z-index:1;padding:10px}
@@ -153,32 +153,32 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* ステータスバー */
 #stat-bar{background:#0c041e;border:1px solid #281848;border-radius:13px;padding:9px 12px;margin-bottom:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .sc{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.sc-e{font-size:40px}.sc-n{font-family:'Zen Kurenaido',cursive;font-size:26px;color:var(--gd)}
+.sc-e{font-size:30px}.sc-n{font-family:'Zen Kurenaido',cursive;font-size:19.5px;color:var(--gd)}
 .sdv{width:1px;height:16px;background:#281848}
 .hp-w{flex:1;min-width:90px}
-.hp-l{font-size:18px;color:var(--gr);margin-bottom:2px;display:flex;justify-content:space-between}
+.hp-l{font-size:13.5px;color:var(--gr);margin-bottom:2px;display:flex;justify-content:space-between}
 .hp-b{height:8px;background:#180830;border-radius:4px;overflow:hidden;border:1px solid #381860}
 .hp-f{height:100%;border-radius:4px;transition:width .45s ease}
 .kw{display:flex;align-items:center;gap:3px;flex-shrink:0}
-.ki{font-size:20px;color:var(--gr)}
+.ki{font-size:15px;color:var(--gr)}
 .kpip{width:11px;height:11px;border-radius:50%;border:1.5px solid #382800;background:#080500;transition:all .3s}
 .kpip.got{background:var(--gd);border-color:var(--gd);box-shadow:0 0 6px #f0d06070;animation:pk .45s ease}
 .fpw{display:flex;align-items:center;gap:2px;flex-shrink:0}
 .fps{width:10px;height:10px;border-radius:50%;border:1.5px solid #3a2040;background:#0c0518;transition:all .35s}
 .fps.lit{background:#c060d0;border-color:#e090f0;box-shadow:0 0 6px #c060d0;animation:fp 1.2s ease-in-out infinite}
-#tb{font-size:20px;color:var(--ac);background:#160830;border:1px solid #382060;border-radius:10px;padding:2px 9px;font-family:'Zen Kurenaido',cursive;margin-left:auto;flex-shrink:0}
-#floor-badge{font-size:20px;color:#fff;border-radius:8px;padding:2px 8px;font-family:'Zen Kurenaido',cursive;flex-shrink:0;background:#2a6a28}
+#tb{font-size:15px;color:var(--ac);background:#160830;border:1px solid #382060;border-radius:10px;padding:2px 9px;font-family:'Zen Kurenaido',cursive;margin-left:auto;flex-shrink:0}
+#floor-badge{font-size:15px;color:#fff;border-radius:8px;padding:2px 8px;font-family:'Zen Kurenaido',cursive;flex-shrink:0;background:#2a6a28}
 
 /* ── ミニマップ ── */
 #minimap{background:#0a0318;border:1px solid #2a1a4a;border-radius:12px;padding:10px;margin-bottom:9px}
-#minimap-title{font-size:18px;color:var(--gr);margin-bottom:7px;font-family:'Zen Kurenaido',cursive;text-align:center}
+#minimap-title{font-size:13.5px;color:var(--gr);margin-bottom:7px;font-family:'Zen Kurenaido',cursive;text-align:center}
 .map-floors{display:flex;flex-direction:column;gap:4px}
 .map-floor{display:flex;align-items:center;gap:4px}
-.map-fl-lbl{font-size:16px;color:var(--gr);width:22px;flex-shrink:0;font-family:'Zen Kurenaido',cursive}
+.map-fl-lbl{font-size:12px;color:var(--gr);width:22px;flex-shrink:0;font-family:'Zen Kurenaido',cursive}
 .map-rooms{display:flex;gap:4px;flex:1}
 .map-room{flex:1;border-radius:6px;padding:4px 2px;text-align:center;border:1px solid #2a1a4a;background:#0e0520;cursor:default;transition:all .2s;position:relative;min-height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.map-room .mr-e{font-size:28px;line-height:1}
-.map-room .mr-n{font-size:14px;color:var(--gr);margin-top:2px;line-height:1.2}
+.map-room .mr-e{font-size:21px;line-height:1}
+.map-room .mr-n{font-size:10.5px;color:var(--gr);margin-top:2px;line-height:1.2}
 .map-room.current{border-color:var(--gd)!important;background:#1a1000;box-shadow:0 0 8px #f0d06050}
 .map-room.current .mr-n{color:var(--gd)}
 .map-room.visited{opacity:1}.map-room.unvisited{opacity:.5}
@@ -189,57 +189,57 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .map-floor-row{border-radius:6px;padding:3px 4px}
 .map-room.reachable{border-color:var(--gn)!important;box-shadow:0 0 6px #70c89040;cursor:pointer}
 .map-room.reachable:hover{transform:scale(1.05);box-shadow:0 0 10px #70c89080}
-.map-ghost{position:absolute;top:1px;right:2px;font-size:18px;animation:fl 2s ease-in-out infinite}
-.map-key-badge{position:absolute;bottom:1px;right:2px;font-size:16px}
+.map-ghost{position:absolute;top:1px;right:2px;font-size:13.5px;animation:fl 2s ease-in-out infinite}
+.map-key-badge{position:absolute;bottom:1px;right:2px;font-size:12px}
 
 /* 連鎖バー */
 #streak-bar{display:none;background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:5px 12px;margin-bottom:7px;display:flex;align-items:center;gap:8px}
-.stk-lbl{font-size:18px;color:var(--gr)}
-#stk-text{font-family:'Zen Kurenaido',cursive;font-size:24px;color:var(--gd)}
-#stk-bonus{font-size:18px;color:var(--gn)}
+.stk-lbl{font-size:13.5px;color:var(--gr)}
+#stk-text{font-family:'Zen Kurenaido',cursive;font-size:18px;color:var(--gd)}
+#stk-bonus{font-size:13.5px;color:var(--gn)}
 
 /* 部屋詳細 */
 #room-detail{background:linear-gradient(145deg,#120326,#080118);border:2px solid #341858;border-radius:16px;padding:16px 14px;margin-bottom:9px;display:none;text-align:center;animation:room-enter .3s ease}
-#rd-floor{font-size:18px;padding:2px 8px;border-radius:6px;color:#fff;display:inline-block;margin-bottom:6px}
+#rd-floor{font-size:13.5px;padding:2px 8px;border-radius:6px;color:#fff;display:inline-block;margin-bottom:6px}
 #rd-emoji{font-size:96px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 10px #9050d080)}
-#rd-name{font-family:'Zen Kurenaido',cursive;font-size:36px;color:var(--gd);margin-bottom:4px}
-#rd-desc{font-size:22px;color:var(--gr);margin-bottom:10px}
+#rd-name{font-family:'Zen Kurenaido',cursive;font-size:27px;color:var(--gd);margin-bottom:4px}
+#rd-desc{font-size:16.5px;color:var(--gr);margin-bottom:10px}
 #rd-chips{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
-.rpc{font-size:20px;padding:2px 9px;border-radius:12px;border:1px solid}
+.rpc{font-size:15px;padding:2px 9px;border-radius:12px;border:1px solid}
 .rpc-g{background:#081808;border-color:var(--gn);color:var(--gn)}
 .rpc-r{background:#180808;border-color:var(--rd);color:var(--rd)}
 .rpc-h{background:#180818;border-color:var(--pu);color:var(--pu)}
 .rpc-n{background:#080818;border-color:var(--gr);color:var(--gr)}
 #fear-row{display:flex;align-items:center;gap:5px;justify-content:center;margin-bottom:8px}
-.fl-lbl{font-size:18px;color:var(--gr)}
+.fl-lbl{font-size:13.5px;color:var(--gr)}
 .fpip{width:14px;height:14px;border-radius:50%;border:1.5px solid #3a1848;background:#0c0518;transition:all .4s}
 .fpip.lit{background:#c060d0;border-color:#e090f0;box-shadow:0 0 8px #c060d0;animation:fp 1.2s ease-in-out infinite}
-#rd-hint{font-size:20px;color:var(--ac);background:#0a0318;border-radius:8px;padding:6px 10px;line-height:1.6;display:none}
+#rd-hint{font-size:15px;color:var(--ac);background:#0a0318;border-radius:8px;padding:6px 10px;line-height:1.6;display:none}
 
 /* 3択ボタン */
 #choices{display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
-.cb{border-radius:12px;padding:11px 4px;cursor:pointer;font-family:'Sawarabi Mincho',serif;font-size:20px;transition:all .2s;border:1.5px solid;text-align:center;color:var(--wh);display:flex;flex-direction:column;align-items:center;gap:4px}
+.cb{border-radius:12px;padding:11px 4px;cursor:pointer;font-family:'Sawarabi Mincho',serif;font-size:15px;transition:all .2s;border:1.5px solid;text-align:center;color:var(--wh);display:flex;flex-direction:column;align-items:center;gap:4px}
 .cb:hover{transform:translateY(-3px)}.cb:disabled{opacity:.3;cursor:not-allowed;transform:none}
-.cb .ci{font-size:44px}.cb .ct{font-size:22px;font-family:'Zen Kurenaido',cursive}.cb .cd{font-size:16px;opacity:.7;line-height:1.4}
+.cb .ci{font-size:33px}.cb .ct{font-size:16.5px;font-family:'Zen Kurenaido',cursive}.cb .cd{font-size:12px;opacity:.7;line-height:1.4}
 .ck{background:#1e0808;border-color:#c03838}.ck:hover{background:#280a0a;box-shadow:0 0 12px #c0383860}
 .co{background:#0a1430;border-color:#4868b8}.co:hover{background:#0e1c40;box-shadow:0 0 12px #4868b860}
 .cr2{background:#0a1808;border-color:#387838}.cr2:hover{background:#0e2010;box-shadow:0 0 12px #38783860}
 
 /* ログ */
-.lp{background:#080318;border:1px solid #180a28;border-radius:10px;padding:14px;max-height:220px;overflow-y:auto}
-.le{font-size:24px;padding:5px 0;border-bottom:1px solid #100820;line-height:1.8;color:var(--gr);animation:fi .3s ease}
+.lp{background:#080318;border:1px solid #180a28;border-radius:10px;padding:10px;max-height:160px;overflow-y:auto}
+.le{font-size:18px;padding:5px 0;border-bottom:1px solid #100820;line-height:1.8;color:var(--gr);animation:fi .3s ease}
 .le:last-child{border-bottom:none}
 .le.imp{color:var(--wh)}.le.dng{color:var(--rd)}.le.gd{color:var(--gn)}.le.gld{color:var(--gd)}.le.pu{color:#c080e0}.le.boss{color:#ff80a0}
 
 /* 結果 */
 #sc-res{display:none;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;gap:13px;position:relative;z-index:1}
 .re2{font-size:78px;animation:fl 2s ease-in-out infinite}
-.rt2{font-family:'Zen Kurenaido',cursive;font-size:54px;color:var(--gd);text-shadow:0 0 25px #f0d060}
-.rm2{font-size:24px;color:var(--wh);line-height:1.85}
-.rs2{background:var(--bc);border:1px solid #3a2a5a;border-radius:10px;padding:12px;width:100%;font-size:22px;color:var(--gr);text-align:left}
+.rt2{font-family:'Zen Kurenaido',cursive;font-size:40.5px;color:var(--gd);text-shadow:0 0 25px #f0d060}
+.rm2{font-size:18px;color:var(--wh);line-height:1.85}
+.rs2{background:var(--bc);border:1px solid #3a2a5a;border-radius:10px;padding:12px;width:100%;font-size:16.5px;color:var(--gr);text-align:left}
 .rs2 div{padding:3px 0}.rs2 span{color:var(--gd);float:right}
 .res-tabs{display:flex;gap:6px;width:100%;margin-bottom:2px}
-.rtab{flex:1;padding:7px;border-radius:9px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:24px;cursor:pointer;transition:all .2s}
+.rtab{flex:1;padding:7px;border-radius:9px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:18px;cursor:pointer;transition:all .2s}
 .rtab.on{background:#1e0840;border-color:var(--ac);color:var(--wh)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#080318}::-webkit-scrollbar-thumb{background:#4a2a7a;border-radius:3px}
 </style>
@@ -333,15 +333,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       💨 <b>走り抜ける</b>… 報酬なし・リスクなし<br>
       😨 <b>恐怖3個でお化け登場！</b>　🗝️ <b>鍵5本で出口へ！</b>
     </div>
-    <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:24px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:18px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
     <div class="cgrid" id="cgrid"></div>
   </div>
   <div class="tc" id="tc-coll">
-    <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:24px;text-align:center;margin-bottom:10px">脱出成功するとお化けが仲間になる！</div>
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:18px;text-align:center;margin-bottom:10px">脱出成功するとお化けが仲間になる！</div>
     <div class="coll-grid" id="coll-grid"></div>
   </div>
   <div class="tc" id="tc-rank">
-    <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:24px;text-align:center;margin-bottom:10px">脱出タイムランキング（ベスト5）</div>
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:18px;text-align:center;margin-bottom:10px">脱出タイムランキング（ベスト5）</div>
     <div class="rank-list" id="rank-list"></div>
   </div>
   <button class="btnp" id="btn-s" disabled onclick="startGame()">🚪 ゲームスタート</button>
@@ -359,7 +359,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="sdv"></div>
     <div class="kw"><span class="ki">🗝️</span><div id="kps" style="display:flex;gap:2px"></div></div>
     <div class="sdv"></div>
-    <div class="fpw"><span style="font-size:18px;color:var(--gr)">😨</span><div id="fps" style="display:flex;gap:2px"></div></div>
+    <div class="fpw"><span style="font-size:13.5px;color:var(--gr)">😨</span><div id="fps" style="display:flex;gap:2px"></div></div>
     <div id="floor-badge">1F</div>
     <div id="tb">ターン1</div>
   </div>
@@ -426,7 +426,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div id="res-stats" style="width:100%"><div class="rs2" id="rs2"></div></div>
   <div id="res-rank" style="display:none;width:100%"><div class="rank-list" id="res-rank-list"></div></div>
   <div id="res-coll" style="display:none;width:100%">
-    <div style="font-size:22px;color:var(--ac);text-align:center;margin-bottom:8px">集めたお化けたち</div>
+    <div style="font-size:16.5px;color:var(--ac);text-align:center;margin-bottom:8px">集めたお化けたち</div>
     <div class="coll-grid" id="res-coll-grid"></div>
   </div>
   <button class="btnp" onclick="location.reload()">🔄 もう一度遊ぶ</button>
@@ -653,7 +653,7 @@ function renderMap(){
         if(r.isExit)cls+=' exit-room';
         const ghostBadge=hasGhost?`<span class="map-ghost">👻</span>`:'';
         const keyBadge=(rid==='b1-1'&&G.k<G.tk)?`<span class="map-key-badge">🗝️</span>`:'';
-        const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?`<span style="position:absolute;top:1px;left:2px;font-size:16px;opacity:.7">🪜</span>`:'';
+        const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?`<span style="position:absolute;top:1px;left:2px;font-size:12px;opacity:.7">🪜</span>`:'';
         const onclick=isReach&&!isCur?`onclick="selectRoom('${rid}')"`:''
         // 出口は未訪問かつ鍵未達成なら霧で隠す
         const isExitHidden=r.isExit&&!isVisited&&!G.bossReady;
@@ -724,7 +724,7 @@ function selectRoom(rid){
   // ヒント
   const hint=document.getElementById('rd-hint');
   if(G.c.id==='kon'&&G.peek>0){
-    hint.innerHTML=`👀 <button onclick="doPeek('${rid}')" style="font-size:20px;padding:3px 10px;border-radius:7px;border:1px solid var(--ac);background:#160a28;color:var(--wh);cursor:pointer">チラ見する（残り${G.peek}回）</button>`;
+    hint.innerHTML=`👀 <button onclick="doPeek('${rid}')" style="font-size:15px;padding:3px 10px;border-radius:7px;border:1px solid var(--ac);background:#160a28;color:var(--wh);cursor:pointer">チラ見する（残り${G.peek}回）</button>`;
     hint.style.display='block';
   } else if(r.safe){
     hint.textContent='✅ 安全な部屋です。リスクなし！';
