@@ -55,7 +55,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .btn-stage-next:disabled{opacity:.4;cursor:not-allowed}
 
 /* 仲間ボタン（ゲーム中） */
-#buddy-btn{display:none;position:fixed;bottom:20px;right:16px;z-index:800;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#1a3a1a,#2a5a2a);border:2px solid var(--gn);font-size:28px;cursor:pointer;box-shadow:0 0 16px #70c89060;animation:fp 2s ease-in-out infinite;transition:all .2s;pointer-events:none}
+#buddy-btn{display:none;position:fixed;bottom:20px;right:16px;z-index:910;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#1a3a1a,#2a5a2a);border:2px solid var(--gn);font-size:28px;cursor:pointer;box-shadow:0 0 16px #70c89060;animation:fp 2s ease-in-out infinite;transition:all .2s;pointer-events:none}
 #buddy-btn:hover{transform:scale(1.1)}
 #buddy-btn:disabled{opacity:.4;animation:none;cursor:not-allowed}
 
@@ -96,7 +96,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
 
 /* hunaのチョコボタン */
-#choco-btn{display:none;position:fixed;bottom:90px;right:16px;z-index:800;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#3a1a08,#5a2a10);border:2px solid #c07040;font-size:28px;cursor:pointer;box-shadow:0 0 16px #c0704060;transition:all .2s}
+#choco-btn{display:none;position:fixed;bottom:90px;right:16px;z-index:910;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#3a1a08,#5a2a10);border:2px solid #c07040;font-size:28px;cursor:pointer;box-shadow:0 0 16px #c0704060;transition:all .2s}
 #choco-btn:hover{transform:scale(1.1)}
 #choco-btn:disabled{opacity:.4;cursor:not-allowed}
 
@@ -238,28 +238,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 #tb{font-size:15px;color:var(--ac);background:#160830;border:1px solid #382060;border-radius:10px;padding:2px 9px;font-family:'Zen Kurenaido',cursive;margin-left:auto;flex-shrink:0}
 #floor-badge{font-size:15px;color:#fff;border-radius:8px;padding:2px 8px;font-family:'Zen Kurenaido',cursive;flex-shrink:0;background:#2a6a28}
 
-/* ── ミニマップ ── */
-#minimap{background:#0a0318;border:1px solid #2a1a4a;border-radius:12px;padding:10px;margin-bottom:9px}
-#minimap-title{font-size:13.5px;color:var(--gr);margin-bottom:7px;font-family:'Zen Kurenaido',cursive;text-align:center}
-.map-floors{display:flex;flex-direction:column;gap:4px}
-.map-floor{display:flex;align-items:center;gap:4px}
-.map-fl-lbl{font-size:12px;color:var(--gr);width:22px;flex-shrink:0;font-family:'Zen Kurenaido',cursive}
-.map-rooms{display:flex;gap:4px;flex:1}
-.map-room{flex:1;border-radius:6px;padding:4px 2px;text-align:center;border:1px solid #2a1a4a;background:#0e0520;cursor:default;transition:all .2s;position:relative;min-height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.map-room .mr-e{font-size:21px;line-height:1}
-.map-room .mr-n{font-size:10.5px;color:var(--gr);margin-top:2px;line-height:1.2}
-.map-room.current{border-color:var(--gd)!important;background:#1a1000;box-shadow:0 0 8px #f0d06050}
-.map-room.current .mr-n{color:var(--gd)}
-.map-room.visited{opacity:1}.map-room.unvisited{opacity:.5}
-.map-room.exit-room{border-color:var(--gd)}
-/* フロアごとの色 */
-.f-b1 .map-room{border-color:#3a2a00}.f-1f .map-room{border-color:#1a4a18}.f-2f .map-room{border-color:#102040}.f-3f .map-room{border-color:#3a1060}
-.f-b1{background:#0a0600}.f-1f{background:#080f08}.f-2f{background:#080d18}.f-3f{background:#100818}
-.map-floor-row{border-radius:6px;padding:3px 4px}
-.map-room.reachable{border-color:var(--gn)!important;box-shadow:0 0 6px #70c89040;cursor:pointer}
-.map-room.reachable:hover{transform:scale(1.05);box-shadow:0 0 10px #70c89080}
-.map-ghost{position:absolute;top:1px;right:2px;font-size:13.5px;animation:fl 2s ease-in-out infinite}
-.map-key-badge{position:absolute;bottom:1px;right:2px;font-size:12px}
+/* ── グリッドマップ（真上から） ── */
+#minimap{background:#0a0318;border:1px solid #2a1a4a;border-radius:12px;padding:6px;margin-bottom:7px}
+#minimap-title{font-size:12px;color:var(--gr);margin-bottom:5px;font-family:'Zen Kurenaido',cursive;text-align:center}
+.map-grid{display:grid;gap:2px}
+.map-cell{border-radius:4px;padding:2px;text-align:center;border:1px solid #2a1a4a;background:#0e0520;cursor:default;transition:all .2s;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:57px;overflow:hidden}
+.map-cell .mr-e{display:none}
+.map-cell .mr-n{font-size:11px;color:var(--gr);line-height:1.2;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;padding:0 2px;word-break:break-all}
+.map-cell.current{border-color:var(--gd)!important;background:#1a1000;box-shadow:0 0 8px #f0d06050}
+.map-cell.current .mr-n{color:var(--gd)}
+.map-cell.visited{opacity:1}
+.map-cell.unvisited{opacity:.45}
+.map-cell.exit-cell{border-color:#806830}
+.map-cell.reachable{border-color:var(--gn)!important;box-shadow:0 0 6px #70c89040;cursor:pointer}
+.map-cell.reachable:hover{transform:scale(1.06);box-shadow:0 0 10px #70c89080}
+.map-cell.wall{background:transparent !important;border:none !important;pointer-events:none}
+.map-ghost{position:absolute;top:1px;right:2px;font-size:11px;animation:fl 2s ease-in-out infinite}
 
 /* 連鎖バー */
 #streak-bar{display:none;background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:5px 12px;margin-bottom:7px;display:flex;align-items:center;gap:8px}
@@ -268,11 +262,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 #stk-bonus{font-size:13.5px;color:var(--gn)}
 
 /* 部屋詳細 */
-#room-detail{background:linear-gradient(145deg,#120326,#080118);border:2px solid #341858;border-radius:16px;padding:16px 14px;margin-bottom:9px;display:none;text-align:center;animation:room-enter .3s ease}
-#rd-floor{font-size:13.5px;padding:2px 8px;border-radius:6px;color:#fff;display:inline-block;margin-bottom:6px}
-#rd-emoji{font-size:96px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 10px #9050d080)}
-#rd-name{font-family:'Zen Kurenaido',cursive;font-size:27px;color:var(--gd);margin-bottom:4px}
-#rd-desc{font-size:16.5px;color:var(--gr);margin-bottom:10px}
+#room-detail{background:linear-gradient(145deg,#120326,#080118);border:2px solid #341858;border-radius:12px;padding:8px 10px;margin-bottom:7px;display:none;text-align:center;animation:room-enter .3s ease}
+#rd-floor{font-size:12px;padding:1px 6px;border-radius:5px;color:#fff;display:inline-block;margin-bottom:3px}
+#rd-emoji{font-size:52px;display:block;margin-bottom:3px;filter:drop-shadow(0 0 8px #9050d080)}
+#rd-name{font-family:'Zen Kurenaido',cursive;font-size:20px;color:var(--gd);margin-bottom:2px}
+#rd-desc{font-size:13px;color:var(--gr);margin-bottom:6px}
 #rd-chips{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
 .rpc{font-size:15px;padding:2px 9px;border-radius:12px;border:1px solid}
 .rpc-g{background:#081808;border-color:var(--gn);color:var(--gn)}
@@ -595,150 +589,167 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 const STAGES = {
   1: {
     name: 'ステージ1',
-    subtitle: '地下から1階へ',
+    subtitle: '洋館1階の謎',
     emoji: '🏚️',
-    floors: ['1F','B1F'],
-    startPos: '1f-0',
+    startPos: 'r1-0-0',
     targetKeys: 3,
     bossHp: 3,
     fearLimit: 3,
-    desc: 'B1F〜1F・鍵3本・ボスHP3\nまずは屋敷に慣れよう！',
-    exitFloors: ['1F'],
+    desc: '4×4マップ・鍵3本・ボスHP3\nまずは屋敷に慣れよう！',
     bgColor: '#0a0318',
   },
   2: {
     name: 'ステージ2',
-    subtitle: '2階から3階へ',
+    subtitle: '洋館の深部へ',
     emoji: '🌑',
-    floors: ['3F','2F'],
-    startPos: '2f-0',
+    startPos: 'r2-0-0',
     targetKeys: 5,
     bossHp: 6,
     fearLimit: 3,
-    desc: '2F〜3F・鍵5本・ボスHP6\n仲間が助けてくれる！',
-    exitFloors: ['3F'],
+    desc: '5×4マップ・鍵5本・ボスHP6\n仲間が助けてくれる！',
     bgColor: '#070210',
     hasBuddy: true,
   },
   3: {
     name: 'ステージ3',
-    subtitle: '4階から6階へ',
+    subtitle: '呪われた最上階',
     emoji: '💀',
-    floors: ['6F','5F','4F'],
-    startPos: '4f-0',
+    startPos: 'r3-0-0',
     targetKeys: 7,
     bossHp: 10,
     fearLimit: 2,
-    desc: '4F〜6F・鍵7本・ボスHP10\n恐怖2個でお化け登場！\n最後の戦いだ！',
-    exitFloors: ['6F'],
+    desc: '5×5マップ・鍵7本・ボスHP10\n恐怖2個でお化け登場！\n最後の戦いだ！',
     bgColor: '#050108',
   },
 };
 
 // ════════════════════════════════════════
-// マップ定義
+// グリッドマップ定義（真上から見た形式）
 // ════════════════════════════════════════
-// 各部屋: id, name, emoji, floor, connections(隣接), reward, risk, special
+
+// ステージ別グリッド定義
+// cells: 2D配列。null=壁、文字列=部屋ID
+const STAGE_GRIDS = {
+  1: {
+    rows: 4, cols: 4,
+    startId: 'r1-0-0',
+    cells: [
+      ['r1-0-0', 'r1-0-1', null,     'r1-0-3'],
+      ['r1-1-0', 'r1-1-1', 'r1-1-2', 'r1-1-3'],
+      ['r1-2-0', 'r1-2-1', 'r1-2-2', 'r1-2-3'],
+      [null,     'r1-3-1', 'r1-3-2', 'exit-room'],
+    ]
+  },
+  2: {
+    rows: 4, cols: 5,
+    startId: 'r2-0-0',
+    cells: [
+      ['r2-0-0', null,     'r2-0-2', null,     'r2-0-4'],
+      ['r2-1-0', 'r2-1-1', 'r2-1-2', 'r2-1-3', 'r2-1-4'],
+      [null,     'r2-2-1', 'r2-2-2', null,     'r2-2-4'],
+      ['r2-3-0', 'r2-3-1', 'r2-3-2', 'r2-3-3', 'exit-room'],
+    ]
+  },
+  3: {
+    rows: 5, cols: 5,
+    startId: 'r3-0-0',
+    cells: [
+      ['r3-0-0', 'r3-0-1', null,     'r3-0-3', 'r3-0-4'],
+      ['r3-1-0', 'r3-1-1', 'r3-1-2', 'r3-1-3', null    ],
+      [null,     'r3-2-1', 'r3-2-2', 'r3-2-3', 'r3-2-4'],
+      ['r3-3-0', 'r3-3-1', null,     'r3-3-3', 'r3-3-4'],
+      ['r3-4-0', null,     'r3-4-2', 'r3-4-3', 'exit-room'],
+    ]
+  },
+};
+
+// 部屋コンテンツ定義（rw=報酬, rs=リスク）
 const MAP_ROOMS = {
-  // B1F（地下1階）
-  'b1-0': {n:'呪いの祭壇',e:'💀',fl:'B1F',rw:{hp:0,k:2},rs:{hp:0,f:2},d:'禍々しい気配がする'},
-  'b1-1': {n:'地下室',    e:'🪜',fl:'B1F',rw:{hp:0,k:1},rs:{hp:1,f:1},d:'暗くて怖いが…'},
-  // 1F（1階）
-  '1f-0': {n:'玄関ホール',e:'🚪',fl:'1F', rw:{hp:0,k:0},rs:{hp:0,f:0},d:'ここからスタート！',safe:true,isStart:true},
-  '1f-1': {n:'台所',      e:'🍳',fl:'1F', rw:{hp:3,k:1},rs:{hp:0,f:0},d:'食べ物と鍵がありそうだ',safe:true},
-  '1f-2': {n:'応接間',    e:'🛋️',fl:'1F', rw:{hp:4,k:1},rs:{hp:0,f:1},d:'暖炉がある部屋'},
-  '1f-3': {n:'地下への扉',e:'🪜',fl:'1F', rw:{hp:0,k:0},rs:{hp:0,f:0},d:'地下へ続く扉…',safe:true},
-  // 2F（2階）
-  '2f-0': {n:'図書室',    e:'📚',fl:'2F', rw:{hp:1,k:1},rs:{hp:0,f:0},d:'本に鍵の手がかりが'},
-  '2f-1': {n:'寝室',      e:'🛏️',fl:'2F', rw:{hp:5,k:0},rs:{hp:0,f:1},d:'ベッドで休めそう…'},
-  '2f-2': {n:'鏡の間',    e:'🪞',fl:'2F', rw:{hp:0,k:2},rs:{hp:1,f:1},d:'何かが光っている'},
-  '2f-3': {n:'バルコニー',e:'🌿',fl:'2F', rw:{hp:4,k:0},rs:{hp:0,f:0},d:'外の空気が気持ちよさそう',safe:true},
-  // 3F（3階）
-  '3f-0': {n:'鐘楼',      e:'🔔',fl:'3F', rw:{hp:0,k:1},rs:{hp:0,f:2},d:'高い塔の部屋'},
-  '3f-1': {n:'屋根裏部屋',e:'🕸️',fl:'3F', rw:{hp:0,k:2},rs:{hp:3,f:1},d:'蜘蛛の巣が張っている'},
-  '3f-2': {n:'隠し部屋',  e:'🔒',fl:'3F', rw:{hp:0,k:3},rs:{hp:2,f:2},d:'隠された扉がある'},
-  '3f-3': {n:'魔法の間',  e:'✨',fl:'3F', rw:{hp:999,k:0},rs:{hp:0,f:0,lk:1},d:'不思議な光が漏れている'},
-  // 4F（4階）
-  '4f-0': {n:'礼拝堂',    e:'⛪',fl:'4F', rw:{hp:3,k:1},rs:{hp:0,f:2},d:'古い礼拝堂…'},
-  '4f-1': {n:'武器庫',    e:'⚔️',fl:'4F', rw:{hp:0,k:2},rs:{hp:3,f:1},d:'武器が並んでいる'},
-  '4f-2': {n:'謎の実験室', e:'⚗️',fl:'4F', rw:{hp:2,k:2},rs:{hp:2,f:2},d:'奇妙な装置がある'},
-  '4f-3': {n:'古い書庫',  e:'📜',fl:'4F', rw:{hp:0,k:3},rs:{hp:1,f:2},d:'古文書が積まれている'},
-  // 5F（5階）
-  '5f-0': {n:'魔女の部屋', e:'🧹',fl:'5F', rw:{hp:4,k:1},rs:{hp:0,f:3},d:'ほうきが浮いている'},
-  '5f-1': {n:'時計塔',    e:'🕰️',fl:'5F', rw:{hp:0,k:2},rs:{hp:2,f:2},d:'時計が逆回転している'},
-  '5f-2': {n:'黒の祭壇',  e:'🖤',fl:'5F', rw:{hp:0,k:4},rs:{hp:0,f:3},d:'黒い炎が燃えている'},
-  '5f-3': {n:'秘密の抜け道',e:'🌀',fl:'5F',rw:{hp:2,k:1},rs:{hp:0,f:1},d:'どこかへ続く道',safe:true},
-  // 6F（6階・最上階）
-  '6f-0': {n:'天文台',    e:'🔭',fl:'6F', rw:{hp:0,k:2},rs:{hp:1,f:2},d:'星が見える塔'},
-  '6f-1': {n:'竜の間',    e:'🐉',fl:'6F', rw:{hp:0,k:3},rs:{hp:4,f:2},d:'炎の痕がある'},
-  '6f-2': {n:'最後の扉',  e:'🗝️',fl:'6F', rw:{hp:0,k:2},rs:{hp:2,f:3},d:'重い扉が立ちはだかる'},
-  '6f-3': {n:'屋上',      e:'🌙',fl:'6F', rw:{hp:5,k:0},rs:{hp:0,f:1},d:'夜風が吹いている',safe:true},
+  // ── ステージ1部屋 ──
+  'r1-0-0': {n:'玄関ホール', e:'🚪', rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'ここからスタート！', safe:true, isStart:true},
+  'r1-0-1': {n:'台所',       e:'🍳', rw:{hp:3,k:1}, rs:{hp:0,f:0}, d:'食べ物と鍵がありそうだ', safe:true},
+  'r1-0-3': {n:'物置',       e:'📦', rw:{hp:0,k:2}, rs:{hp:1,f:1}, d:'ガラクタの中に何かある'},
+  'r1-1-0': {n:'洋館の廊下', e:'🌿', rw:{hp:2,k:0}, rs:{hp:0,f:1}, d:'長い廊下が続いている'},
+  'r1-1-1': {n:'応接間',     e:'🛋️', rw:{hp:4,k:1}, rs:{hp:0,f:1}, d:'暖炉がある部屋'},
+  'r1-1-2': {n:'書斎',       e:'📚', rw:{hp:1,k:1}, rs:{hp:0,f:0}, d:'本に鍵の手がかりが', safe:true},
+  'r1-1-3': {n:'暗い廊下',   e:'🌑', rw:{hp:0,k:1}, rs:{hp:2,f:1}, d:'何かいる気がする…'},
+  'r1-2-0': {n:'地下室',     e:'💀', rw:{hp:0,k:2}, rs:{hp:2,f:2}, d:'暗くて怖いが鍵がある'},
+  'r1-2-1': {n:'暖炉の間',   e:'🔥', rw:{hp:3,k:0}, rs:{hp:0,f:1}, d:'暖かい炎が揺れている'},
+  'r1-2-2': {n:'鏡の間',     e:'🪞', rw:{hp:0,k:2}, rs:{hp:1,f:1}, d:'何かが光っている'},
+  'r1-2-3': {n:'宝物庫',     e:'💎', rw:{hp:0,k:3}, rs:{hp:2,f:1}, d:'宝がありそうだ…'},
+  'r1-3-1': {n:'隠し部屋',   e:'🔒', rw:{hp:0,k:2}, rs:{hp:2,f:2}, d:'隠された扉がある'},
+  'r1-3-2': {n:'魔法の間',   e:'✨', rw:{hp:999,k:0}, rs:{hp:0,f:0,lk:1}, d:'不思議な光が漏れている'},
+
+  // ── ステージ2部屋 ──
+  'r2-0-0': {n:'図書室',     e:'📚', rw:{hp:1,k:1}, rs:{hp:0,f:0}, d:'本に鍵の手がかりが', isStart:true, safe:true},
+  'r2-0-2': {n:'寝室',       e:'🛏️', rw:{hp:5,k:0}, rs:{hp:0,f:1}, d:'ベッドで休めそう…'},
+  'r2-0-4': {n:'屋根裏',     e:'🕸️', rw:{hp:0,k:2}, rs:{hp:3,f:1}, d:'蜘蛛の巣が張っている'},
+  'r2-1-0': {n:'鐘楼',       e:'🔔', rw:{hp:0,k:1}, rs:{hp:0,f:2}, d:'高い塔の部屋'},
+  'r2-1-1': {n:'広間',       e:'🏛️', rw:{hp:3,k:0}, rs:{hp:0,f:1}, d:'広い廊下のような部屋', safe:true},
+  'r2-1-2': {n:'鏡の回廊',   e:'🪞', rw:{hp:0,k:2}, rs:{hp:1,f:1}, d:'無限に続く鏡の廊下'},
+  'r2-1-3': {n:'バルコニー', e:'🌿', rw:{hp:4,k:0}, rs:{hp:0,f:0}, d:'外の空気が気持ちよさそう', safe:true},
+  'r2-1-4': {n:'隠し部屋',   e:'🔒', rw:{hp:0,k:3}, rs:{hp:2,f:2}, d:'隠された扉がある'},
+  'r2-2-1': {n:'武器庫',     e:'⚔️', rw:{hp:0,k:2}, rs:{hp:3,f:1}, d:'武器が並んでいる'},
+  'r2-2-2': {n:'実験室',     e:'⚗️', rw:{hp:2,k:2}, rs:{hp:2,f:2}, d:'奇妙な装置がある'},
+  'r2-2-4': {n:'呪いの宝物庫',e:'💎', rw:{hp:0,k:4}, rs:{hp:0,f:3}, d:'黒い炎が燃えている'},
+  'r2-3-0': {n:'地下の祭壇', e:'💀', rw:{hp:0,k:2}, rs:{hp:0,f:3}, d:'禍々しい気配がする'},
+  'r2-3-1': {n:'古い書庫',   e:'📜', rw:{hp:0,k:3}, rs:{hp:1,f:2}, d:'古文書が積まれている'},
+  'r2-3-2': {n:'魔法陣の間', e:'🌀', rw:{hp:2,k:1}, rs:{hp:0,f:1}, d:'どこかへ続く魔法陣', safe:true},
+  'r2-3-3': {n:'魔女の部屋', e:'🧹', rw:{hp:4,k:1}, rs:{hp:0,f:3}, d:'ほうきが浮いている'},
+
+  // ── ステージ3部屋 ──
+  'r3-0-0': {n:'礼拝堂',     e:'⛪', rw:{hp:3,k:1}, rs:{hp:0,f:2}, d:'古い礼拝堂…', isStart:true},
+  'r3-0-1': {n:'武器庫',     e:'⚔️', rw:{hp:0,k:2}, rs:{hp:3,f:1}, d:'武器が並んでいる'},
+  'r3-0-3': {n:'天文台',     e:'🔭', rw:{hp:0,k:2}, rs:{hp:1,f:2}, d:'星が見える塔'},
+  'r3-0-4': {n:'竜の間',     e:'🐉', rw:{hp:0,k:3}, rs:{hp:4,f:2}, d:'炎の痕がある'},
+  'r3-1-0': {n:'謎の実験室', e:'⚗️', rw:{hp:2,k:2}, rs:{hp:2,f:2}, d:'奇妙な装置がある'},
+  'r3-1-1': {n:'大広間',     e:'🏛️', rw:{hp:3,k:0}, rs:{hp:0,f:1}, d:'広い廊下のような部屋', safe:true},
+  'r3-1-2': {n:'古い書庫',   e:'📜', rw:{hp:0,k:3}, rs:{hp:1,f:2}, d:'古文書が積まれている'},
+  'r3-1-3': {n:'魔女の部屋', e:'🧹', rw:{hp:4,k:1}, rs:{hp:0,f:3}, d:'ほうきが浮いている'},
+  'r3-2-1': {n:'時計塔',     e:'🕰️', rw:{hp:0,k:2}, rs:{hp:2,f:2}, d:'時計が逆回転している'},
+  'r3-2-2': {n:'呪いの間',   e:'🔮', rw:{hp:0,k:3}, rs:{hp:1,f:2}, d:'不思議な呪いが漂う'},
+  'r3-2-3': {n:'黒の祭壇',   e:'🖤', rw:{hp:0,k:4}, rs:{hp:0,f:3}, d:'黒い炎が燃えている'},
+  'r3-2-4': {n:'秘密の部屋', e:'🔒', rw:{hp:0,k:3}, rs:{hp:2,f:2}, d:'隠された扉がある'},
+  'r3-3-0': {n:'地下の祭壇', e:'💀', rw:{hp:0,k:2}, rs:{hp:0,f:3}, d:'禍々しい気配がする'},
+  'r3-3-1': {n:'鏡の回廊',   e:'🪞', rw:{hp:0,k:2}, rs:{hp:1,f:1}, d:'無限に続く鏡の廊下'},
+  'r3-3-3': {n:'最後の扉',   e:'🗝️', rw:{hp:0,k:2}, rs:{hp:2,f:3}, d:'重い扉が立ちはだかる'},
+  'r3-3-4': {n:'屋上',       e:'🌙', rw:{hp:5,k:0}, rs:{hp:0,f:1}, d:'夜風が吹いている', safe:true},
+  'r3-4-0': {n:'奈落',       e:'🌀', rw:{hp:2,k:1}, rs:{hp:0,f:1}, d:'底が見えない暗い穴'},
+  'r3-4-2': {n:'竜の巣',     e:'🐲', rw:{hp:0,k:3}, rs:{hp:4,f:2}, d:'巨大な竜の気配がする'},
+  'r3-4-3': {n:'封印の間',   e:'⛓️', rw:{hp:0,k:4}, rs:{hp:3,f:3}, d:'強い封印が施されている'},
+
+  // 出口（共通）
+  'exit-room': {n:'出口の扉', e:'🏁', rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
 };
 
-// 出口は別途フロアに応じて追加
-const EXIT_ROOMS = {
-  'B1F': {n:'出口の扉', e:'🏁', fl:'B1F', rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-  '1F':  {n:'出口の扉', e:'🏁', fl:'1F',  rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-  '2F':  {n:'出口の扉', e:'🏁', fl:'2F',  rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-  '3F':  {n:'出口の扉', e:'🏁', fl:'3F',  rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-  '4F':  {n:'出口の扉', e:'🏁', fl:'4F',  rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-  '5F':  {n:'出口の扉', e:'🏁', fl:'5F',  rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-  '6F':  {n:'出口の扉', e:'🏁', fl:'6F',  rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
-};
+// グリッドから接続マップを構築
+let CONNECTIONS = {};
+function buildStageConnections(stageNum) {
+  const grid = STAGE_GRIDS[stageNum];
+  CONNECTIONS = {};
+  const {rows, cols, cells} = grid;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const rid = cells[r][c];
+      if (!rid) continue;
+      CONNECTIONS[rid] = [];
+      if (r > 0 && cells[r-1][c]) CONNECTIONS[rid].push(cells[r-1][c]);
+      if (r < rows-1 && cells[r+1][c]) CONNECTIONS[rid].push(cells[r+1][c]);
+      if (c > 0 && cells[r][c-1]) CONNECTIONS[rid].push(cells[r][c-1]);
+      if (c < cols-1 && cells[r][c+1]) CONNECTIONS[rid].push(cells[r][c+1]);
+    }
+  }
+}
 
-// 隣接マップ（移動できる部屋）
-// 双方向接続マップ（全部屋から双方向に移動可能）
-// 🪜マークの部屋は上下フロアへの階段あり
-const CONNECTIONS = {
-  // B1F ↔ 1F
-  'b1-0': ['b1-1'],
-  'b1-1': ['b1-0','1f-3'],
-  // 1F
-  '1f-0': ['1f-1'],
-  '1f-1': ['1f-0','1f-2'],
-  '1f-2': ['1f-1','1f-3'],
-  '1f-3': ['1f-2','b1-1'],
-  // 2F ↔ 3F
-  '2f-0': ['2f-1'],
-  '2f-1': ['2f-0','2f-2'],
-  '2f-2': ['2f-1','2f-3'],
-  '2f-3': ['2f-2','3f-0'],
-  // 3F
-  '3f-0': ['3f-1','2f-3'],
-  '3f-1': ['3f-0','3f-2'],
-  '3f-2': ['3f-1','3f-3'],
-  '3f-3': ['3f-2'],
-  // 4F ↔ 5F
-  '4f-0': ['4f-1'],
-  '4f-1': ['4f-0','4f-2'],
-  '4f-2': ['4f-1','4f-3'],
-  '4f-3': ['4f-2','5f-0'],
-  // 5F ↔ 6F
-  '5f-0': ['5f-1','4f-3'],
-  '5f-1': ['5f-0','5f-2'],
-  '5f-2': ['5f-1','5f-3'],
-  '5f-3': ['5f-2','6f-0'],
-  // 6F
-  '6f-0': ['6f-1','5f-3'],
-  '6f-1': ['6f-0','6f-2'],
-  '6f-2': ['6f-1','6f-3'],
-  '6f-3': ['6f-2'],
-};
-// 階段のある部屋（マップ表示でアイコン付き）
-const STAIR_ROOMS = new Set(['b1-1','1f-3','2f-3','3f-0','3f-3','4f-3','5f-0','5f-3','6f-0']);
-// 出口の接続は起動時に設定
-
-const FLOOR_ORDER = ['6F','5F','4F','3F','2F','1F','B1F'];
-const FLOOR_ROOMS = {
-  'B1F': ['b1-0','b1-1'],
-  '1F':  ['1f-0','1f-1','1f-2','1f-3'],
-  '2F':  ['2f-0','2f-1','2f-2','2f-3'],
-  '3F':  ['3f-0','3f-1','3f-2','3f-3'],
-  '4F':  ['4f-0','4f-1','4f-2','4f-3'],
-  '5F':  ['5f-0','5f-1','5f-2','5f-3'],
-  '6F':  ['6f-0','6f-1','6f-2','6f-3'],
-};
-const FLOOR_COLORS = {'B1F':'#6a3010','1F':'#1a4a18','2F':'#102848','3F':'#3a1060','4F':'#401020','5F':'#601010','6F':'#800808'};
+// ステージのルームID一覧を取得
+function getStageRoomIds(stageNum) {
+  const grid = STAGE_GRIDS[stageNum];
+  const ids = [];
+  for (let r = 0; r < grid.rows; r++)
+    for (let c = 0; c < grid.cols; c++)
+      if (grid.cells[r][c]) ids.push(grid.cells[r][c]);
+  return ids;
+}
 
 const CHARS=[
   {id:'una', name:'una', emoji:'🎀',role:'バランス型',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:12,col:'#e8a0d0'},
@@ -843,26 +854,8 @@ function selChar(id){
 function startGame(stageNum=1, prevData=null){
   const ch=sel||prevData?.ch;if(!ch)return;
   const stage=STAGES[stageNum];
-  // 出口フロアをステージ定義からランダム決定
-  const exitFloors=stage.exitFloors;
-  const exitFloor=exitFloors[Math.floor(Math.random()*exitFloors.length)];
-  // 出口部屋を設定（重複防止）
+  buildStageConnections(stageNum);
   const exitId='exit-room';
-  MAP_ROOMS[exitId]={...EXIT_ROOMS[exitFloor]};
-  // 既存の出口接続をリセット
-  Object.keys(CONNECTIONS).forEach(k=>{
-    CONNECTIONS[k]=(CONNECTIONS[k]||[]).filter(id=>id!=='exit-room');
-  });
-  Object.keys(FLOOR_ROOMS).forEach(f=>{
-    FLOOR_ROOMS[f]=FLOOR_ROOMS[f].filter(id=>id!=='exit-room');
-  });
-  // 出口フロアの最後の部屋に接続
-  const flRooms=FLOOR_ROOMS[exitFloor].filter(id=>id!=='exit-room');
-  const exitLink=flRooms[flRooms.length-1];
-  CONNECTIONS['exit-room']=[exitLink];
-  if(CONNECTIONS[exitLink]&&!CONNECTIONS[exitLink].includes('exit-room'))
-    CONNECTIONS[exitLink].push('exit-room');
-  FLOOR_ROOMS[exitFloor].push(exitId);
 
   const stageData=STAGES[stageNum];
   G={
@@ -877,7 +870,7 @@ function startGame(stageNum=1, prevData=null){
     done:false,st:Date.now(),
     streak:{type:null,count:0},
     boss:null,bossHp:0,bossReady:false,
-    exitFloor,exitId,
+    exitId,
     selectedRoom:null,
     stage:stageNum,
     stageData,
@@ -892,14 +885,15 @@ function startGame(stageNum=1, prevData=null){
   document.getElementById('sc-game').style.display='block';
   lg(`${stageData.emoji} ${stageData.name}「${stageData.subtitle}」開始！`,'imp');
   lg(`👤 ${ch.name}（${ch.ability}）`,'pu');
-  lg(`🏁 出口は【${exitFloor}】！鍵${stageData.targetKeys}本集めて向かおう！`,'gld');
+  lg(`🏁 出口🏁を目指せ！鍵${stageData.targetKeys}本集めて向かおう！`,'gld');
   if(stageData.fearLimit<3) lg(`⚠️ 恐怖${stageData.fearLimit}個でお化け登場！気をつけろ！`,'dng');
   if(G.buddy) lg(`👻 仲間の【${G.buddy.name}】が一緒にいる！ピンチのとき呼ぼう！`,'pu');
   lg('💡 緑に光る部屋をタップして移動しよう！','');
   // ランダムに1体のお化けをマップに配置（スタート部屋と出口以外）
-  const ghostRooms=Object.keys(MAP_ROOMS).filter(id=>{
+  const stageRoomIds=getStageRoomIds(stageNum);
+  const ghostRooms=stageRoomIds.filter(id=>{
     const r=MAP_ROOMS[id];
-    return r&&!r.isStart&&!r.isExit&&!r.safe&&stageData.floors.includes(r.fl);
+    return r&&!r.isStart&&!r.isExit&&!r.safe;
   });
   if(ghostRooms.length>0){
     const ghostRid=ghostRooms[Math.floor(Math.random()*ghostRooms.length)];
@@ -912,50 +906,45 @@ function startGame(stageNum=1, prevData=null){
 // ミニマップ描画
 // ════════════════════════════════════════
 function renderMap(){
+  const grid=STAGE_GRIDS[G.stage];
   const reachable=getReachable();
   const container=document.getElementById('map-floors');
-  const activeFloors=G&&G.stageData?G.stageData.floors:FLOOR_ORDER;
-  let html='';
-  FLOOR_ORDER.filter(function(fl){return activeFloors.includes(fl);}).forEach(function(fl){
-    const rooms=FLOOR_ROOMS[fl]||[];
-    if(!rooms.length)return;
-    let roomsHtml='';
-    rooms.forEach(function(rid){
-      const r=MAP_ROOMS[rid];if(!r)return;
+  const {rows,cols,cells}=grid;
+  let html=`<div class="map-grid" style="grid-template-columns:repeat(${cols},1fr)">`;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const rid=cells[r][c];
+      if(!rid){html+='<div class="map-cell wall"></div>';continue;}
+      const room=MAP_ROOMS[rid];
+      if(!room){html+='<div class="map-cell wall"></div>';continue;}
       const isCur=G.pos===rid;
       const isReach=reachable.includes(rid);
       const isVisited=G.visited.has(rid);
-      const hasGhost=G.ghosts[rid]>0;
       // 出口の表示
-      if(r.isExit){
+      if(room.isExit){
         if(!G.bossReady){
-          roomsHtml+='<div class="map-room unvisited" style="opacity:.4;cursor:default"><span class="mr-e">🌫️</span><div class="mr-n">???</div></div>';
+          html+='<div class="map-cell unvisited" style="opacity:.35;cursor:default"><span class="mr-e">🌫️</span><div class="mr-n">???</div></div>';
         } else {
           const curCls=isCur?' current':'';
-          const nextToExit=reachable.includes(rid);
-          if(nextToExit){
-            // 隣にいる → クリック可能・金色に光る
-            roomsHtml+='<div class="map-room exit-room reachable'+curCls+'" onclick="selectRoom_exit()" style="cursor:pointer;border:2px solid #f0d060;box-shadow:0 0 14px #f0d06080"><span class="mr-e">'+r.e+'</span><div class="mr-n">'+r.n+'</div></div>';
+          if(isReach){
+            html+=`<div class="map-cell exit-cell reachable${curCls}" onclick="selectRoom_exit()" style="cursor:pointer;border-color:#f0d060;box-shadow:0 0 12px #f0d06080"><span class="mr-e">${room.e}</span><div class="mr-n">${room.n}</div></div>`;
           } else {
-            // 遠い → 薄く表示・クリック不可
-            roomsHtml+='<div class="map-room exit-room'+curCls+'" style="cursor:default;border:1px solid #806830;opacity:.6"><span class="mr-e">'+r.e+'</span><div class="mr-n">'+r.n+'</div></div>';
+            html+=`<div class="map-cell exit-cell${curCls}" style="cursor:default"><span class="mr-e">${room.e}</span><div class="mr-n">${room.n}</div></div>`;
           }
         }
-        return;
+        continue;
       }
       // 通常部屋
-      let cls='map-room';
-      if(isCur)cls+=' current';
-      if(isReach&&!isCur)cls+=' reachable';
-      if(isVisited)cls+=' visited';else cls+=' unvisited';
-      const ghostBadge=''; // お化けはマップ非表示
-      const keyBadge=(rid==='b1-1'&&G.k<G.tk)?'<span class="map-key-badge">🗝️</span>':'';
-      const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?'<span style="position:absolute;top:1px;left:2px;font-size:12px;opacity:.7">🪜</span>':'';
-      const clickAttr=(isReach&&!isCur)?(' onclick="selectRoom_id(this)" data-rid="'+rid+'"'):'';
-      roomsHtml+='<div class="'+cls+'"'+clickAttr+'><span class="mr-e">'+r.e+'</span><div class="mr-n">'+r.n+'</div>'+ghostBadge+keyBadge+stairBadge+'</div>';
-    });
-    html+='<div class="map-floor map-floor-row f-'+fl.toLowerCase()+'"><div class="map-fl-lbl">'+fl+'</div><div class="map-rooms">'+roomsHtml+'</div></div>';
-  });
+      let cls='map-cell';
+      if(isCur) cls+=' current';
+      else if(isReach&&!isCur) cls+=' reachable';
+      if(isVisited) cls+=' visited'; else cls+=' unvisited';
+      const ghostBadge=G.ghosts[rid]>0?'<span class="map-ghost">👻</span>':'';
+      const click=(isReach&&!isCur)?` onclick="selectRoom_id(this)" data-rid="${rid}"`:'';
+      html+=`<div class="${cls}"${click}><span class="mr-e">${room.e}</span><div class="mr-n">${room.n}</div>${ghostBadge}</div>`;
+    }
+  }
+  html+='</div>';
   container.innerHTML=html;
   updateFloorBadge();
 }
@@ -990,9 +979,8 @@ function getReachable(){
 function updateFloorBadge(){
   const r=MAP_ROOMS[G.pos];if(!r)return;
   const el=document.getElementById('floor-badge');
-  el.textContent=`📍 ${r.fl}`;
-  const bg=FLOOR_COLORS[r.fl]||'#2a6a28';
-  el.style.background=bg;
+  el.textContent=`📍 ${r.n}`;
+  el.style.background='#1a3a1a';
 }
 
 // ════════════════════════════════════════
@@ -1022,9 +1010,8 @@ function selectRoom(rid){
   // 部屋詳細表示
   const detail=document.getElementById('room-detail');
   detail.style.display='block';
-  const flCol=FLOOR_COLORS[r.fl]||'#2a6a28';
-  document.getElementById('rd-floor').textContent=r.fl;
-  document.getElementById('rd-floor').style.background=flCol;
+  document.getElementById('rd-floor').textContent=r.n;
+  document.getElementById('rd-floor').style.background='#1a3a1a';
   document.getElementById('rd-emoji').textContent=r.e;
   document.getElementById('rd-name').textContent=r.n;
   document.getElementById('rd-desc').textContent=r.d;
@@ -1104,6 +1091,15 @@ function resolveRoom(rid,type,sb){
   let extraRw=sb&&sb.extraRw?sb.extraRw:0;
   let extraRs=sb&&sb.extraRs?sb.extraRs:0;
 
+  // unaやり直し用スナップショット（効果適用前に保存）
+  if(G.c.id==='una'&&G.canChange){
+    _undoSnapshot={
+      hp:G.c.hp, k:G.k, fear:G.fear,
+      streakCount:G.streak.count,
+      streakType:G.streak.type,
+    };
+  }
+
   // 報酬
   if(r.rw.hp>0){
     const h=r.rw.hp===999?G.c.mhp-G.c.hp:r.rw.hp*mul+extraRw;
@@ -1139,9 +1135,10 @@ function resolveRoom(rid,type,sb){
     setTimeout(()=>showGhost(gh,d),350);
     // 次のターンで新しいお化けを別の部屋に配置
     setTimeout(()=>{
-      const rooms=Object.keys(MAP_ROOMS).filter(id=>{
+      const stageIds=getStageRoomIds(G.stage);
+      const rooms=stageIds.filter(id=>{
         const rm=MAP_ROOMS[id];
-        return rm&&!rm.isStart&&!rm.isExit&&!rm.safe&&G.stageData.floors.includes(rm.fl)&&id!==G.pos;
+        return rm&&!rm.isStart&&!rm.isExit&&!rm.safe&&id!==G.pos;
       });
       if(rooms.length>0){
         const newRid=rooms[Math.floor(Math.random()*rooms.length)];
@@ -1162,12 +1159,6 @@ function resolveRoom(rid,type,sb){
   const hadRisk=r.rs.hp>0||r.rs.f>0||(r.rs.lk&&mul>0)||G.ghosts[rid]>0;
   if(G.c.id==='una'&&G.canChange&&hadRisk){
     _pendingType=type;_pendingCard=rid;
-    // やり直し用に現在の状態をスナップショット保存（結果適用後）
-    _undoSnapshot={
-      hp:G.c.hp, k:G.k, fear:G.fear,
-      streakCount:G.streak.count,
-      streakType:G.streak.type,
-    };
     setTimeout(()=>showUndoDialog(type,logs),600);
   } else {
     nextTurn();
@@ -1177,7 +1168,7 @@ function resolveRoom(rid,type,sb){
 function checkBoss(){
   if(G.k>=G.tk&&!G.bossReady){
     G.bossReady=true;
-    lg(`🗝️ 鍵${G.tk}本揃った！出口【${G.exitFloor}】を目指せ！`,'gld');
+    lg(`🗝️ 鍵${G.tk}本揃った！出口🏁を目指せ！`,'gld');
     renderMap();
   }
 }
@@ -1360,9 +1351,10 @@ function bossEscape(){
   document.getElementById('boss-modal').classList.remove('show');
   lg('💨 ボスから逃げた！鍵-1…もう一度挑もう！','dng');
   // ランダムに1体のお化けをマップに配置（スタート部屋と出口以外）
-  const ghostRooms=Object.keys(MAP_ROOMS).filter(id=>{
+  const bossEscapeRoomIds=getStageRoomIds(G.stage);
+  const ghostRooms=bossEscapeRoomIds.filter(id=>{
     const r=MAP_ROOMS[id];
-    return r&&!r.isStart&&!r.isExit&&!r.safe&&stageData.floors.includes(r.fl);
+    return r&&!r.isStart&&!r.isExit&&!r.safe;
   });
   if(ghostRooms.length>0){
     const ghostRid=ghostRooms[Math.floor(Math.random()*ghostRooms.length)];
@@ -1589,10 +1581,10 @@ function showUndoDialog(type,logs){
   document.getElementById('undo-fill').style.width='100%';
   document.getElementById('undo-overlay').classList.add('show');
   setTimeout(()=>{
-    document.getElementById('undo-fill').style.transition='width 4s linear';
+    document.getElementById('undo-fill').style.transition='width 8s linear';
     document.getElementById('undo-fill').style.width='0%';
   },50);
-  _undoTimer=setTimeout(()=>cancelUndo(),4000);
+  _undoTimer=setTimeout(()=>cancelUndo(),8000);
 }
 function confirmUndo(){
   clearTimeout(_undoTimer);
