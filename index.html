@@ -26,6 +26,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 @keyframes friend-pop{0%{opacity:0;transform:scale(0) rotate(-20deg)}70%{transform:scale(1.2) rotate(5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes fw-burst{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
 @keyframes win-pop{0%{opacity:0;transform:scale(0) rotate(-15deg)}70%{opacity:1;transform:scale(1.2) rotate(5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes kick-don{0%{opacity:0;transform:translate(-50%,-50%) scale(0) rotate(-30deg)}55%{opacity:1;transform:translate(-50%,-50%) scale(1.3) rotate(8deg)}80%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(-3deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4) rotate(0deg)}}
 @keyframes win-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
 @keyframes dice-roll{0%{transform:rotate(0) scale(1)}25%{transform:rotate(180deg) scale(1.2)}50%{transform:rotate(360deg) scale(.9)}100%{transform:rotate(720deg) scale(1)}}
 @keyframes dice-pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:1}}
@@ -198,6 +199,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .cbtn{background:var(--bc);border:2px solid transparent;border-radius:13px;padding:11px 7px;cursor:pointer;transition:all .2s;text-align:center;color:var(--wh);font-family:inherit;position:relative;z-index:11}
 .cbtn:hover{transform:translateY(-3px)}.cbtn.sel{border-color:var(--gd);background:#1e1042}
 .cbtn .ce{font-size:36px;display:block;margin-bottom:4px}
+.cbtn .ce-img{width:72px;height:72px;object-fit:contain;display:block;margin:0 auto 4px}
 .cbtn .cn{font-family:'Zen Kurenaido',cursive;font-size:21px;color:var(--gd)}
 .cbtn .cr{font-size:13.5px;color:var(--gr);margin-top:2px}
 .cbtn .ca{font-size:13.5px;color:var(--ac);margin-top:4px;font-style:italic;line-height:1.5}
@@ -224,7 +226,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* ステータスバー */
 #stat-bar{background:#0c041e;border:1px solid #281848;border-radius:13px;padding:9px 12px;margin-bottom:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .sc{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.sc-e{font-size:30px}.sc-n{font-family:'Zen Kurenaido',cursive;font-size:19.5px;color:var(--gd)}
+.sc-e{font-size:30px}.sc-n{font-family:'Zen Kurenaido',cursive;font-size:19.5px;color:var(--gd)}.sc-img{width:36px;height:36px;object-fit:contain;border-radius:6px}
+#kick-effect{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:120px;pointer-events:none;z-index:2000;display:none;line-height:1}
 .sdv{width:1px;height:16px;background:#281848}
 .hp-w{flex:1;min-width:90px}
 .hp-l{font-size:13.5px;color:var(--gr);margin-bottom:2px;display:flex;justify-content:space-between}
@@ -311,6 +314,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 </head>
 <body>
 <div id="flash"></div>
+<div id="kick-effect">🥾</div>
 
 <!-- ステージクリアモーダル -->
 <div id="stage-modal">
@@ -503,7 +507,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 <!-- ゲーム -->
 <div id="sc-game">
   <div id="stat-bar">
-    <div class="sc"><span class="sc-e" id="se">🎀</span><span class="sc-n" id="sn">una</span></div>
+    <div class="sc"><img class="sc-img" id="se" src="" alt=""><span class="sc-n" id="sn">una</span></div>
     <div class="sdv"></div>
     <div class="hp-w">
       <div class="hp-l"><span>❤️</span><span id="hpn">10/10</span></div>
@@ -653,14 +657,13 @@ const STAGE_GRIDS = {
     ]
   },
   3: {
-    rows: 5, cols: 5,
+    rows: 4, cols: 5,
     startId: 'r3-0-0',
     cells: [
       ['r3-0-0', 'r3-0-1', null,     'r3-0-3', 'r3-0-4'],
       ['r3-1-0', 'r3-1-1', 'r3-1-2', 'r3-1-3', null    ],
       [null,     'r3-2-1', 'r3-2-2', 'r3-2-3', 'r3-2-4'],
       ['r3-3-0', 'r3-3-1', null,     'r3-3-3', 'r3-3-4'],
-      ['r3-4-0', null,     'r3-4-2', 'r3-4-3', 'exit-room'],
     ]
   },
 };
@@ -716,9 +719,6 @@ const MAP_ROOMS = {
   'r3-3-1': {n:'鏡の回廊',   e:'🪞', rw:{hp:0,k:2}, rs:{hp:1,f:1}, d:'無限に続く鏡の廊下'},
   'r3-3-3': {n:'最後の扉',   e:'🗝️', rw:{hp:0,k:2}, rs:{hp:2,f:3}, d:'重い扉が立ちはだかる'},
   'r3-3-4': {n:'屋上',       e:'🌙', rw:{hp:5,k:0}, rs:{hp:0,f:0}, d:'夜風が吹いている', safe:true, fearRelief:1},
-  'r3-4-0': {n:'奈落',       e:'🌀', rw:{hp:2,k:1}, rs:{hp:0,f:1}, d:'底が見えない暗い穴'},
-  'r3-4-2': {n:'竜の巣',     e:'🐲', rw:{hp:0,k:3}, rs:{hp:4,f:2}, d:'巨大な竜の気配がする'},
-  'r3-4-3': {n:'封印の間',   e:'⛓️', rw:{hp:0,k:4}, rs:{hp:3,f:3}, d:'強い封印が施されている'},
 
   // 出口（共通）
   'exit-room': {n:'出口の扉', e:'🏁', rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true},
@@ -753,9 +753,9 @@ function getStageRoomIds() {
 }
 
 const CHARS=[
-  {id:'una', name:'una', emoji:'👧🏽',role:'ふつう',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:15,col:'#e8a0d0'},
-  {id:'huna',name:'huna',emoji:'👱‍♀️',role:'むずかしい',ability:'🍫 チョコ：各ステージ1回だけ体力+2回復できる',hp:12,col:'#a0c0f0'},
-  {id:'mea', name:'うま', emoji:'🐴',role:'やさしい',  ability:'体力ダメージを常に1軽減する',hp:20,col:'#c08050'},
+  {id:'una', name:'una', emoji:'👧🏽',img:'img/una.png', role:'ふつう',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:15,col:'#e8a0d0'},
+  {id:'huna',name:'huna',emoji:'👱‍♀️',img:'img/huna.png',role:'むずかしい',ability:'🍫 チョコ：各ステージ1回だけ体力+2回復できる',hp:12,col:'#a0c0f0'},
+  {id:'mea', name:'うま', emoji:'🐴',img:'img/uma.png', role:'やさしい',  ability:'体力ダメージを常に1軽減する',hp:20,col:'#c08050'},
 ];
 const GHOSTS=[
   {id:'g0',name:'さ迷える霊',  emoji:'👻',desc:'廊下をふらふらと漂っている。',          dmg:2,fd:'かわいいおばけ。霧のようにふわふわ漂う。',        buddyEffect:{type:'hp',  amount:3, icon:'💚',label:'体力を3回復'}},
@@ -828,7 +828,7 @@ function renderRank(id){
 function initChars(){
   document.getElementById('cgrid').innerHTML=CHARS.map(ch=>`
     <div class="cbtn" data-id="${ch.id}" id="cb-${ch.id}" style="border-color:${ch.col}20">
-      <span class="ce">${ch.emoji}</span><div class="cn">${ch.name}</div>
+      <img class="ce-img" src="${ch.img}" alt="${ch.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="ce" style="display:none">${ch.emoji}</span><div class="cn">${ch.name}</div>
       <div class="cr">難易度：${ch.role}</div><div class="ca">${ch.ability}</div>
     </div>`).join('');
   document.querySelectorAll('.cbtn').forEach(el=>{
@@ -866,13 +866,35 @@ function startGame(stageNum=1, prevData=null){
   for(let r=0;r<baseGrid.rows;r++)
     for(let c=0;c<baseGrid.cols;c++)
       if(cellsCopy[r][c]===stage.startPos){startR=r;startC=c;}
-  // スタート以外の非null部屋を候補にする（スタートの直接隣接は除外して詰まりを防ぐ）
+  // 出口を除いても全部屋がスタートから到達可能か確認する関数
+  function isConnectedWithoutExit(exR,exC){
+    const visited=new Set();
+    const queue=[[startR,startC]];
+    while(queue.length){
+      const [r,c]=queue.shift();
+      const key=r+','+c;
+      if(visited.has(key))continue;
+      visited.add(key);
+      for(const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+        const nr=r+dr,nc=c+dc;
+        if(nr<0||nr>=baseGrid.rows||nc<0||nc>=baseGrid.cols)continue;
+        if(nr===exR&&nc===exC)continue;
+        if(cellsCopy[nr][nc]&&!visited.has(nr+','+nc))queue.push([nr,nc]);
+      }
+    }
+    let total=0;
+    for(let r=0;r<baseGrid.rows;r++)
+      for(let c=0;c<baseGrid.cols;c++)
+        if(cellsCopy[r][c]&&!(r===exR&&c===exC))total++;
+    return visited.size>=total;
+  }
+  // スタート以外の非null部屋を候補にする（スタートの直接隣接・通路になる位置は除外）
   const exitCandidates=[];
   for(let r=0;r<baseGrid.rows;r++)
     for(let c=0;c<baseGrid.cols;c++){
       const id=cellsCopy[r][c];
       const isStartAdj=(Math.abs(r-startR)+Math.abs(c-startC))===1;
-      if(id&&id!==stage.startPos&&!isStartAdj) exitCandidates.push([r,c]);
+      if(id&&id!==stage.startPos&&!isStartAdj&&isConnectedWithoutExit(r,c)) exitCandidates.push([r,c]);
     }
   const [er,ec]=exitCandidates[Math.floor(Math.random()*exitCandidates.length)];
   cellsCopy[er][ec]='exit-room';
@@ -1095,6 +1117,7 @@ function choose(type){
   const sb=getStreakBonus(type);
   if(sb.active) lg(`🔥 連鎖${G.streak.count+1}回！${sb.msg}`,'gld');
   lg(`${type==='kick'?'🥾 蹴破る！':'🤲 そっと開ける…'} — 結果は…`,'imp');
+  if(type==='kick')kickEffect();
   setTimeout(()=>resolveRoom(rid,type,sb),800);
 }
 
@@ -1704,7 +1727,7 @@ function updateFP(){
 }
 function upStat(){
   if(!G)return;
-  document.getElementById('se').textContent=G.c.emoji;
+  document.getElementById('se').src=G.c.img||'';
   document.getElementById('sn').textContent=G.c.name;
   const pct=Math.max(0,G.c.hp/G.c.mhp*100);
   const f=document.getElementById('hpf');
@@ -1741,6 +1764,14 @@ function upStat(){
   updateFP();
 }
 function enBtn(on){document.querySelectorAll('.cb').forEach(b=>b.disabled=!on);}
+function kickEffect(){
+  const el=document.getElementById('kick-effect');
+  el.style.display='block';
+  el.style.animation='none';
+  void el.offsetWidth;
+  el.style.animation='kick-don 1s cubic-bezier(.34,1.56,.64,1) forwards';
+  setTimeout(()=>{el.style.display='none';},1000);
+}
 function flashEl(cls){
   const o=document.getElementById('flash');o.className=cls;setTimeout(()=>o.className='',700);
   if(cls==='red'){const g=document.getElementById('sc-game');g.style.animation='shake .4s ease';setTimeout(()=>g.style.animation='',450);}
