@@ -94,6 +94,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .bc-desc{display:block;font-size:13px;opacity:.7;margin-top:2px}
 .boss-def-count{font-size:13px;color:var(--bl);text-align:center;margin-top:4px;display:none}
 
+
+/* hunaのチョコボタン */
+#choco-btn{display:none;position:fixed;bottom:90px;right:16px;z-index:800;border-radius:50%;width:56px;height:56px;background:linear-gradient(135deg,#3a1a08,#5a2a10);border:2px solid #c07040;font-size:28px;cursor:pointer;box-shadow:0 0 16px #c0704060;transition:all .2s}
+#choco-btn:hover{transform:scale(1.1)}
+#choco-btn:disabled{opacity:.4;cursor:not-allowed}
+
 /* ── フラッシュ ── */
 #flash{position:fixed;inset:0;z-index:1000;pointer-events:none;opacity:0}
 #flash.red{background:radial-gradient(ellipse at center,#ff000070,#ff000025);animation:flash-red .55s ease forwards}
@@ -280,7 +286,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 #rd-hint{font-size:15px;color:var(--ac);background:#0a0318;border-radius:8px;padding:6px 10px;line-height:1.6;display:none}
 
 /* 3択ボタン */
-#choices{display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
+#choices{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
 .cb{border-radius:12px;padding:11px 4px;cursor:pointer;font-family:'Sawarabi Mincho',serif;font-size:15px;transition:all .2s;border:1.5px solid;text-align:center;color:var(--wh);display:flex;flex-direction:column;align-items:center;gap:4px}
 .cb:hover{transform:translateY(-3px)}.cb:disabled{opacity:.3;cursor:not-allowed;transform:none}
 .cb .ci{font-size:33px}.cb .ct{font-size:16.5px;font-family:'Zen Kurenaido',cursive}.cb .cd{font-size:12px;opacity:.7;line-height:1.4}
@@ -289,7 +295,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .cr2{background:#0a1808;border-color:#387838}.cr2:hover{background:#0e2010;box-shadow:0 0 12px #38783860}
 
 /* ログ */
-.lp{background:#080318;border:1px solid #180a28;border-radius:10px;padding:10px;max-height:160px;overflow-y:auto}
+.lp{background:#080318;border:1px solid #180a28;border-radius:10px;padding:10px;max-height:320px;overflow-y:auto}
 .le{font-size:18px;padding:5px 0;border-bottom:1px solid #100820;line-height:1.8;color:var(--gr);animation:fi .3s ease}
 .le:last-child{border-bottom:none}
 .le.imp{color:var(--wh)}.le.dng{color:var(--rd)}.le.gd{color:var(--gn)}.le.gld{color:var(--gd)}.le.pu{color:#c080e0}.le.boss{color:#ff80a0}
@@ -324,6 +330,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <button class="btn-stage-next" id="btn-stage-next" onclick="startNextStage()" disabled>次のステージへ →</button>
   </div>
 </div>
+
+<!-- hunaのチョコボタン -->
+<button id="choco-btn" onclick="useChoco()" title="チョコを食べて体力+2！">🍫</button>
 
 <!-- 仲間発動ボタン -->
 <button id="buddy-btn" onclick="showBuddyModal()" title="仲間に助けてもらう！">👻</button>
@@ -380,38 +389,47 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="boss-hp-lbl"><span>👹 ボスの体力</span><span id="bm-hp-num">6/6</span></div>
     <div class="boss-hp-bar"><div class="boss-hp-fill" id="bm-hp-fill" style="width:100%"></div></div>
     <div class="boss-php-lbl"><span>❤️ あなたの体力</span><span id="bm-php-num">10/10</span></div>
-    <!-- Step1: サイコロ -->
+    <!-- サイコロ -->
     <div class="dice-area" id="dice-area">
       <span class="dice-face" id="dice-face">🎲</span>
       <div class="dice-result" id="dice-result">まずサイコロを振ろう！</div>
     </div>
     <button class="btn-roll" id="btn-roll" onclick="bossRoll()">🎲 サイコロを振る！</button>
-    <!-- Step2: 使い方を選ぶ -->
+    <!-- 結果後の選択肢 -->
     <div id="boss-choices">
-      <div style="font-size:18px;color:var(--gd);font-family:'Zen Kurenaido',cursive;text-align:center;margin-bottom:4px">
-        🎲 <span id="roll-result-num">4</span> の目！どう使う？
+      <!-- 偶数：ボスにダメージ確定 → 防御に変えることもできる -->
+      <div id="bc-even-area">
+        <div style="font-size:16px;color:var(--gn);font-family:'Zen Kurenaido',cursive;text-align:center;margin-bottom:8px">
+          🎯 偶数！ボスに <span id="bc-roll-val">0</span> ダメージ確定
+        </div>
+        <button class="boss-choice-btn bc-atk" onclick="bossUseRoll('atk')">
+          <span class="bc-icon">⚔️</span>
+          <div class="bc-text">
+            <span class="bc-name">そのまま攻撃！</span>
+            <span class="bc-desc" id="bc-atk-desc">ボスに ? ダメージ</span>
+          </div>
+        </button>
+        <button class="boss-choice-btn bc-heal" onclick="bossUseRoll('def')">
+          <span class="bc-icon">💚</span>
+          <div class="bc-text">
+            <span class="bc-name">体力を回復する</span>
+            <span class="bc-desc" id="bc-def-desc">体力を ? 回復する</span>
+          </div>
+        </button>
       </div>
-      <button class="boss-choice-btn bc-atk" onclick="bossUseRoll('atk')">
-        <span class="bc-icon">⚔️</span>
-        <div class="bc-text">
-          <span class="bc-name">攻撃に使う</span>
-          <span class="bc-desc" id="bc-atk-desc">ボスに ? ダメージ</span>
+      <!-- 奇数：自分にダメージ確定（変更不可） -->
+      <div id="bc-odd-area">
+        <div style="font-size:16px;color:var(--rd);font-family:'Zen Kurenaido',cursive;text-align:center;margin-bottom:8px">
+          💥 奇数！自分に <span id="bc-roll-val2">0</span> ダメージ確定
         </div>
-      </button>
-      <button class="boss-choice-btn bc-def" onclick="bossUseRoll('def')">
-        <span class="bc-icon">🛡️</span>
-        <div class="bc-text">
-          <span class="bc-name">防御に使う</span>
-          <span class="bc-desc" id="bc-def-desc">次の攻撃を ? 軽減</span>
-        </div>
-      </button>
-      <button class="boss-choice-btn bc-heal" onclick="bossUseRoll('heal')">
-        <span class="bc-icon">💚</span>
-        <div class="bc-text">
-          <span class="bc-name">回復に使う</span>
-          <span class="bc-desc" id="bc-heal-desc">体力を ? 回復</span>
-        </div>
-      </button>
+        <button class="boss-choice-btn bc-atk" onclick="bossUseRoll('dmg')">
+          <span class="bc-icon">💥</span>
+          <div class="bc-text">
+            <span class="bc-name">ダメージを受ける</span>
+            <span class="bc-desc" id="bc-dmg-desc">自分に ? ダメージ（変更不可）</span>
+          </div>
+        </button>
+      </div>
     </div>
     <div class="boss-def-count" id="boss-def-count">🛡️ 防御中（次の攻撃を軽減）</div>
     <button class="boss-run" onclick="bossEscape()">💨 今は逃げる（鍵-1）</button>
@@ -470,7 +488,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <b>STEP 2：</b>扉の開け方を3択から選ぶ<br>
       🥾 <b>蹴破る</b>… 報酬×2・リスク×2<br>
       🤲 <b>そっと開ける</b>… 報酬×1・リスク×1<br>
-      💨 <b>走り抜ける</b>… 報酬なし・リスクなし<br>
       😨 <b>恐怖3個でお化け登場！</b>　🗝️ <b>鍵5本で出口へ！</b>
     </div>
     <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:18px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
@@ -545,10 +562,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       <span class="ci">🤲</span><span class="ct">そっと開ける</span>
       <span class="cd">報酬×1<br>リスク×1</span>
     </button>
-    <button class="cb cr2" onclick="choose('run')">
-      <span class="ci">💨</span><span class="ct">走り抜ける</span>
-      <span class="cd">安全<br>何もなし</span>
-    </button>
+
   </div>
 
   <div class="lp" id="lp"></div>
@@ -586,9 +600,9 @@ const STAGES = {
     floors: ['1F','B1F'],
     startPos: '1f-0',
     targetKeys: 3,
-    bossHp: 4,
+    bossHp: 3,
     fearLimit: 3,
-    desc: 'B1F〜1F・鍵3本・ボスHP4\nまずは屋敷に慣れよう！',
+    desc: 'B1F〜1F・鍵3本・ボスHP3\nまずは屋敷に慣れよう！',
     exitFloors: ['1F'],
     bgColor: '#0a0318',
   },
@@ -628,11 +642,11 @@ const STAGES = {
 const MAP_ROOMS = {
   // B1F（地下1階）
   'b1-0': {n:'呪いの祭壇',e:'💀',fl:'B1F',rw:{hp:0,k:2},rs:{hp:0,f:2},d:'禍々しい気配がする'},
-  'b1-1': {n:'地下室',    e:'🪜',fl:'B1F',rw:{hp:0,k:1},rs:{hp:2,f:1},d:'暗くて怖いが…'},
+  'b1-1': {n:'地下室',    e:'🪜',fl:'B1F',rw:{hp:0,k:1},rs:{hp:1,f:1},d:'暗くて怖いが…'},
   // 1F（1階）
   '1f-0': {n:'玄関ホール',e:'🚪',fl:'1F', rw:{hp:0,k:0},rs:{hp:0,f:0},d:'ここからスタート！',safe:true,isStart:true},
-  '1f-1': {n:'台所',      e:'🍳',fl:'1F', rw:{hp:2,k:0},rs:{hp:0,f:0},d:'食べ物がありそうだ',safe:true},
-  '1f-2': {n:'応接間',    e:'🛋️',fl:'1F', rw:{hp:3,k:0},rs:{hp:0,f:1},d:'暖炉がある部屋'},
+  '1f-1': {n:'台所',      e:'🍳',fl:'1F', rw:{hp:3,k:1},rs:{hp:0,f:0},d:'食べ物と鍵がありそうだ',safe:true},
+  '1f-2': {n:'応接間',    e:'🛋️',fl:'1F', rw:{hp:4,k:1},rs:{hp:0,f:1},d:'暖炉がある部屋'},
   '1f-3': {n:'地下への扉',e:'🪜',fl:'1F', rw:{hp:0,k:0},rs:{hp:0,f:0},d:'地下へ続く扉…',safe:true},
   // 2F（2階）
   '2f-0': {n:'図書室',    e:'📚',fl:'2F', rw:{hp:1,k:1},rs:{hp:0,f:0},d:'本に鍵の手がかりが'},
@@ -727,20 +741,20 @@ const FLOOR_ROOMS = {
 const FLOOR_COLORS = {'B1F':'#6a3010','1F':'#1a4a18','2F':'#102848','3F':'#3a1060','4F':'#401020','5F':'#601010','6F':'#800808'};
 
 const CHARS=[
-  {id:'una', name:'una', emoji:'🎀',role:'バランス型',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:10,col:'#e8a0d0'},
-  {id:'huna',name:'huna',emoji:'👑',role:'堅実型',     ability:'走り抜けるだけで鍵+1もらえる',hp:8,col:'#a0c0f0'},
+  {id:'una', name:'una', emoji:'🎀',role:'バランス型',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:12,col:'#e8a0d0'},
+  {id:'huna',name:'huna',emoji:'👑',role:'堅実型',     ability:'🍫 チョコ：各ステージ1回だけ体力+2回復できる',hp:8,col:'#a0c0f0'},
   {id:'mea', name:'メア',emoji:'🐴',role:'タフ型',     ability:'体力ダメージを常に1軽減する',hp:14,col:'#c08050'},
   {id:'kon', name:'コン',emoji:'🐿️',role:'情報型',    ability:'移動前にリスクをチラ見できる（3回まで）',hp:8,col:'#e09050'},
 ];
 const GHOSTS=[
-  {id:'g0',name:'さ迷える霊',  emoji:'👻',desc:'廊下をふらふらと漂っている。',          dmg:2,fd:'かわいいおばけ。霧のようにふわふわ漂う。'},
-  {id:'g1',name:'のっぺらぼう',emoji:'🫥',desc:'顔のない影が近づいてくる…！',           dmg:3,fd:'顔がないけど心優しい。表情は読めない。'},
-  {id:'g2',name:'髪の長い女',  emoji:'👩',desc:'長い黒髪が闇の中から伸びてきた！',      dmg:4,fd:'見た目は怖いが実は寂しがり屋。'},
-  {id:'g3',name:'ガイコツ',    emoji:'💀',desc:'カタカタと骨が鳴り響く！',              dmg:3,fd:'カタカタと笑う陽気なガイコツ。'},
-  {id:'g4',name:'大きな目玉',  emoji:'👁️',desc:'天井から巨大な目玉がジッと見ている…',dmg:2,fd:'何でもお見通し。でも秘密は守ってくれる。'},
-  {id:'g5',name:'炎のお化け',  emoji:'🔥',desc:'燃え盛る炎が人の形をとっている！',      dmg:5,fd:'熱いけど暖かい。冬の夜に寄り添ってくれる。'},
-  {id:'g6',name:'黒い影',      emoji:'🌑',desc:'壁から黒い影がにじみ出てきた！',        dmg:3,fd:'暗い場所が大好き。夜道を照らしてくれる。'},
-  {id:'g7',name:'泣く子ども',  emoji:'😭',desc:'暗闇の中から子どもの泣き声が…',         dmg:2,fd:'実は迷子だった。道案内が得意。'},
+  {id:'g0',name:'さ迷える霊',  emoji:'👻',desc:'廊下をふらふらと漂っている。',          dmg:2,fd:'かわいいおばけ。霧のようにふわふわ漂う。',        buddyEffect:{type:'hp',  amount:3, icon:'💚',label:'体力を3回復'}},
+  {id:'g1',name:'のっぺらぼう',emoji:'🫥',desc:'顔のない影が近づいてくる…！',           dmg:3,fd:'顔がないけど心優しい。表情は読めない。',          buddyEffect:{type:'fear',amount:0, icon:'😌',label:'恐怖をリセット'}},
+  {id:'g2',name:'髪の長い女',  emoji:'👩',desc:'長い黒髪が闇の中から伸びてきた！',      dmg:4,fd:'見た目は怖いが実は寂しがり屋。',                  buddyEffect:{type:'hp',  amount:5, icon:'💚',label:'体力を5回復'}},
+  {id:'g3',name:'ガイコツ',    emoji:'💀',desc:'カタカタと骨が鳴り響く！',              dmg:3,fd:'カタカタと笑う陽気なガイコツ。',                  buddyEffect:{type:'boss',amount:4, icon:'⚔️',label:'ボスに4ダメージ'}},
+  {id:'g4',name:'大きな目玉',  emoji:'👁️',desc:'天井から巨大な目玉がジッと見ている…',dmg:2,fd:'何でもお見通し。でも秘密は守ってくれる。',          buddyEffect:{type:'fear',amount:0, icon:'😌',label:'恐怖をリセット'}},
+  {id:'g5',name:'炎のお化け',  emoji:'🔥',desc:'燃え盛る炎が人の形をとっている！',      dmg:5,fd:'熱いけど暖かい。冬の夜に寄り添ってくれる。',      buddyEffect:{type:'boss',amount:6, icon:'⚔️',label:'ボスに6ダメージ'}},
+  {id:'g6',name:'黒い影',      emoji:'🌑',desc:'壁から黒い影がにじみ出てきた！',        dmg:3,fd:'暗い場所が大好き。夜道を照らしてくれる。',        buddyEffect:{type:'hp',  amount:4, icon:'💚',label:'体力を4回復'}},
+  {id:'g7',name:'泣く子ども',  emoji:'😭',desc:'暗闇の中から子どもの泣き声が…',         dmg:2,fd:'実は迷子だった。道案内が得意。',                  buddyEffect:{type:'hp',  amount:2, icon:'💚',label:'体力を2回復'}},
 ];
 const BOSSES=[
   {name:'大魔王カゲムラ',  emoji:'👹',desc:'お化け屋敷の主！全てを支配する闇の王。',hp:6},
@@ -759,7 +773,7 @@ function addColl(id){const c=getColl();if(!c.includes(id)){c.push(id);saveColl(c
 function addRank(e){let r=getRank();r.push(e);r.sort((a,b)=>a.time-b.time);r=r.slice(0,5);saveRank(r);}
 function fmtTime(ms){const s=Math.floor(ms/1000);return`${Math.floor(s/60)}分${s%60}秒`;}
 
-let G=null, sel=null, _undoTimer=null, _pendingType=null, _pendingCard=null;
+let G=null, sel=null, _undoTimer=null, _pendingType=null, _pendingCard=null, _undoSnapshot=null;
 
 // ════════════════════════════════════════
 // タブ
@@ -857,7 +871,7 @@ function startGame(stageNum=1, prevData=null){
     fear:0,turn:1,
     pos:stageData.startPos,
     visited:new Set([stageData.startPos]),
-    ghosts:{},  // お化けの位置（空で開始）
+    ghosts:{},  // 実行時に設定
     canChange:ch.id==='una',
     peek:ch.id==='kon'?3:0,
     done:false,st:Date.now(),
@@ -871,6 +885,7 @@ function startGame(stageNum=1, prevData=null){
     // 仲間システム
     buddy: prevData?.buddy||null,
     buddyUsed: false,
+    chocoUsed: false,
   };
 
   document.getElementById('sc-title').style.display='none';
@@ -881,6 +896,15 @@ function startGame(stageNum=1, prevData=null){
   if(stageData.fearLimit<3) lg(`⚠️ 恐怖${stageData.fearLimit}個でお化け登場！気をつけろ！`,'dng');
   if(G.buddy) lg(`👻 仲間の【${G.buddy.name}】が一緒にいる！ピンチのとき呼ぼう！`,'pu');
   lg('💡 緑に光る部屋をタップして移動しよう！','');
+  // ランダムに1体のお化けをマップに配置（スタート部屋と出口以外）
+  const ghostRooms=Object.keys(MAP_ROOMS).filter(id=>{
+    const r=MAP_ROOMS[id];
+    return r&&!r.isStart&&!r.isExit&&!r.safe&&stageData.floors.includes(r.fl);
+  });
+  if(ghostRooms.length>0){
+    const ghostRid=ghostRooms[Math.floor(Math.random()*ghostRooms.length)];
+    G.ghosts[ghostRid]=1;
+  }
   upStat();renderMap();
 }
 
@@ -924,7 +948,7 @@ function renderMap(){
       if(isCur)cls+=' current';
       if(isReach&&!isCur)cls+=' reachable';
       if(isVisited)cls+=' visited';else cls+=' unvisited';
-      const ghostBadge=hasGhost?'<span class="map-ghost">👻</span>':'';
+      const ghostBadge=''; // お化けはマップ非表示
       const keyBadge=(rid==='b1-1'&&G.k<G.tk)?'<span class="map-key-badge">🗝️</span>':'';
       const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?'<span style="position:absolute;top:1px;left:2px;font-size:12px;opacity:.7">🪜</span>':'';
       const clickAttr=(isReach&&!isCur)?(' onclick="selectRoom_id(this)" data-rid="'+rid+'"'):'';
@@ -1014,29 +1038,12 @@ function selectRoom(rid){
   if(G.c.id==='kon'&&G.peek>0){
     hint.innerHTML=`👀 <button onclick="doPeek('${rid}')" style="font-size:15px;padding:3px 10px;border-radius:7px;border:1px solid var(--ac);background:#160a28;color:var(--wh);cursor:pointer">チラ見する（残り${G.peek}回）</button>`;
     hint.style.display='block';
-  } else if(r.safe){
-    hint.textContent='✅ 安全な部屋です。リスクなし！';
-    hint.style.display='block';
   } else {
     hint.style.display='none';
   }
 
   // 3択表示
   document.getElementById('choices').style.display='grid';
-  // 鍵5本揃ったら「走り抜ける」を無効化
-  const runBtn=document.querySelector('.cr2');
-  if(runBtn){
-    if(G.bossReady){
-      runBtn.disabled=true;
-      runBtn.title='鍵が揃ったら走り抜けられません！';
-      runBtn.style.opacity='.3';
-      runBtn.querySelector('.cd').textContent='鍵揃い後は使用不可';
-    } else {
-      runBtn.disabled=false;
-      runBtn.style.opacity='';
-      runBtn.querySelector('.cd').textContent='安全\n何もなし';
-    }
-  }
   updateFP();
 }
 
@@ -1072,22 +1079,6 @@ function choose(type){
   if(G.done||!G.selectedRoom)return;
   const rid=G.selectedRoom;
   enBtn(false);
-
-  if(type==='run'){
-    // 鍵5本以上なら走り抜け不可
-    if(G.bossReady){
-      lg('⚠️ 鍵が揃っている！走り抜けは使えない。部屋に入って出口を目指せ！','dng');
-      enBtn(true);return;
-    }
-    if(G.c.id==='huna'){
-      G.k=Math.min(G.k+1,99);lg('💨 走り抜けた！hunaは鍵+1！','gd');
-      upStat();checkBoss();
-    } else lg('💨 走り抜けた！（報酬・リスクなし）','');
-    updateStreak('run');
-    moveToRoom(rid,false);
-    setTimeout(()=>nextTurn(),400);
-    return;
-  }
 
   const mul=type==='kick'?2:1;
   const sb=getStreakBonus(type);
@@ -1139,6 +1130,26 @@ function resolveRoom(rid,type,sb){
     }
   }
 
+  // お化けとの遭遇チェック（恐怖なしで出会う可能性）
+  if(G.ghosts[rid]>0){
+    G.ghosts[rid]=0;
+    const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
+    let d=gh.dmg;if(G.c.id==='mea')d=Math.max(0,d-1);
+    G.c.hp-=d;logs.push(`👻【${gh.name}が潜んでいた！】体力-${d}`);
+    setTimeout(()=>showGhost(gh,d),350);
+    // 次のターンで新しいお化けを別の部屋に配置
+    setTimeout(()=>{
+      const rooms=Object.keys(MAP_ROOMS).filter(id=>{
+        const rm=MAP_ROOMS[id];
+        return rm&&!rm.isStart&&!rm.isExit&&!rm.safe&&G.stageData.floors.includes(rm.fl)&&id!==G.pos;
+      });
+      if(rooms.length>0){
+        const newRid=rooms[Math.floor(Math.random()*rooms.length)];
+        G.ghosts[newRid]=1;
+      }
+    },2000);
+  }
+
   lg(`${r.e}${r.n}：${logs.length?logs.join('　'):'何もなかった'}`,'imp');
   updateStreak(type);
   moveToRoom(rid,true);
@@ -1148,9 +1159,15 @@ function resolveRoom(rid,type,sb){
   checkBoss();
 
   // unaやり直し
-  const hadRisk=r.rs.hp>0||r.rs.f>0||(r.rs.lk&&mul>0);
-  if(G.c.id==='una'&&G.canChange&&type!=='run'&&hadRisk){
+  const hadRisk=r.rs.hp>0||r.rs.f>0||(r.rs.lk&&mul>0)||G.ghosts[rid]>0;
+  if(G.c.id==='una'&&G.canChange&&hadRisk){
     _pendingType=type;_pendingCard=rid;
+    // やり直し用に現在の状態をスナップショット保存（結果適用後）
+    _undoSnapshot={
+      hp:G.c.hp, k:G.k, fear:G.fear,
+      streakCount:G.streak.count,
+      streakType:G.streak.type,
+    };
     setTimeout(()=>showUndoDialog(type,logs),600);
   } else {
     nextTurn();
@@ -1237,6 +1254,8 @@ function bossRoll(){
   const rEl=document.getElementById('dice-result');
   btn.disabled=true;
   document.getElementById('boss-choices').style.display='none';
+  document.getElementById('bc-even-area').style.display='none';
+  document.getElementById('bc-odd-area').style.display='none';
   const FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
   dEl.className='dice-face rolling';
   let cnt=0;
@@ -1248,16 +1267,24 @@ function bossRoll(){
       _bossRoll=roll;
       dEl.textContent=FACES[roll-1];
       dEl.className='dice-face popped';
-      rEl.textContent=roll+'の目が出た！どう使う？';
-      rEl.className='dice-result';
-      // 選択肢を更新して表示
-      document.getElementById('roll-result-num').textContent=roll;
-      document.getElementById('bc-atk-desc').textContent='ボスに '+roll+' ダメージ';
-      document.getElementById('bc-def-desc').textContent='次のボス攻撃を '+roll+' 軽減';
-      document.getElementById('bc-heal-desc').textContent='体力を '+roll+' 回復';
-      setTimeout(()=>{
-        document.getElementById('boss-choices').style.display='flex';
-      },400);
+      const isEven=roll%2===0;
+      if(isEven){
+        // 偶数：ボスにダメージ確定　防御に変えることもできる
+        rEl.textContent=roll+'（偶数）→ ボスにダメージ！選択してください';
+        rEl.className='dice-result bdmg';
+        document.getElementById('bc-roll-val').textContent=roll;
+        document.getElementById('bc-atk-desc').textContent='ボスに '+roll+' ダメージ';
+        document.getElementById('bc-def-desc').textContent='体力を 1 回復する';
+        document.getElementById('bc-even-area').style.display='block';
+        setTimeout(()=>{
+          document.getElementById('boss-choices').style.display='flex';
+        },500);
+      } else {
+        // 奇数：自分にダメージ確定（自動適用）
+        rEl.textContent=roll+'（奇数）→ 自分に'+roll+'ダメージ！';
+        rEl.className='dice-result pdmg';
+        setTimeout(()=>bossUseRoll('dmg'),900);
+      }
     }
   },60);
 }
@@ -1267,34 +1294,31 @@ function bossUseRoll(type){
   if(!roll)return;
   _bossRoll=0;
   document.getElementById('boss-choices').style.display='none';
+  const isEven=roll%2===0;
 
   if(type==='atk'){
-    // 攻撃：ボスにダメージを与えるが、ボスも反撃する
-    const bossDmg=Math.floor(Math.random()*G.boss.hp/3)+1; // ボスの反撃
-    let playerDmg=bossDmg;
-    if(G.bossDefense>0){playerDmg=Math.max(0,playerDmg-G.bossDefense);G.bossDefense=0;updateBossDefDisplay();}
-    if(G.c.id==='mea')playerDmg=Math.max(0,playerDmg-1);
+    // 偶数確定：そのままボスにダメージ
     G.bossHp=Math.max(0,G.bossHp-roll);
-    G.c.hp=Math.max(0,G.c.hp-playerDmg);
     flashEl('gold');
-    if(playerDmg>0)setTimeout(()=>flashEl('red'),300);
-    lg('⚔️ 攻撃！ボスに'+roll+'ダメージ！ボスの反撃で体力-'+playerDmg,'gld');
+    lg('⚔️ '+roll+'（偶数）→ ボスに'+roll+'ダメージ！（残り'+G.bossHp+'）','gld');
   } else if(type==='def'){
-    // 防御：次のボス攻撃を軽減
-    G.bossDefense=(G.bossDefense||0)+roll;
-    updateBossDefDisplay();
-    flashEl('pu');
-    lg('🛡️ 防御！次のボス攻撃を'+roll+'軽減できる！','pu');
-  } else if(type==='heal'){
-    // 回復：体力を回復するが、ボスが攻撃してくる
-    const bossDmg=Math.floor(Math.random()*3)+1;
-    let playerDmg=bossDmg;
-    if(G.bossDefense>0){playerDmg=Math.max(0,playerDmg-G.bossDefense);G.bossDefense=0;updateBossDefDisplay();}
-    if(G.c.id==='mea')playerDmg=Math.max(0,playerDmg-1);
-    G.c.hp=Math.min(G.c.hp+roll,G.c.mhp);
-    G.c.hp=Math.max(0,G.c.hp-playerDmg);
+    // 偶数→体力回復（常に+1）
+    G.c.hp=Math.min(G.c.hp+1,G.c.mhp);
     flashEl('gold');
-    lg('💚 回復！体力+'+roll+'！でもボスの攻撃で体力-'+playerDmg,'gd');
+    lg('💚 体力+1回復！','gd');
+  } else if(type==='dmg'){
+    // 奇数確定：そのまま自分がダメージ
+    let d=roll;
+    if(G.bossDefense>0){d=Math.max(0,d-G.bossDefense);G.bossDefense=0;updateBossDefDisplay();}
+    if(G.c.id==='mea')d=Math.max(0,d-1);
+    G.c.hp=Math.max(0,G.c.hp-d);
+    if(d>0)flashEl('red');
+    lg('💥 '+roll+'（奇数）→ 自分に'+d+'ダメージ！','dng');
+  } else if(type==='heal'){
+    // 奇数→回復に変換：ダメージの代わりに体力回復
+    G.c.hp=Math.min(G.c.hp+roll,G.c.mhp);
+    flashEl('gold');
+    lg('💚 '+roll+'（奇数）を回復に変換！体力+'+roll,'gd');
   }
 
   // HP表示更新
@@ -1314,7 +1338,6 @@ function bossUseRoll(type){
       document.getElementById('boss-modal').classList.remove('show');
       setTimeout(()=>gameOver(),400);
     } else {
-      // 次のターンへ
       document.getElementById('btn-roll').disabled=false;
       document.getElementById('dice-result').textContent='次のサイコロを振ろう！';
       document.getElementById('dice-face').textContent='🎲';
@@ -1336,6 +1359,15 @@ function bossEscape(){
   G.bossReady=false;
   document.getElementById('boss-modal').classList.remove('show');
   lg('💨 ボスから逃げた！鍵-1…もう一度挑もう！','dng');
+  // ランダムに1体のお化けをマップに配置（スタート部屋と出口以外）
+  const ghostRooms=Object.keys(MAP_ROOMS).filter(id=>{
+    const r=MAP_ROOMS[id];
+    return r&&!r.isStart&&!r.isExit&&!r.safe&&stageData.floors.includes(r.fl);
+  });
+  if(ghostRooms.length>0){
+    const ghostRid=ghostRooms[Math.floor(Math.random()*ghostRooms.length)];
+    G.ghosts[ghostRid]=1;
+  }
   upStat();renderMap();
   if(G.k>=G.tk)checkBoss();
   nextTurn();
@@ -1377,6 +1409,7 @@ function stageClear(){
         return`<div class="sfl-item" id="sfl-${id}" onclick="selectBuddy('${id}')">
           <span class="sfl-e">${gh.emoji}</span>
           <div class="sfl-n">${gh.name}</div>
+          <div class="sfl-ability">${gh.buddyEffect.icon} ${gh.buddyEffect.label}</div>
         </div>`;
       }).join('');
     } else {
@@ -1406,6 +1439,7 @@ function stageClear(){
         return`<div class="sfl-item" id="sfl-${id}" data-id="${id}">
           <span class="sfl-e">${g.emoji}</span>
           <div class="sfl-n">${g.name}</div>
+          <div class="sfl-ability">${g.buddyEffect.icon} ${g.buddyEffect.label}</div>
         </div>`;
       }).join('');
       friendList.querySelectorAll('.sfl-item').forEach(el=>{
@@ -1441,6 +1475,7 @@ function startNextStage(){
   document.getElementById('sc-res').style.display='none';
   document.getElementById('sc-game').style.display='none';
   sel=prevData.ch;
+  if(prevData.ch&&prevData.ch.id==='huna'){prevData.ch.chocoUsed=false;}
   startGame(nextStageNum, prevData);
 }
 
@@ -1451,13 +1486,27 @@ function showBuddyModal(){
   if(!G.buddy||G.buddyUsed)return;
   const gh=typeof G.buddy==='object'?G.buddy:GHOSTS.find(g=>g.id===G.buddy);
   if(!gh)return;
+  const ef=gh.buddyEffect;
   document.getElementById('buddy-title').textContent=`👻 ${gh.name}を呼ぶ！`;
-  // ボス戦中でない場合はボスダメージを無効化
-  const bossOpt=document.getElementById('buddy-boss-opt');
-  if(bossOpt){
+  // 全ボタンを非表示にして、この仲間専用の1つだけ表示する
+  const hpBtn=document.querySelector('.buddy-opt.hp');
+  const fearBtn=document.querySelector('.buddy-opt.fear');
+  const bossBtn=document.getElementById('buddy-boss-opt');
+  hpBtn.style.display='none';
+  fearBtn.style.display='none';
+  bossBtn.style.display='none';
+  if(ef.type==='hp'){
+    hpBtn.style.display='flex';
+    hpBtn.querySelector('.buddy-opt-name').textContent=`体力を${ef.amount}回復`;
+    hpBtn.querySelector('.buddy-opt-desc').textContent=`HPを${ef.amount}回復してくれる`;
+  } else if(ef.type==='fear'){
+    fearBtn.style.display='flex';
+  } else if(ef.type==='boss'){
+    bossBtn.style.display='flex';
     const inBoss=document.getElementById('boss-modal').classList.contains('show');
-    bossOpt.disabled=!inBoss;
-    bossOpt.style.opacity=inBoss?'1':'.4';
+    bossBtn.disabled=!inBoss;
+    bossBtn.style.opacity=inBoss?'1':'.4';
+    bossBtn.querySelector('.buddy-opt-name').textContent=`ボスに${ef.amount}ダメージ`;
   }
   document.getElementById('buddy-modal').classList.add('show');
 }
@@ -1468,26 +1517,28 @@ function useBuddy(type){
   document.getElementById('buddy-modal').classList.remove('show');
   const gh=typeof G.buddy==='object'?G.buddy:GHOSTS.find(g=>g.id===G.buddy);
   const name=gh?gh.name:'仲間';
+  const ef=gh?.buddyEffect;
+  if(!ef){upStat();return;}
 
-  if(type==='hp'){
-    G.c.hp=G.c.mhp;
+  if(ef.type==='hp'){
+    G.c.hp=Math.min(G.c.hp+ef.amount,G.c.mhp);
     flashEl('gold');
-    lg(`👻 ${name}が体力を全回復してくれた！`,'gld');
+    lg(`👻 ${name}が体力を${ef.amount}回復してくれた！`,'gld');
     upStat();
-  } else if(type==='fear'){
+  } else if(ef.type==='fear'){
     G.fear=0;
     updateFP();
     flashEl('pu');
     lg(`👻 ${name}が恐怖を払いのけてくれた！`,'pu');
     upStat();
-  } else if(type==='boss'){
+  } else if(ef.type==='boss'){
     if(G.boss){
-      G.bossHp=Math.max(0,G.bossHp-3);
+      G.bossHp=Math.max(0,G.bossHp-ef.amount);
       const pct=Math.max(0,G.bossHp/G.stageData.bossHp*100);
       document.getElementById('bm-hp-fill').style.width=pct+'%';
       document.getElementById('bm-hp-num').textContent=`${G.bossHp}/${G.stageData.bossHp}`;
       flashEl('gold');
-      lg(`👻 ${name}がボスに3ダメージ！（残りHP${G.bossHp}）`,'gld');
+      lg(`👻 ${name}がボスに${ef.amount}ダメージ！（残りHP${G.bossHp}）`,'gld');
       if(G.bossHp<=0){
         document.getElementById('boss-modal').classList.remove('show');
         lg(`🎉 ボスを倒した！`,'gld');
@@ -1498,6 +1549,15 @@ function useBuddy(type){
   upStat();
 }
 
+
+function useChoco(){
+  if(!G||G.c.id!=='huna'||G.chocoUsed||G.done)return;
+  G.chocoUsed=true;
+  G.c.hp=Math.min(G.c.hp+2,G.c.mhp);
+  flashEl('gold');
+  lg('🍫 hunaがチョコを食べた！体力+2！','gld');
+  upStat();
+}
 
 // ════════════════════════════════════════
 // フレンドゲット
@@ -1538,23 +1598,19 @@ function confirmUndo(){
   clearTimeout(_undoTimer);
   document.getElementById('undo-overlay').classList.remove('show');
   G.canChange=false;
-  const r=MAP_ROOMS[_pendingCard];
-  const mul=_pendingType==='kick'?2:1;
-  // 結果を巻き戻す
-  if(r.rw.hp>0){const h=r.rw.hp===999?G.c.mhp-G.c.hp:r.rw.hp*mul;G.c.hp=Math.max(0,G.c.hp-h);}
-  if(r.rw.k>0)G.k=Math.max(0,G.k-r.rw.k*mul);
-  if(r.rs.lk&&mul>0)G.k=Math.min(G.k+mul,99);
-  if(r.rs.hp>0){let d=r.rs.hp*mul;if(G.c.id==='mea')d=Math.max(0,d-1);G.c.hp=Math.min(G.c.hp+d,G.c.mhp);}
-  if(r.rs.f>0)G.fear=Math.max(0,G.fear-r.rs.f*mul);
-  if(G.streak.count>0)G.streak.count--;
+  // スナップショットから状態を完全に復元
+  if(_undoSnapshot){
+    G.c.hp=_undoSnapshot.hp;
+    G.k=_undoSnapshot.k;
+    G.fear=_undoSnapshot.fear;
+    G.streak.count=_undoSnapshot.streakCount;
+    G.streak.type=_undoSnapshot.streakType;
+    _undoSnapshot=null;
+  }
   upStat();updateFP();
   lg('✨ 不思議な直感が発動！結果をなかったことにした。もう一度選ぼう。','gld');
-  // 同じ部屋で再選択
+  // 同じ部屋で再選択（移動はそのまま・やり直しは開け方のみ）
   G.selectedRoom=_pendingCard;
-  G.pos=CONNECTIONS[_pendingCard]?G.pos:_pendingCard;
-  // 移動前の位置に戻す（前の部屋へ）
-  const prevRooms=Object.keys(CONNECTIONS).filter(id=>CONNECTIONS[id].includes(_pendingCard));
-  // 簡易的に戻す：selectRoomを再表示
   document.getElementById('room-detail').style.display='block';
   document.getElementById('choices').style.display='grid';
   enBtn(true);
@@ -1646,6 +1702,16 @@ function upStat(){
       bb.style.display='none';
       bb.style.pointerEvents='none';
     }
+  // hunaのチョコボタン
+  const cb2=document.getElementById('choco-btn');
+  if(cb2){
+    if(G.c.id==='huna'&&!G.chocoUsed){
+      cb2.style.display='block';
+      cb2.disabled=false;
+    } else {
+      cb2.style.display='none';
+    }
+  }
   }
   updateFP();
 }
