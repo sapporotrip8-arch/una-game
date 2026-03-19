@@ -479,10 +479,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="t-rule" style="margin-bottom:10px">
       <b>🎮 遊び方</b><br>
       <b>STEP 1：</b>ミニマップの<b>緑に光る部屋</b>をタップして移動<br>
-      <b>STEP 2：</b>扉の開け方を3択から選ぶ<br>
+      <b>STEP 2：</b>扉の開け方を2択から選ぶ<br>
       🥾 <b>蹴破る</b>… 報酬×2・リスク×2<br>
       🤲 <b>そっと開ける</b>… 報酬×1・リスク×1<br>
-      😨 <b>恐怖3個でお化け登場！</b>　🗝️ <b>鍵5本で出口へ！</b>
+      😨 <b>恐怖3個でお化け登場！</b>　🗝️ <b>鍵5本で出口へ！</b><br>
+      😱 <b>恐怖2個以上でマップが見えなくなるよ！</b>
     </div>
     <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:18px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
     <div class="cgrid" id="cgrid"></div>
@@ -861,7 +862,7 @@ function startGame(stageNum=1, prevData=null){
   G={
     c:{...ch,hp:ch.hp,mhp:ch.hp},
     k:0,tk:stageData.targetKeys,
-    fear:0,turn:1,
+    fear:prevData?.fear||0,turn:prevData?.turn||1,
     pos:stageData.startPos,
     visited:new Set([stageData.startPos]),
     ghosts:{},  // 実行時に設定
@@ -941,7 +942,11 @@ function renderMap(){
       if(isVisited) cls+=' visited'; else cls+=' unvisited';
       const ghostBadge=G.ghosts[rid]>0?'<span class="map-ghost">👻</span>':'';
       const click=(isReach&&!isCur)?` onclick="selectRoom_id(this)" data-rid="${rid}"`:'';
-      html+=`<div class="${cls}"${click}><span class="mr-e">${room.e}</span><div class="mr-n">${room.n}</div>${ghostBadge}</div>`;
+      // 恐怖2以上：未訪問部屋は「???」で隠す
+      const fearHide=G.fear>=2&&!isVisited&&!isCur;
+      const dispE=fearHide?'😱':room.e;
+      const dispN=fearHide?'???':room.n;
+      html+=`<div class="${cls}"${click}><span class="mr-e">${dispE}</span><div class="mr-n">${dispN}</div>${ghostBadge}</div>`;
     }
   }
   html+='</div>';
@@ -1458,10 +1463,12 @@ function startNextStage(){
   document.getElementById('win-overlay').classList.remove('show');
   const nextStageNum=G.stage+1;
   const ch=G.c;
-  // HPを引き継ぎ（全回復して次ステージへ）
+  // ステータス引き継ぎ（HP・恐怖・ターンはそのまま継続）
   const prevData={
-    ch:{...ch,hp:ch.mhp,mhp:ch.mhp}, // 全回復
+    ch:{...ch,hp:ch.hp,mhp:ch.mhp},
     buddy: _selectedBuddy ? GHOSTS.find(g=>g.id===_selectedBuddy)||_selectedBuddy : null,
+    fear: G.fear,
+    turn: G.turn,
   };
   // 画面リセット
   document.getElementById('sc-res').style.display='none';
@@ -1668,6 +1675,7 @@ function updateFP(){
   }
   const bar=document.getElementById('fps');bar.innerHTML='';
   for(let i=0;i<lim;i++){const d=document.createElement('div');d.className='fps'+(G.fear>i?' lit':'');bar.appendChild(d);}
+  if(G&&document.getElementById('map-floors'))renderMap();
 }
 function upStat(){
   if(!G)return;
