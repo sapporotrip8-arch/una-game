@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>unaとお化け屋敷</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kurenaido&family=Sawarabi+Mincho&display=swap');
+:root{--bg:#07020d;--bc:#150830;--ac:#e8a0d0;--gd:#f0d060;--wh:#f5f0ff;--gr:#7060a0;--rd:#e86070;--gn:#70c890;--bl:#7090e0;--pu:#c070d0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--wh);font-family:'Sawarabi Mincho',serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(1px 1px at 10% 20%,#fffa,transparent),radial-gradient(1px 1px at 60% 10%,#fff8,transparent),
+  radial-gradient(1.5px 1.5px at 80% 30%,#fffa,transparent),radial-gradient(1px 1px at 30% 70%,#fff7,transparent);
+  animation:tw 5s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.5}to{opacity:1}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fi{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes flash-red{0%,100%{opacity:0}40%,60%{opacity:1}}
+@keyframes flash-gold{0%,100%{opacity:0}40%,60%{opacity:1}}
+@keyframes ghost-in{0%{opacity:0;transform:scale(.4) translateY(40px)}60%{opacity:1;transform:scale(1.1) translateY(-6px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes pk{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes fp{0%,100%{box-shadow:0 0 6px #c060d0}50%{box-shadow:0 0 14px #e080f0}}
+@keyframes boss-in{0%{opacity:0;transform:scale(.3) rotate(-10deg)}70%{transform:scale(1.1) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes friend-pop{0%{opacity:0;transform:scale(0) rotate(-20deg)}70%{transform:scale(1.2) rotate(5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes fw-burst{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+@keyframes win-pop{0%{opacity:0;transform:scale(0) rotate(-15deg)}70%{opacity:1;transform:scale(1.2) rotate(5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes win-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes dice-roll{0%{transform:rotate(0) scale(1)}25%{transform:rotate(180deg) scale(1.2)}50%{transform:rotate(360deg) scale(.9)}100%{transform:rotate(720deg) scale(1)}}
+@keyframes dice-pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes room-enter{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+
+/* ── フラッシュ ── */
+#flash{position:fixed;inset:0;z-index:1000;pointer-events:none;opacity:0}
+#flash.red{background:radial-gradient(ellipse at center,#ff000070,#ff000025);animation:flash-red .55s ease forwards}
+#flash.gold{background:radial-gradient(ellipse at center,#f0d06050,#f0d06015);animation:flash-gold .45s ease forwards}
+#flash.pu{background:radial-gradient(ellipse at center,#8000ff50,#8000ff15);animation:flash-red .55s ease forwards}
+
+/* ── モーダル共通 ── */
+.modal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;background:#000000e8;backdrop-filter:blur(8px);padding:20px}
+.modal.show{display:flex;animation:fi .25s ease}
+.mcard{border-radius:22px;padding:28px 22px;text-align:center;max-width:310px;width:100%}
+
+/* お化けモーダル */
+#ghost-modal .mcard{background:linear-gradient(160deg,#1e0630,#080215);border:2px solid var(--rd);box-shadow:0 0 60px #e8607080}
+.gm-e{font-size:80px;display:block;animation:ghost-in .55s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
+.gm-n{font-family:'Zen Kurenaido',cursive;font-size:22px;color:var(--rd);margin:12px 0 5px;text-shadow:0 0 24px #e86070}
+.gm-d{font-size:11px;color:#f0b0b0;line-height:1.85;margin-bottom:12px}
+.gm-dmg{font-family:'Zen Kurenaido',cursive;font-size:30px;color:var(--rd);text-shadow:0 0 18px #e86070;margin-bottom:16px}
+.btn-gok{border-radius:12px;padding:10px 28px;background:#2e0a14;border:2px solid var(--rd);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-gok:hover{background:#3e1020;box-shadow:0 0 18px #e8607060}
+
+/* ボスモーダル */
+#boss-modal .mcard{background:linear-gradient(160deg,#250530,#0d0118);border:3px solid #ff4080;box-shadow:0 0 80px #ff408080}
+.boss-e{font-size:80px;display:block;animation:boss-in .7s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
+.boss-title{font-size:10px;color:#ff8080;letter-spacing:3px;margin:10px 0 3px}
+.boss-n{font-family:'Zen Kurenaido',cursive;font-size:24px;color:#ff6090;margin-bottom:6px;text-shadow:0 0 30px #ff4080}
+.boss-d{font-size:11px;color:#f0a0c0;line-height:1.8;margin-bottom:12px}
+.boss-hp-lbl{font-size:9px;color:#ff8080;display:flex;justify-content:space-between;margin-bottom:3px}
+.boss-hp-bar{height:9px;background:#200a18;border-radius:5px;overflow:hidden;border:1px solid #ff4080;margin-bottom:4px}
+.boss-hp-fill{height:100%;background:linear-gradient(90deg,#ff4080,#ff80a0);border-radius:5px;transition:width .5s ease}
+.boss-php-lbl{font-size:9px;color:var(--gr);display:flex;justify-content:space-between;margin-bottom:12px}
+.dice-area{margin:8px 0;display:flex;flex-direction:column;align-items:center;gap:7px}
+.dice-face{font-size:56px;display:block;line-height:1}
+.dice-face.rolling{animation:dice-roll .6s ease forwards}
+.dice-face.popped{animation:dice-pop .4s cubic-bezier(.34,1.56,.64,1) forwards}
+.dice-result{font-family:'Zen Kurenaido',cursive;font-size:15px;min-height:20px}
+.dice-result.pdmg{color:var(--rd)}.dice-result.bdmg{color:var(--gn)}
+.dice-hint{font-size:10px;color:#c080a0;line-height:1.6}
+.btn-roll{width:100%;border-radius:12px;padding:13px;cursor:pointer;font-family:'Zen Kurenaido',cursive;font-size:16px;border:2px solid #ff4080;background:#200a18;color:var(--wh);transition:all .2s;margin-bottom:8px}
+.btn-roll:hover{background:#2e0c22;box-shadow:0 0 18px #ff408060}
+.btn-roll:disabled{opacity:.4;cursor:not-allowed}
+.boss-run{width:100%;border-radius:10px;padding:9px;background:#0a1808;border:1.5px solid var(--gn);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:13px;cursor:pointer;transition:all .2s}
+.boss-run:hover{background:#0e2010;box-shadow:0 0 12px #70c89050}
+
+/* フレンドモーダル */
+#friend-modal .mcard{background:linear-gradient(160deg,#0a2030,#040d18);border:3px solid var(--gd);box-shadow:0 0 60px #f0d06080}
+.friend-e{font-size:80px;display:block;animation:friend-pop .6s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
+.friend-badge{font-size:10px;color:var(--gd);letter-spacing:3px;margin:10px 0 4px}
+.friend-n{font-family:'Zen Kurenaido',cursive;font-size:22px;color:var(--gd);margin-bottom:6px;text-shadow:0 0 20px #f0d060}
+.friend-d{font-size:11px;color:#e0d090;line-height:1.85;margin-bottom:16px}
+.btn-fok{border-radius:12px;padding:10px 28px;background:#1a1400;border:2px solid var(--gd);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-fok:hover{background:#261c00;box-shadow:0 0 18px #f0d06060}
+
+/* unaやり直しオーバーレイ */
+#undo-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:flex-end;justify-content:center;padding-bottom:40px;background:#000000a0;backdrop-filter:blur(3px)}
+#undo-overlay.show{display:flex;animation:fi .2s ease}
+.undo-card{background:linear-gradient(135deg,#1e0a40,#0e0520);border:2px solid var(--gd);border-radius:20px;padding:20px 22px;text-align:center;width:calc(100% - 32px);max-width:340px;box-shadow:0 0 40px #f0d06060}
+.undo-t{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--gd);margin-bottom:5px}
+.undo-d{font-size:11px;color:#c8b0e8;margin-bottom:12px;line-height:1.7}
+.undo-timer{height:4px;background:#1a0a30;border-radius:2px;overflow:hidden;margin-bottom:12px;border:1px solid #3a2a5a}
+.undo-fill{height:100%;background:linear-gradient(90deg,var(--gd),#f0a030);border-radius:2px;transition:width linear}
+.undo-btns{display:flex;gap:8px}
+.btn-undo-y{flex:1;border-radius:10px;padding:10px;background:#2a1800;border:2px solid var(--gd);color:var(--gd);font-family:'Zen Kurenaido',cursive;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-undo-y:hover{background:#3a2200}
+.btn-undo-n{flex:1;border-radius:10px;padding:10px;background:#0a0318;border:1.5px solid #3a2a5a;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-undo-n:hover{background:#120820;color:var(--wh)}
+
+/* 勝利オーバーレイ */
+#win-overlay{position:fixed;inset:0;z-index:1100;display:none;flex-direction:column;align-items:center;justify-content:center;background:#000000f0;backdrop-filter:blur(6px)}
+#win-overlay.show{display:flex}
+.win-fw{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.fw-p{position:absolute;width:6px;height:6px;border-radius:50%;animation:fw-burst 1s ease-out forwards}
+.win-con{position:relative;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;padding:24px}
+.win-e{font-size:90px;animation:win-pop .6s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0}
+.win-t{font-family:'Zen Kurenaido',cursive;font-size:34px;color:var(--gd);text-shadow:0 0 40px #f0d060;opacity:0;animation:win-in .5s ease .4s forwards}
+.win-sub{font-size:12px;color:#e0d090;line-height:1.9;opacity:0;animation:win-in .5s ease .7s forwards}
+.win-stats{background:#ffffff18;border:1px solid var(--gd);border-radius:14px;padding:14px 20px;font-size:12px;color:var(--wh);text-align:left;opacity:0;animation:win-in .5s ease 1s forwards;min-width:220px}
+.win-stats div{padding:4px 0;display:flex;justify-content:space-between;gap:14px}
+.win-stats span{color:var(--gd);font-family:'Zen Kurenaido',cursive}
+.btn-win{border-radius:50px;padding:12px 32px;background:linear-gradient(135deg,#4a1a6a,#8a3a9a);border:2px solid var(--ac);color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:15px;cursor:pointer;opacity:0;animation:win-in .5s ease 1.3s forwards;box-shadow:0 0 18px #c070d040;transition:all .2s}
+.btn-win:hover{transform:translateY(-2px);box-shadow:0 0 28px #c070d080}
+
+/* ── タイトル ── */
+#sc-title{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px;position:relative;z-index:1}
+.t-house{font-size:78px;animation:fl 3s ease-in-out infinite;filter:drop-shadow(0 0 20px #e8a0d050)}
+.t-title{font-family:'Zen Kurenaido',cursive;font-size:27px;color:var(--gd);text-shadow:0 0 20px #f0d06060;line-height:1.4}
+.t-sub{font-size:11px;color:var(--ac);letter-spacing:3px}
+.t-rule{background:#100420;border:1px solid #3a2a5a;border-radius:14px;padding:13px 15px;font-size:11px;line-height:1.9;color:#c8b8e8;width:100%;text-align:left}
+.t-rule b{color:var(--gd)}
+.ttabs{display:flex;gap:6px;width:100%}
+.ttab{flex:1;padding:8px;border-radius:10px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:12px;cursor:pointer;transition:all .2s}
+.ttab.on{background:#1e0840;border-color:var(--ac);color:var(--wh)}
+.tc{display:none;width:100%}.tc.on{display:block}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.cbtn{background:var(--bc);border:2px solid transparent;border-radius:13px;padding:11px 7px;cursor:pointer;transition:all .2s;text-align:center;color:var(--wh);font-family:inherit}
+.cbtn:hover{transform:translateY(-3px)}.cbtn.sel{border-color:var(--gd);background:#1e1042}
+.cbtn .ce{font-size:24px;display:block;margin-bottom:4px}
+.cbtn .cn{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--gd)}
+.cbtn .cr{font-size:9px;color:var(--gr);margin-top:2px}
+.cbtn .ca{font-size:9px;color:var(--ac);margin-top:4px;font-style:italic;line-height:1.5}
+.btnp{background:linear-gradient(135deg,#4a1a6a,#8a3a9a);border:2px solid var(--ac);border-radius:50px;padding:12px 32px;color:var(--wh);font-family:'Zen Kurenaido',cursive;font-size:15px;cursor:pointer;box-shadow:0 0 18px #c070d040;transition:all .2s;width:100%}
+.btnp:hover{transform:translateY(-2px);box-shadow:0 0 28px #c070d070}
+.btnp:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.coll-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cslot{background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:8px 4px;text-align:center;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.cslot.owned{border-color:var(--gd);background:#120820}
+.cslot .cse{font-size:24px}.cslot .csn{font-size:8px;color:var(--gr);line-height:1.3}
+.cslot.owned .csn{color:var(--gd)}.cslot .csl{font-size:16px;color:#2a1a4a}
+.rank-list{width:100%;display:flex;flex-direction:column;gap:5px}
+.rrow{display:flex;align-items:center;gap:8px;background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:8px 12px}
+.rrow.gold{border-color:var(--gd);background:#140e00}.rrow.silver{border-color:#a0a0c0;background:#0a0a18}.rrow.bronze{border-color:#a06030;background:#100800}
+.rnum{font-family:'Zen Kurenaido',cursive;font-size:18px;width:24px;flex-shrink:0}
+.rchar{font-size:18px;flex-shrink:0}.rinfo{flex:1}
+.rtime{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--gd)}
+.rdetail{font-size:9px;color:var(--gr)}
+.rank-empty{text-align:center;color:var(--gr);font-size:11px;padding:20px}
+
+/* ── ゲーム画面 ── */
+#sc-game{display:none;min-height:100vh;position:relative;z-index:1;padding:10px}
+
+/* ステータスバー */
+#stat-bar{background:#0c041e;border:1px solid #281848;border-radius:13px;padding:9px 12px;margin-bottom:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.sc{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.sc-e{font-size:20px}.sc-n{font-family:'Zen Kurenaido',cursive;font-size:13px;color:var(--gd)}
+.sdv{width:1px;height:16px;background:#281848}
+.hp-w{flex:1;min-width:90px}
+.hp-l{font-size:9px;color:var(--gr);margin-bottom:2px;display:flex;justify-content:space-between}
+.hp-b{height:8px;background:#180830;border-radius:4px;overflow:hidden;border:1px solid #381860}
+.hp-f{height:100%;border-radius:4px;transition:width .45s ease}
+.kw{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.ki{font-size:10px;color:var(--gr)}
+.kpip{width:11px;height:11px;border-radius:50%;border:1.5px solid #382800;background:#080500;transition:all .3s}
+.kpip.got{background:var(--gd);border-color:var(--gd);box-shadow:0 0 6px #f0d06070;animation:pk .45s ease}
+.fpw{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.fps{width:10px;height:10px;border-radius:50%;border:1.5px solid #3a2040;background:#0c0518;transition:all .35s}
+.fps.lit{background:#c060d0;border-color:#e090f0;box-shadow:0 0 6px #c060d0;animation:fp 1.2s ease-in-out infinite}
+#tb{font-size:10px;color:var(--ac);background:#160830;border:1px solid #382060;border-radius:10px;padding:2px 9px;font-family:'Zen Kurenaido',cursive;margin-left:auto;flex-shrink:0}
+#floor-badge{font-size:10px;color:#fff;border-radius:8px;padding:2px 8px;font-family:'Zen Kurenaido',cursive;flex-shrink:0;background:#2a6a28}
+
+/* ── ミニマップ ── */
+#minimap{background:#0a0318;border:1px solid #2a1a4a;border-radius:12px;padding:10px;margin-bottom:9px}
+#minimap-title{font-size:9px;color:var(--gr);margin-bottom:7px;font-family:'Zen Kurenaido',cursive;text-align:center}
+.map-floors{display:flex;flex-direction:column;gap:4px}
+.map-floor{display:flex;align-items:center;gap:4px}
+.map-fl-lbl{font-size:8px;color:var(--gr);width:22px;flex-shrink:0;font-family:'Zen Kurenaido',cursive}
+.map-rooms{display:flex;gap:4px;flex:1}
+.map-room{flex:1;border-radius:6px;padding:4px 2px;text-align:center;border:1px solid #2a1a4a;background:#0e0520;cursor:default;transition:all .2s;position:relative;min-height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.map-room .mr-e{font-size:14px;line-height:1}
+.map-room .mr-n{font-size:7px;color:var(--gr);margin-top:2px;line-height:1.2}
+.map-room.current{border-color:var(--gd)!important;background:#1a1000;box-shadow:0 0 8px #f0d06050}
+.map-room.current .mr-n{color:var(--gd)}
+.map-room.visited{opacity:1}.map-room.unvisited{opacity:.5}
+.map-room.exit-room{border-color:var(--gd)}
+/* フロアごとの色 */
+.f-b1 .map-room{border-color:#3a2a00}.f-1f .map-room{border-color:#1a4a18}.f-2f .map-room{border-color:#102040}.f-3f .map-room{border-color:#3a1060}
+.f-b1{background:#0a0600}.f-1f{background:#080f08}.f-2f{background:#080d18}.f-3f{background:#100818}
+.map-floor-row{border-radius:6px;padding:3px 4px}
+.map-room.reachable{border-color:var(--gn)!important;box-shadow:0 0 6px #70c89040;cursor:pointer}
+.map-room.reachable:hover{transform:scale(1.05);box-shadow:0 0 10px #70c89080}
+.map-ghost{position:absolute;top:1px;right:2px;font-size:9px;animation:fl 2s ease-in-out infinite}
+.map-key-badge{position:absolute;bottom:1px;right:2px;font-size:8px}
+
+/* 連鎖バー */
+#streak-bar{display:none;background:#0a0318;border:1px solid #2a1a4a;border-radius:10px;padding:5px 12px;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+.stk-lbl{font-size:9px;color:var(--gr)}
+#stk-text{font-family:'Zen Kurenaido',cursive;font-size:12px;color:var(--gd)}
+#stk-bonus{font-size:9px;color:var(--gn)}
+
+/* 部屋詳細 */
+#room-detail{background:linear-gradient(145deg,#120326,#080118);border:2px solid #341858;border-radius:16px;padding:16px 14px;margin-bottom:9px;display:none;text-align:center;animation:room-enter .3s ease}
+#rd-floor{font-size:9px;padding:2px 8px;border-radius:6px;color:#fff;display:inline-block;margin-bottom:6px}
+#rd-emoji{font-size:48px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 10px #9050d080)}
+#rd-name{font-family:'Zen Kurenaido',cursive;font-size:18px;color:var(--gd);margin-bottom:4px}
+#rd-desc{font-size:11px;color:var(--gr);margin-bottom:10px}
+#rd-chips{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.rpc{font-size:10px;padding:2px 9px;border-radius:12px;border:1px solid}
+.rpc-g{background:#081808;border-color:var(--gn);color:var(--gn)}
+.rpc-r{background:#180808;border-color:var(--rd);color:var(--rd)}
+.rpc-h{background:#180818;border-color:var(--pu);color:var(--pu)}
+.rpc-n{background:#080818;border-color:var(--gr);color:var(--gr)}
+#fear-row{display:flex;align-items:center;gap:5px;justify-content:center;margin-bottom:8px}
+.fl-lbl{font-size:9px;color:var(--gr)}
+.fpip{width:14px;height:14px;border-radius:50%;border:1.5px solid #3a1848;background:#0c0518;transition:all .4s}
+.fpip.lit{background:#c060d0;border-color:#e090f0;box-shadow:0 0 8px #c060d0;animation:fp 1.2s ease-in-out infinite}
+#rd-hint{font-size:10px;color:var(--ac);background:#0a0318;border-radius:8px;padding:6px 10px;line-height:1.6;display:none}
+
+/* 3択ボタン */
+#choices{display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
+.cb{border-radius:12px;padding:11px 4px;cursor:pointer;font-family:'Sawarabi Mincho',serif;font-size:10px;transition:all .2s;border:1.5px solid;text-align:center;color:var(--wh);display:flex;flex-direction:column;align-items:center;gap:4px}
+.cb:hover{transform:translateY(-3px)}.cb:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.cb .ci{font-size:22px}.cb .ct{font-size:11px;font-family:'Zen Kurenaido',cursive}.cb .cd{font-size:8px;opacity:.7;line-height:1.4}
+.ck{background:#1e0808;border-color:#c03838}.ck:hover{background:#280a0a;box-shadow:0 0 12px #c0383860}
+.co{background:#0a1430;border-color:#4868b8}.co:hover{background:#0e1c40;box-shadow:0 0 12px #4868b860}
+.cr2{background:#0a1808;border-color:#387838}.cr2:hover{background:#0e2010;box-shadow:0 0 12px #38783860}
+
+/* ログ */
+.lp{background:#080318;border:1px solid #180a28;border-radius:10px;padding:7px;max-height:90px;overflow-y:auto}
+.le{font-size:9px;padding:3px 0;border-bottom:1px solid #100820;line-height:1.6;color:var(--gr);animation:fi .3s ease}
+.le:last-child{border-bottom:none}
+.le.imp{color:var(--wh)}.le.dng{color:var(--rd)}.le.gd{color:var(--gn)}.le.gld{color:var(--gd)}.le.pu{color:#c080e0}.le.boss{color:#ff80a0}
+
+/* 結果 */
+#sc-res{display:none;min-height:100vh;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;gap:13px;position:relative;z-index:1}
+.re2{font-size:78px;animation:fl 2s ease-in-out infinite}
+.rt2{font-family:'Zen Kurenaido',cursive;font-size:27px;color:var(--gd);text-shadow:0 0 25px #f0d060}
+.rm2{font-size:12px;color:var(--wh);line-height:1.85}
+.rs2{background:var(--bc);border:1px solid #3a2a5a;border-radius:10px;padding:12px;width:100%;font-size:11px;color:var(--gr);text-align:left}
+.rs2 div{padding:3px 0}.rs2 span{color:var(--gd);float:right}
+.res-tabs{display:flex;gap:6px;width:100%;margin-bottom:2px}
+.rtab{flex:1;padding:7px;border-radius:9px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:12px;cursor:pointer;transition:all .2s}
+.rtab.on{background:#1e0840;border-color:var(--ac);color:var(--wh)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#080318}::-webkit-scrollbar-thumb{background:#4a2a7a;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="flash"></div>
+
+<!-- お化けモーダル -->
+<div id="ghost-modal" class="modal">
+  <div class="mcard">
+    <span class="gm-e" id="gm-e">👻</span>
+    <div class="gm-n" id="gm-n">お化け</div>
+    <div class="gm-d" id="gm-d">突然現れた！</div>
+    <div class="gm-dmg" id="gm-dmg">体力 -3</div>
+    <button class="btn-gok" onclick="closeGM()">逃げる！</button>
+  </div>
+</div>
+
+<!-- ボスモーダル -->
+<div id="boss-modal" class="modal">
+  <div class="mcard">
+    <span class="boss-e" id="bm-e">👹</span>
+    <div class="boss-title">⚠️ ボス出現 ⚠️</div>
+    <div class="boss-n" id="bm-n">大ボス</div>
+    <div class="boss-d" id="bm-d">強敵が現れた！</div>
+    <div class="boss-hp-lbl"><span>👹 ボスの体力</span><span id="bm-hp-num">6/6</span></div>
+    <div class="boss-hp-bar"><div class="boss-hp-fill" id="bm-hp-fill" style="width:100%"></div></div>
+    <div class="boss-php-lbl"><span>❤️ あなたの体力</span><span id="bm-php-num">10/10</span></div>
+    <div class="dice-area">
+      <span class="dice-face" id="dice-face">🎲</span>
+      <div class="dice-result" id="dice-result">サイコロを振って勝負！</div>
+      <div class="dice-hint">偶数の目 → ボスにダメージ🎯<br>奇数の目 → 自分にダメージ💥</div>
+    </div>
+    <button class="btn-roll" id="btn-roll" onclick="bossRoll()">🎲 サイコロを振る！</button>
+    <button class="boss-run" onclick="bossEscape()">💨 今は逃げる（鍵-1）</button>
+  </div>
+</div>
+
+<!-- フレンドモーダル -->
+<div id="friend-modal" class="modal">
+  <div class="mcard">
+    <span class="friend-e" id="fm-e">👻</span>
+    <div class="friend-badge">✨ 新しい仲間 ✨</div>
+    <div class="friend-n" id="fm-n">友達お化け</div>
+    <div class="friend-d" id="fm-d">仲間になってくれた！</div>
+    <button class="btn-fok" onclick="closeFriend()">仲間にする！</button>
+  </div>
+</div>
+
+<!-- unaやり直し -->
+<div id="undo-overlay">
+  <div class="undo-card">
+    <div class="undo-t">✨ 不思議な直感！結果をなかったことに？</div>
+    <div class="undo-d" id="undo-desc">結果を見てからやり直せます！（1回限り）</div>
+    <div class="undo-timer"><div class="undo-fill" id="undo-fill" style="width:100%"></div></div>
+    <div class="undo-btns">
+      <button class="btn-undo-y" onclick="confirmUndo()">⏪ やり直す！</button>
+      <button class="btn-undo-n" onclick="cancelUndo()">このまま進む</button>
+    </div>
+  </div>
+</div>
+
+<!-- 勝利オーバーレイ -->
+<div id="win-overlay">
+  <div class="win-fw" id="win-fw"></div>
+  <div class="win-con">
+    <div class="win-e" id="win-e">🎉</div>
+    <div class="win-t">脱出成功！</div>
+    <div class="win-sub" id="win-sub">お化け屋敷からの脱出に成功した！</div>
+    <div class="win-stats" id="win-stats"></div>
+    <button class="btn-win" onclick="closeWin()">🏆 結果を見る</button>
+  </div>
+</div>
+
+<!-- タイトル -->
+<div id="sc-title">
+  <div class="t-house">🏚️</div>
+  <div><div class="t-title">unaとお化け屋敷</div><div class="t-sub">〜 リスクを冒して脱出せよ 〜</div></div>
+  <div class="ttabs">
+    <button class="ttab on" onclick="switchTab('play')">🎮 あそぶ</button>
+    <button class="ttab" onclick="switchTab('coll')">👻 コレクション</button>
+    <button class="ttab" onclick="switchTab('rank')">🏆 ランキング</button>
+  </div>
+  <div class="tc on" id="tc-play">
+    <div class="t-rule" style="margin-bottom:10px">
+      <b>🎮 遊び方</b><br>
+      <b>STEP 1：</b>ミニマップの<b>緑に光る部屋</b>をタップして移動<br>
+      <b>STEP 2：</b>扉の開け方を3択から選ぶ<br>
+      🥾 <b>蹴破る</b>… 報酬×2・リスク×2<br>
+      🤲 <b>そっと開ける</b>… 報酬×1・リスク×1<br>
+      💨 <b>走り抜ける</b>… 報酬なし・リスクなし<br>
+      😨 <b>恐怖3個でお化け登場！</b>　🗝️ <b>鍵5本で出口へ！</b>
+    </div>
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:12px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+  <div class="tc" id="tc-coll">
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:12px;text-align:center;margin-bottom:10px">脱出成功するとお化けが仲間になる！</div>
+    <div class="coll-grid" id="coll-grid"></div>
+  </div>
+  <div class="tc" id="tc-rank">
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:12px;text-align:center;margin-bottom:10px">脱出タイムランキング（ベスト5）</div>
+    <div class="rank-list" id="rank-list"></div>
+  </div>
+  <button class="btnp" id="btn-s" disabled onclick="startGame()">🚪 ゲームスタート</button>
+</div>
+
+<!-- ゲーム -->
+<div id="sc-game">
+  <div id="stat-bar">
+    <div class="sc"><span class="sc-e" id="se">🎀</span><span class="sc-n" id="sn">una</span></div>
+    <div class="sdv"></div>
+    <div class="hp-w">
+      <div class="hp-l"><span>❤️</span><span id="hpn">10/10</span></div>
+      <div class="hp-b"><div class="hp-f" id="hpf" style="width:100%;background:linear-gradient(90deg,#e86070,#ff90a0)"></div></div>
+    </div>
+    <div class="sdv"></div>
+    <div class="kw"><span class="ki">🗝️</span><div id="kps" style="display:flex;gap:2px"></div></div>
+    <div class="sdv"></div>
+    <div class="fpw"><span style="font-size:9px;color:var(--gr)">😨</span><div id="fps" style="display:flex;gap:2px"></div></div>
+    <div id="floor-badge">1F</div>
+    <div id="tb">ターン1</div>
+  </div>
+
+  <!-- ミニマップ -->
+  <div id="minimap">
+    <div id="minimap-title">🗺️ マップ（緑の部屋をタップして移動）</div>
+    <div class="map-floors" id="map-floors"></div>
+  </div>
+
+  <!-- 連鎖バー -->
+  <div id="streak-bar" style="display:none">
+    <span class="stk-lbl">連鎖</span>
+    <span id="stk-text">🥾×2</span>
+    <span id="stk-bonus"></span>
+  </div>
+
+  <!-- 部屋詳細 -->
+  <div id="room-detail">
+    <div id="rd-floor">1F</div>
+    <span id="rd-emoji">🚪</span>
+    <div id="rd-name">部屋名</div>
+    <div id="rd-desc">説明</div>
+    <div id="rd-chips"></div>
+    <div id="fear-row">
+      <span class="fl-lbl">恐怖</span>
+      <div class="fpip" id="fp0"></div>
+      <div class="fpip" id="fp1"></div>
+      <div class="fpip" id="fp2"></div>
+      <span class="fl-lbl">→3個で👻登場！</span>
+    </div>
+    <div id="rd-hint"></div>
+  </div>
+
+  <!-- 3択 -->
+  <div id="choices">
+    <button class="cb ck" onclick="choose('kick')">
+      <span class="ci">🥾</span><span class="ct">蹴破る</span>
+      <span class="cd">報酬×2<br>リスク×2</span>
+    </button>
+    <button class="cb co" onclick="choose('open')">
+      <span class="ci">🤲</span><span class="ct">そっと開ける</span>
+      <span class="cd">報酬×1<br>リスク×1</span>
+    </button>
+    <button class="cb cr2" onclick="choose('run')">
+      <span class="ci">💨</span><span class="ct">走り抜ける</span>
+      <span class="cd">安全<br>何もなし</span>
+    </button>
+  </div>
+
+  <div class="lp" id="lp"></div>
+</div>
+
+<!-- 結果 -->
+<div id="sc-res">
+  <div class="re2" id="re2"></div>
+  <div class="rt2" id="rt2"></div>
+  <div class="rm2" id="rm2"></div>
+  <div class="res-tabs">
+    <button class="rtab on" onclick="switchResTab('stats')">📊 結果</button>
+    <button class="rtab" onclick="switchResTab('rank')">🏆 ランキング</button>
+    <button class="rtab" onclick="switchResTab('coll')">👻 コレクション</button>
+  </div>
+  <div id="res-stats" style="width:100%"><div class="rs2" id="rs2"></div></div>
+  <div id="res-rank" style="display:none;width:100%"><div class="rank-list" id="res-rank-list"></div></div>
+  <div id="res-coll" style="display:none;width:100%">
+    <div style="font-size:11px;color:var(--ac);text-align:center;margin-bottom:8px">集めたお化けたち</div>
+    <div class="coll-grid" id="res-coll-grid"></div>
+  </div>
+  <button class="btnp" onclick="location.reload()">🔄 もう一度遊ぶ</button>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// マップ定義
+// ════════════════════════════════════════
+// 各部屋: id, name, emoji, floor, connections(隣接), reward, risk, special
+const MAP_ROOMS = {
+  // B1
+  'b1-0': {n:'呪いの祭壇',e:'💀',fl:'B1',rw:{hp:0,k:4},rs:{hp:0,f:3},d:'禍々しい気配がする'},
+  'b1-1': {n:'地下室',    e:'🪜',fl:'B1',rw:{hp:0,k:1},rs:{hp:2,f:1},d:'暗くて怖いが…'},
+  // 1F
+  '1f-0': {n:'玄関ホール',e:'🚪',fl:'1F',rw:{hp:0,k:0},rs:{hp:0,f:0},d:'ここからスタート！',safe:true,isStart:true},
+  '1f-1': {n:'台所',      e:'🍳',fl:'1F',rw:{hp:2,k:0},rs:{hp:0,f:0},d:'食べ物がありそうだ',safe:true},
+  '1f-2': {n:'応接間',    e:'🛋️',fl:'1F',rw:{hp:3,k:0},rs:{hp:0,f:1},d:'暖炉がある部屋'},
+  '1f-3': {n:'地下への扉',e:'🚪',fl:'1F',rw:{hp:0,k:0},rs:{hp:0,f:0},d:'地下へ続く扉…',safe:true},
+  // 2F
+  '2f-0': {n:'図書室',    e:'📚',fl:'2F',rw:{hp:1,k:1},rs:{hp:0,f:0},d:'本に鍵の手がかりが'},
+  '2f-1': {n:'寝室',      e:'🛏️',fl:'2F',rw:{hp:5,k:0},rs:{hp:0,f:1},d:'ベッドで休めそう…'},
+  '2f-2': {n:'鏡の間',    e:'🪞',fl:'2F',rw:{hp:0,k:2},rs:{hp:1,f:1},d:'何かが光っている'},
+  '2f-3': {n:'バルコニー',e:'🌿',fl:'2F',rw:{hp:4,k:0},rs:{hp:0,f:0},d:'外の空気が気持ちよさそう',safe:true},
+  // 3F
+  '3f-0': {n:'鐘楼',      e:'🔔',fl:'3F',rw:{hp:0,k:1},rs:{hp:0,f:2},d:'高い塔の部屋'},
+  '3f-1': {n:'屋根裏部屋',e:'🕸️',fl:'3F',rw:{hp:0,k:2},rs:{hp:3,f:1},d:'蜘蛛の巣が張っている'},
+  '3f-2': {n:'隠し部屋',  e:'🔒',fl:'3F',rw:{hp:0,k:3},rs:{hp:2,f:2},d:'隠された扉がある'},
+  '3f-3': {n:'魔法の間',  e:'✨',fl:'3F',rw:{hp:999,k:0},rs:{hp:0,f:0,lk:1},d:'不思議な光が漏れている'},
+};
+
+// 出口は別途フロアに応じて追加
+const EXIT_ROOM_2F = {n:'出口の扉', e:'🏁', fl:'2F', rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true};
+const EXIT_ROOM_3F = {n:'出口の扉', e:'🏁', fl:'3F', rw:{hp:0,k:0}, rs:{hp:0,f:0}, d:'脱出のチャンス！', isExit:true};
+
+// 隣接マップ（移動できる部屋）
+// 双方向接続マップ（全部屋から双方向に移動可能）
+// 🪜マークの部屋は上下フロアへの階段あり
+const CONNECTIONS = {
+  // B1
+  'b1-0': ['b1-1'],
+  'b1-1': ['b1-0', '1f-3'],        // 🪜1Fへ
+  // 1F
+  '1f-0': ['1f-1'],
+  '1f-1': ['1f-0','1f-2', '2f-0'], // 🪜2Fへ
+  '1f-2': ['1f-1','1f-3'],
+  '1f-3': ['1f-2', 'b1-1'],        // 🪜B1へ
+  // 2F
+  '2f-0': ['2f-1', '1f-1'],        // 🪜1Fへ
+  '2f-1': ['2f-0','2f-2'],
+  '2f-2': ['2f-1','2f-3', '3f-1'], // 🪜3Fへ
+  '2f-3': ['2f-2', '3f-0'],        // 🪜3Fへ
+  // 3F
+  '3f-0': ['3f-1', '2f-3'],        // 🪜2Fへ
+  '3f-1': ['3f-0','3f-2', '2f-2'], // 🪜2Fへ
+  '3f-2': ['3f-1','3f-3'],
+  '3f-3': ['3f-2'],
+};
+// 階段のある部屋（マップ表示でアイコン付き）
+const STAIR_ROOMS = new Set(['b1-1','1f-1','1f-3','2f-0','2f-2','2f-3','3f-0','3f-1']);
+// 出口の接続は起動時に設定
+
+const FLOOR_ORDER = ['3F','2F','1F','B1'];
+const FLOOR_ROOMS = {
+  'B1': ['b1-0','b1-1'],
+  '1F': ['1f-0','1f-1','1f-2','1f-3'],
+  '2F': ['2f-0','2f-1','2f-2','2f-3'],
+  '3F': ['3f-0','3f-1','3f-2','3f-3'],
+};
+const FLOOR_COLORS = {'B1':'#6a3010','1F':'#1a4a18','2F':'#102848','3F':'#3a1060'};
+
+const CHARS=[
+  {id:'una', name:'una', emoji:'🎀',role:'バランス型',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:10,col:'#e8a0d0'},
+  {id:'huna',name:'huna',emoji:'👑',role:'堅実型',     ability:'走り抜けるだけで鍵+1もらえる',hp:8,col:'#a0c0f0'},
+  {id:'mea', name:'メア',emoji:'🐴',role:'タフ型',     ability:'体力ダメージを常に1軽減する',hp:14,col:'#c08050'},
+  {id:'kon', name:'コン',emoji:'🐿️',role:'情報型',    ability:'移動前にリスクをチラ見できる（3回まで）',hp:8,col:'#e09050'},
+];
+const GHOSTS=[
+  {id:'g0',name:'さ迷える霊',  emoji:'👻',desc:'廊下をふらふらと漂っている。',          dmg:2,fd:'かわいいおばけ。霧のようにふわふわ漂う。'},
+  {id:'g1',name:'のっぺらぼう',emoji:'🫥',desc:'顔のない影が近づいてくる…！',           dmg:3,fd:'顔がないけど心優しい。表情は読めない。'},
+  {id:'g2',name:'髪の長い女',  emoji:'👩',desc:'長い黒髪が闇の中から伸びてきた！',      dmg:4,fd:'見た目は怖いが実は寂しがり屋。'},
+  {id:'g3',name:'ガイコツ',    emoji:'💀',desc:'カタカタと骨が鳴り響く！',              dmg:3,fd:'カタカタと笑う陽気なガイコツ。'},
+  {id:'g4',name:'大きな目玉',  emoji:'👁️',desc:'天井から巨大な目玉がジッと見ている…',dmg:2,fd:'何でもお見通し。でも秘密は守ってくれる。'},
+  {id:'g5',name:'炎のお化け',  emoji:'🔥',desc:'燃え盛る炎が人の形をとっている！',      dmg:5,fd:'熱いけど暖かい。冬の夜に寄り添ってくれる。'},
+  {id:'g6',name:'黒い影',      emoji:'🌑',desc:'壁から黒い影がにじみ出てきた！',        dmg:3,fd:'暗い場所が大好き。夜道を照らしてくれる。'},
+  {id:'g7',name:'泣く子ども',  emoji:'😭',desc:'暗闇の中から子どもの泣き声が…',         dmg:2,fd:'実は迷子だった。道案内が得意。'},
+];
+const BOSSES=[
+  {name:'大魔王カゲムラ',  emoji:'👹',desc:'お化け屋敷の主！全てを支配する闇の王。',hp:6},
+  {name:'呪いの館主',      emoji:'🧙',desc:'この屋敷に永遠にとり憑く老魔法使い。',hp:6},
+  {name:'千の顔を持つ者',  emoji:'🎭',desc:'姿を自在に変える謎のお化け。',          hp:6},
+];
+
+const shuf=a=>{const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;};
+
+// ストレージ
+function getColl(){try{return JSON.parse(localStorage.getItem('una_coll')||'[]');}catch{return[];}}
+function saveColl(c){try{localStorage.setItem('una_coll',JSON.stringify(c));}catch{}}
+function getRank(){try{return JSON.parse(localStorage.getItem('una_rank')||'[]');}catch{return[];}}
+function saveRank(r){try{localStorage.setItem('una_rank',JSON.stringify(r));}catch{}}
+function addColl(id){const c=getColl();if(!c.includes(id)){c.push(id);saveColl(c);return true;}return false;}
+function addRank(e){let r=getRank();r.push(e);r.sort((a,b)=>a.time-b.time);r=r.slice(0,5);saveRank(r);}
+function fmtTime(ms){const s=Math.floor(ms/1000);return`${Math.floor(s/60)}分${s%60}秒`;}
+
+let G=null, sel=null, _undoTimer=null, _pendingType=null, _pendingCard=null;
+
+// ════════════════════════════════════════
+// タブ
+// ════════════════════════════════════════
+function switchTab(t){
+  document.querySelectorAll('.ttab').forEach((el,i)=>el.className='ttab'+(t===['play','coll','rank'][i]?' on':''));
+  document.querySelectorAll('.tc').forEach(el=>el.classList.remove('on'));
+  document.getElementById('tc-'+t).classList.add('on');
+  if(t==='coll')renderColl('coll-grid');
+  if(t==='rank')renderRank('rank-list');
+}
+function switchResTab(t){
+  document.querySelectorAll('.rtab').forEach((el,i)=>el.className='rtab'+(t===['stats','rank','coll'][i]?' on':''));
+  document.getElementById('res-stats').style.display=t==='stats'?'block':'none';
+  document.getElementById('res-rank').style.display=t==='rank'?'block':'none';
+  document.getElementById('res-coll').style.display=t==='coll'?'block':'none';
+}
+function renderColl(id){
+  const owned=getColl();
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=GHOSTS.map(g=>`<div class="cslot ${owned.includes(g.id)?'owned':''}">
+    ${owned.includes(g.id)?`<span class="cse">${g.emoji}</span><div class="csn">${g.name}</div>`:`<span class="csl">🔒</span><div class="csn">???</div>`}
+  </div>`).join('');
+}
+function renderRank(id){
+  const r=getRank();const el=document.getElementById(id);if(!el)return;
+  if(!r.length){el.innerHTML='<div class="rank-empty">まだ記録がありません</div>';return;}
+  const medals=['🥇','🥈','🥉','4','5'];
+  const cls=['gold','silver','bronze','',''];
+  el.innerHTML=r.map((e,i)=>`<div class="rrow ${cls[i]}">
+    <div class="rnum">${medals[i]}</div><div class="rchar">${e.char}</div>
+    <div class="rinfo"><div class="rtime">${fmtTime(e.time)}</div>
+    <div class="rdetail">${e.turn}ターン・鍵${e.keys}本・残り体力${e.hp}</div></div>
+  </div>`).join('');
+}
+
+// ════════════════════════════════════════
+// キャラ選択
+// ════════════════════════════════════════
+function initChars(){
+  document.getElementById('cgrid').innerHTML=CHARS.map(ch=>`
+    <div class="cbtn" onclick="selChar('${ch.id}')" id="cb-${ch.id}" style="border-color:${ch.col}20">
+      <span class="ce">${ch.emoji}</span><div class="cn">${ch.name}</div>
+      <div class="cr">${ch.role}</div><div class="ca">${ch.ability}</div>
+    </div>`).join('');
+  renderColl('coll-grid');renderRank('rank-list');
+}
+function selChar(id){
+  sel=CHARS.find(c=>c.id===id);
+  document.querySelectorAll('.cbtn').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('cb-'+id).classList.add('sel');
+  document.getElementById('cb-'+id).style.borderColor=sel.col;
+  document.getElementById('btn-s').disabled=false;
+}
+
+// ════════════════════════════════════════
+// ゲーム開始
+// ════════════════════════════════════════
+function startGame(){
+  const ch=sel;if(!ch)return;
+  // 出口フロアをランダム決定
+  const exitFloor=['2F','3F'][Math.floor(Math.random()*2)];
+  // 出口部屋を追加
+  const exitId='exit-room';
+  const exitRoom=exitFloor==='2F'?{...EXIT_ROOM_2F}:{...EXIT_ROOM_3F};
+  MAP_ROOMS[exitId]=exitRoom;
+  // 出口の接続先（そのフロアの最後の部屋に接続）
+  const exitLink=exitFloor==='2F'?'2f-3':'3f-3';
+  CONNECTIONS[exitId]=[exitLink];
+  if(CONNECTIONS[exitLink]&&!CONNECTIONS[exitLink].includes(exitId))
+    CONNECTIONS[exitLink].push(exitId);
+  FLOOR_ROOMS[exitFloor].push(exitId);
+
+  G={
+    c:{...ch,hp:ch.hp,mhp:ch.hp},
+    k:0,tk:5,fear:0,turn:1,
+    pos:'1f-0',
+    visited:new Set(['1f-0']),
+    ghosts:{'1f-2':1,'2f-1':1},// 部屋IDをキー、体数を値
+    canChange:ch.id==='una',
+    peek:ch.id==='kon'?3:0,
+    done:false,st:Date.now(),
+    streak:{type:null,count:0},
+    boss:null,bossHp:0,bossReady:false,
+    exitFloor,exitId,
+    selectedRoom:null,
+  };
+
+  document.getElementById('sc-title').style.display='none';
+  document.getElementById('sc-game').style.display='block';
+  lg('🏚️ unaはお化け屋敷の扉を開けた…','imp');
+  lg(`👤 ${ch.name}（${ch.ability}）`,'pu');
+  lg(`🏁 今回の出口は【${exitFloor}】！鍵5本集めて向かおう！`,'gld');
+  lg('💡 緑に光る部屋をタップして移動しよう！','');
+  upStat();renderMap();
+}
+
+// ════════════════════════════════════════
+// ミニマップ描画
+// ════════════════════════════════════════
+function renderMap(){
+  const reachable=getReachable();
+  const container=document.getElementById('map-floors');
+  container.innerHTML=FLOOR_ORDER.map(fl=>{
+    const rooms=FLOOR_ROOMS[fl]||[];
+    if(!rooms.length)return'';
+    return`<div class="map-floor map-floor-row f-${fl.toLowerCase().replace('b','b')}">
+      <div class="map-fl-lbl">${fl}</div>
+      <div class="map-rooms">${rooms.map(rid=>{
+        const r=MAP_ROOMS[rid];if(!r)return'';
+        const isCur=G.pos===rid;
+        const isReach=reachable.includes(rid);
+        const hasGhost=G.ghosts[rid]>0;
+        const isVisited=G.visited.has(rid);
+        let cls='map-room';
+        if(isCur)cls+=' current';
+        if(isReach&&!isCur)cls+=' reachable';
+        if(isVisited)cls+=' visited';else cls+=' unvisited';
+        if(r.isExit)cls+=' exit-room';
+        const ghostBadge=hasGhost?`<span class="map-ghost">👻</span>`:'';
+        const keyBadge=(rid==='b1-1'&&G.k<G.tk)?`<span class="map-key-badge">🗝️</span>`:'';
+        const stairBadge=STAIR_ROOMS&&STAIR_ROOMS.has(rid)?`<span style="position:absolute;top:1px;left:2px;font-size:8px;opacity:.7">🪜</span>`:'';
+        const onclick=isReach&&!isCur?`onclick="selectRoom('${rid}')"`:''
+        // 出口は未訪問かつ鍵未達成なら霧で隠す
+        const isExitHidden=r.isExit&&!isVisited&&!G.bossReady;
+        if(isExitHidden){
+          // 出口を霧で隠す（???表示）
+          return`<div class="map-room unvisited" style="opacity:.4">
+            <span class="mr-e">🌫️</span>
+            <div class="mr-n">???</div>
+          </div>`;
+        }
+        return`<div class="${cls}" ${onclick}>
+          <span class="mr-e">${r.e}</span>
+          <div class="mr-n">${r.n}</div>
+          ${ghostBadge}${keyBadge}${stairBadge}
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }).join('');
+  updateFloorBadge();
+}
+
+function getReachable(){
+  return (CONNECTIONS[G.pos]||[]).filter(id=>MAP_ROOMS[id]);
+}
+
+function updateFloorBadge(){
+  const r=MAP_ROOMS[G.pos];if(!r)return;
+  const el=document.getElementById('floor-badge');
+  el.textContent=`📍 ${r.fl}`;
+  const bg=FLOOR_COLORS[r.fl]||'#2a6a28';
+  el.style.background=bg;
+}
+
+// ════════════════════════════════════════
+// 部屋選択
+// ════════════════════════════════════════
+function selectRoom(rid){
+  if(G.done)return;
+  G.selectedRoom=rid;
+  const r=MAP_ROOMS[rid];if(!r)return;
+
+  // 出口チェック
+  if(r.isExit){
+    if(G.k>=G.tk){
+      // 鍵5本＋出口 → ボス戦！
+      G.pos=rid;G.visited.add(rid);
+      renderMap();
+      triggerBoss();return;
+    }
+    lg(`🔒 出口！でも鍵があと${G.tk-G.k}本足りない…`,'dng');
+    flashEl('red');return;
+  }
+
+  // 部屋詳細表示
+  const detail=document.getElementById('room-detail');
+  detail.style.display='block';
+  const flCol=FLOOR_COLORS[r.fl]||'#2a6a28';
+  document.getElementById('rd-floor').textContent=r.fl;
+  document.getElementById('rd-floor').style.background=flCol;
+  document.getElementById('rd-emoji').textContent=r.e;
+  document.getElementById('rd-name').textContent=r.n;
+  document.getElementById('rd-desc').textContent=r.d;
+
+  // コン：チラ見でリスク表示
+  const showRisk=G.c.id==='kon'&&G.peek>0;
+  document.getElementById('rd-chips').innerHTML=buildChips(r,1,showRisk);
+
+  // ヒント
+  const hint=document.getElementById('rd-hint');
+  if(G.c.id==='kon'&&G.peek>0){
+    hint.innerHTML=`👀 <button onclick="doPeek('${rid}')" style="font-size:10px;padding:3px 10px;border-radius:7px;border:1px solid var(--ac);background:#160a28;color:var(--wh);cursor:pointer">チラ見する（残り${G.peek}回）</button>`;
+    hint.style.display='block';
+  } else if(r.safe){
+    hint.textContent='✅ 安全な部屋です。リスクなし！';
+    hint.style.display='block';
+  } else {
+    hint.style.display='none';
+  }
+
+  // 3択表示
+  document.getElementById('choices').style.display='grid';
+  // 鍵5本揃ったら「走り抜ける」を無効化
+  const runBtn=document.querySelector('.cr2');
+  if(runBtn){
+    if(G.bossReady){
+      runBtn.disabled=true;
+      runBtn.title='鍵が揃ったら走り抜けられません！';
+      runBtn.style.opacity='.3';
+      runBtn.querySelector('.cd').textContent='鍵揃い後は使用不可';
+    } else {
+      runBtn.disabled=false;
+      runBtn.style.opacity='';
+      runBtn.querySelector('.cd').textContent='安全\n何もなし';
+    }
+  }
+  updateFP();
+}
+
+function doPeek(rid){
+  if(G.peek<=0)return;
+  G.peek--;
+  const r=MAP_ROOMS[rid];
+  document.getElementById('rd-chips').innerHTML=buildChips(r,1,true);
+  document.getElementById('rd-hint').innerHTML=`👀 リスクが見えた！（残り${G.peek}回）`;
+  lg('👀 コンがリスクをチラ見した！','pu');
+}
+
+function buildChips(r,mul,showRisk){
+  const chips=[];
+  if(r.rw.hp>0) chips.push(`<span class="rpc rpc-g">${r.rw.hp===999?'全回復':`体力+${r.rw.hp*mul}`}</span>`);
+  if(r.rw.k>0)  chips.push(`<span class="rpc rpc-g">鍵+${r.rw.k*mul}</span>`);
+  if(showRisk||r.safe){
+    if(r.rs.hp>0) chips.push(`<span class="rpc rpc-r">体力-${r.rs.hp*mul}</span>`);
+    if(r.rs.f>0)  chips.push(`<span class="rpc rpc-r">恐怖+${r.rs.f*mul}</span>`);
+    if(r.rs.lk&&mul>0) chips.push(`<span class="rpc rpc-r">鍵-${mul}</span>`);
+  } else {
+    if(!r.safe) chips.push(`<span class="rpc rpc-h">リスク：？？？</span>`);
+  }
+  if(r.safe&&!chips.length) chips.push(`<span class="rpc rpc-g">安全</span>`);
+  if(!chips.length) chips.push(`<span class="rpc rpc-n">何もなし</span>`);
+  return chips.join('');
+}
+
+// ════════════════════════════════════════
+// 扉の開け方
+// ════════════════════════════════════════
+function choose(type){
+  if(G.done||!G.selectedRoom)return;
+  const rid=G.selectedRoom;
+  enBtn(false);
+
+  if(type==='run'){
+    // 鍵5本以上なら走り抜け不可
+    if(G.bossReady){
+      lg('⚠️ 鍵が揃っている！走り抜けは使えない。部屋に入って出口を目指せ！','dng');
+      enBtn(true);return;
+    }
+    if(G.c.id==='huna'){
+      G.k=Math.min(G.k+1,99);lg('💨 走り抜けた！hunaは鍵+1！','gd');
+      upStat();checkBoss();
+    } else lg('💨 走り抜けた！（報酬・リスクなし）','');
+    updateStreak('run');
+    moveToRoom(rid,false);
+    setTimeout(()=>nextTurn(),400);
+    return;
+  }
+
+  const mul=type==='kick'?2:1;
+  const sb=getStreakBonus(type);
+  if(sb.active) lg(`🔥 連鎖${G.streak.count+1}回！${sb.msg}`,'gld');
+  lg(`${type==='kick'?'🥾 蹴破る！':'🤲 そっと開ける…'} — 結果は…`,'imp');
+  setTimeout(()=>resolveRoom(rid,type,sb),800);
+}
+
+function moveToRoom(rid,applyEffect){
+  G.pos=rid;G.visited.add(rid);
+  document.getElementById('room-detail').style.display='none';
+  document.getElementById('choices').style.display='none';
+  renderMap();
+}
+
+// ════════════════════════════════════════
+// 結果処理
+// ════════════════════════════════════════
+function resolveRoom(rid,type,sb){
+  const r=MAP_ROOMS[rid];
+  const mul=type==='kick'?2:1;
+  const logs=[];
+  let extraRw=sb&&sb.extraRw?sb.extraRw:0;
+  let extraRs=sb&&sb.extraRs?sb.extraRs:0;
+
+  // 報酬
+  if(r.rw.hp>0){
+    const h=r.rw.hp===999?G.c.mhp-G.c.hp:r.rw.hp*mul+extraRw;
+    G.c.hp=Math.min(G.c.hp+h,G.c.mhp);logs.push(`💚体力+${h}`);flashEl('gold');
+  }
+  if(r.rw.k>0){
+    const kn=r.rw.k*mul;G.k=Math.min(G.k+kn,99);logs.push(`🗝️鍵+${kn}`);
+  }
+  if(r.rs.lk&&mul>0){G.k=Math.max(0,G.k-mul);logs.push(`😱鍵-${mul}`);}
+
+  // リスク
+  if(r.rs.hp>0){
+    let d=(r.rs.hp+extraRs)*mul;
+    if(G.c.id==='mea')d=Math.max(0,d-1);
+    if(d>0){G.c.hp-=d;logs.push(`💢体力-${d}`);flashEl('red');}
+  }
+  if(r.rs.f>0){
+    const f=r.rs.f*mul;G.fear+=f;logs.push(`😨恐怖+${f}`);updateFP();
+    if(G.fear>=3){
+      const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
+      let d=gh.dmg;if(G.c.id==='mea')d=Math.max(0,d-1);
+      G.c.hp-=d;G.fear=0;logs.push(`👻【${gh.name}】体力-${d}`);
+      setTimeout(()=>showGhost(gh,d),350);
+    }
+  }
+
+  lg(`${r.e}${r.n}：${logs.length?logs.join('　'):'何もなかった'}`,'imp');
+  updateStreak(type);
+  moveToRoom(rid,true);
+  upStat();
+
+  if(G.c.hp<=0){setTimeout(()=>gameOver(),750);return;}
+  checkBoss();
+
+  // unaやり直し
+  const hadRisk=r.rs.hp>0||r.rs.f>0||(r.rs.lk&&mul>0);
+  if(G.c.id==='una'&&G.canChange&&type!=='run'&&hadRisk){
+    _pendingType=type;_pendingCard=rid;
+    setTimeout(()=>showUndoDialog(type,logs),600);
+  } else {
+    nextTurn();
+  }
+}
+
+function checkBoss(){
+  if(G.k>=G.tk&&!G.bossReady){
+    G.bossReady=true;
+    lg(`🗝️ 鍵${G.tk}本揃った！出口【${G.exitFloor}】を目指せ！`,'gld');
+    renderMap();
+  }
+}
+
+function nextTurn(){
+  G.turn++;
+  document.getElementById('tb').textContent=`ターン${G.turn}`;
+  enBtn(true);
+  document.getElementById('room-detail').style.display='none';
+  document.getElementById('choices').style.display='none';
+  G.selectedRoom=null;
+  updateStreakBar();
+  renderMap();
+}
+
+// ════════════════════════════════════════
+// 連鎖システム
+// ════════════════════════════════════════
+function updateStreak(type){
+  if(type==='kick'){
+    if(G.streak.type==='kick')G.streak.count++;
+    else G.streak={type:'kick',count:1};
+  } else {
+    G.streak={type:null,count:0};
+  }
+  updateStreakBar();
+}
+function getStreakBonus(type){
+  if(type!=='kick')return{active:false};
+  const next=G.streak.type==='kick'?G.streak.count+1:1;
+  if(next>=3)return{active:true,msg:'連続突撃！報酬+1・リスク+1',extraRw:1,extraRs:1};
+  return{active:false};
+}
+function updateStreakBar(){
+  const sb=document.getElementById('streak-bar');
+  const st=G.streak;
+  if(!st||st.type!=='kick'||st.count<2){sb.style.display='none';return;}
+  sb.style.display='flex';
+  document.getElementById('stk-text').textContent=`🥾 蹴破る ×${st.count}`;
+  document.getElementById('stk-bonus').textContent=st.count>=3?'🔥 次も蹴破ると報酬＆リスクさらに増大！':'あと1回で連鎖ボーナス！';
+}
+
+// ════════════════════════════════════════
+// ボス戦
+// ════════════════════════════════════════
+function triggerBoss(){
+  const boss=BOSSES[Math.floor(Math.random()*BOSSES.length)];
+  G.boss=boss;G.bossHp=boss.hp;
+  document.getElementById('bm-e').textContent=boss.emoji;
+  document.getElementById('bm-n').textContent=boss.name;
+  document.getElementById('bm-d').textContent=boss.desc;
+  document.getElementById('bm-hp-fill').style.width='100%';
+  document.getElementById('bm-hp-num').textContent=`${boss.hp}/${boss.hp}`;
+  document.getElementById('bm-php-num').textContent=`${G.c.hp}/${G.c.mhp}`;
+  document.getElementById('dice-face').textContent='🎲';
+  document.getElementById('dice-face').className='dice-face';
+  document.getElementById('dice-result').textContent='サイコロを振って勝負！';
+  document.getElementById('dice-result').className='dice-result';
+  document.getElementById('btn-roll').disabled=false;
+  document.getElementById('boss-modal').classList.add('show');
+  flashEl('pu');
+  lg(`👹 【${boss.name}】が現れた！ボス戦開始！`,'boss');
+}
+function bossRoll(){
+  const btn=document.getElementById('btn-roll');
+  const dEl=document.getElementById('dice-face');
+  const rEl=document.getElementById('dice-result');
+  btn.disabled=true;
+  const FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  dEl.className='dice-face rolling';
+  let cnt=0;
+  const spin=setInterval(()=>{
+    dEl.textContent=FACES[Math.floor(Math.random()*6)];
+    if(++cnt>=10){
+      clearInterval(spin);
+      const roll=Math.floor(Math.random()*6)+1;
+      dEl.textContent=FACES[roll-1];
+      dEl.className='dice-face popped';
+      const isEven=roll%2===0;
+      if(isEven){
+        G.bossHp=Math.max(0,G.bossHp-roll);
+        rEl.textContent=`${roll}（偶数）→ ボスに${roll}ダメージ！🎯`;
+        rEl.className='dice-result bdmg';
+        flashEl('gold');
+        lg(`🎲 ${roll}の目！偶数→ボスに${roll}ダメージ（残り${G.bossHp}）`,'gld');
+      } else {
+        let d=roll;if(G.c.id==='mea')d=Math.max(0,d-1);
+        G.c.hp=Math.max(0,G.c.hp-d);
+        rEl.textContent=`${roll}（奇数）→ 自分に${d}ダメージ！💥`;
+        rEl.className='dice-result pdmg';
+        flashEl('red');
+        lg(`🎲 ${roll}の目！奇数→自分に${d}ダメージ（残りHP${G.c.hp}）`,'dng');
+      }
+      const pct=Math.max(0,G.bossHp/G.boss.hp*100);
+      document.getElementById('bm-hp-fill').style.width=pct+'%';
+      document.getElementById('bm-hp-num').textContent=`${G.bossHp}/${G.boss.hp}`;
+      document.getElementById('bm-php-num').textContent=`${Math.max(0,G.c.hp)}/${G.c.mhp}`;
+      upStat();
+      setTimeout(()=>{
+        if(G.bossHp<=0){
+          document.getElementById('boss-modal').classList.remove('show');
+          flashEl('gold');
+          lg(`🎉 【${G.boss.name}】を倒した！脱出成功！`,'gld');
+          setTimeout(()=>triggerFriend(),800);
+        } else if(G.c.hp<=0){
+          document.getElementById('boss-modal').classList.remove('show');
+          setTimeout(()=>gameOver(),400);
+        } else {
+          btn.disabled=false;
+        }
+      },1200);
+    }
+  },60);
+}
+function bossEscape(){
+  G.k=Math.max(0,G.k-1);
+  G.bossReady=false;
+  document.getElementById('boss-modal').classList.remove('show');
+  lg('💨 ボスから逃げた！鍵-1…もう一度挑もう！','dng');
+  upStat();renderMap();
+  if(G.k>=G.tk)checkBoss();
+  nextTurn();
+}
+
+// ════════════════════════════════════════
+// フレンドゲット
+// ════════════════════════════════════════
+function triggerFriend(){
+  const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
+  const isNew=addColl(gh.id);
+  document.getElementById('fm-e').textContent=gh.emoji;
+  document.getElementById('fm-n').textContent=gh.name;
+  document.getElementById('fm-d').textContent=isNew?`${gh.fd}\n✨初めてのゲット！`:gh.fd;
+  document.getElementById('friend-modal').classList.add('show');
+  flashEl('gold');
+}
+function closeFriend(){
+  document.getElementById('friend-modal').classList.remove('show');
+  showWinOverlay();
+}
+
+// ════════════════════════════════════════
+// unaやり直し
+// ════════════════════════════════════════
+function showUndoDialog(type,logs){
+  if(G.done)return;
+  const labels={'kick':'🥾 蹴破る','open':'🤲 そっと開ける'};
+  document.getElementById('undo-desc').innerHTML=
+    `<b style="color:var(--rd)">${logs.join('　')}</b><br><br>`+
+    `<b style="color:var(--gd)">${labels[type]}</b> をやり直しますか？`;
+  document.getElementById('undo-fill').style.transition='none';
+  document.getElementById('undo-fill').style.width='100%';
+  document.getElementById('undo-overlay').classList.add('show');
+  setTimeout(()=>{
+    document.getElementById('undo-fill').style.transition='width 4s linear';
+    document.getElementById('undo-fill').style.width='0%';
+  },50);
+  _undoTimer=setTimeout(()=>cancelUndo(),4000);
+}
+function confirmUndo(){
+  clearTimeout(_undoTimer);
+  document.getElementById('undo-overlay').classList.remove('show');
+  G.canChange=false;
+  const r=MAP_ROOMS[_pendingCard];
+  const mul=_pendingType==='kick'?2:1;
+  // 結果を巻き戻す
+  if(r.rw.hp>0){const h=r.rw.hp===999?G.c.mhp-G.c.hp:r.rw.hp*mul;G.c.hp=Math.max(0,G.c.hp-h);}
+  if(r.rw.k>0)G.k=Math.max(0,G.k-r.rw.k*mul);
+  if(r.rs.lk&&mul>0)G.k=Math.min(G.k+mul,99);
+  if(r.rs.hp>0){let d=r.rs.hp*mul;if(G.c.id==='mea')d=Math.max(0,d-1);G.c.hp=Math.min(G.c.hp+d,G.c.mhp);}
+  if(r.rs.f>0)G.fear=Math.max(0,G.fear-r.rs.f*mul);
+  if(G.streak.count>0)G.streak.count--;
+  upStat();updateFP();
+  lg('✨ 不思議な直感が発動！結果をなかったことにした。もう一度選ぼう。','gld');
+  // 同じ部屋で再選択
+  G.selectedRoom=_pendingCard;
+  G.pos=CONNECTIONS[_pendingCard]?G.pos:_pendingCard;
+  // 移動前の位置に戻す（前の部屋へ）
+  const prevRooms=Object.keys(CONNECTIONS).filter(id=>CONNECTIONS[id].includes(_pendingCard));
+  // 簡易的に戻す：selectRoomを再表示
+  document.getElementById('room-detail').style.display='block';
+  document.getElementById('choices').style.display='grid';
+  enBtn(true);
+  _pendingType=null;_pendingCard=null;
+}
+function cancelUndo(){
+  clearTimeout(_undoTimer);
+  document.getElementById('undo-overlay').classList.remove('show');
+  G.canChange=false;
+  _pendingType=null;_pendingCard=null;
+  nextTurn();
+}
+
+// ════════════════════════════════════════
+// 勝利演出
+// ════════════════════════════════════════
+function showWinOverlay(){
+  const elapsed=Date.now()-G.st;
+  addRank({char:G.c.emoji,time:elapsed,turn:G.turn,keys:G.k,hp:G.c.hp});
+  document.getElementById('win-e').style.animation='win-pop .6s cubic-bezier(.34,1.56,.64,1) forwards';
+  document.getElementById('win-sub').textContent=`${G.c.name}はお化け屋敷からの脱出に成功した！`;
+  document.getElementById('win-stats').innerHTML=`
+    <div><span>キャラクター</span><span>${G.c.emoji} ${G.c.name}</span></div>
+    <div><span>クリアターン</span><span>${G.turn}ターン</span></div>
+    <div><span>残り体力</span><span>❤️ ${G.c.hp}/${G.c.mhp}</span></div>
+    <div><span>プレイ時間</span><span>${fmtTime(elapsed)}</span></div>`;
+  document.getElementById('win-overlay').classList.add('show');
+  launchFW();
+}
+function launchFW(){
+  const c=document.getElementById('win-fw');
+  const cols=['#f0d060','#e8a0d0','#70c890','#7090e0','#c070d0','#e86070','#ff8040','#40e0d0'];
+  let w=0;
+  function burst(){
+    const cx=20+Math.random()*60,cy=10+Math.random()*50;
+    for(let i=0;i<16;i++){
+      const p=document.createElement('div');p.className='fw-p';
+      const a=Math.random()*Math.PI*2,d=60+Math.random()*100;
+      const col=cols[Math.floor(Math.random()*cols.length)];
+      p.style.cssText=`left:${cx}%;top:${cy}%;background:${col};width:${4+Math.random()*5}px;height:${4+Math.random()*5}px;--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;animation-duration:${.7+Math.random()*.6}s;animation-delay:${Math.random()*.2}s`;
+      c.appendChild(p);setTimeout(()=>p.remove(),1200);
+    }
+    if(++w<8)setTimeout(burst,350);
+  }
+  burst();setTimeout(()=>{w=0;burst();},1500);setTimeout(()=>{w=0;burst();},3000);
+}
+function closeWin(){
+  document.getElementById('win-overlay').classList.remove('show');
+  gameWin();
+}
+
+// ════════════════════════════════════════
+// UI更新
+// ════════════════════════════════════════
+function updateFP(){
+  for(let i=0;i<3;i++){const p=document.getElementById('fp'+i);if(p)p.className='fpip'+(G.fear>i?' lit':'');}
+  const bar=document.getElementById('fps');bar.innerHTML='';
+  for(let i=0;i<3;i++){const d=document.createElement('div');d.className='fps'+(G.fear>i?' lit':'');bar.appendChild(d);}
+}
+function upStat(){
+  if(!G)return;
+  document.getElementById('se').textContent=G.c.emoji;
+  document.getElementById('sn').textContent=G.c.name;
+  const pct=Math.max(0,G.c.hp/G.c.mhp*100);
+  const f=document.getElementById('hpf');
+  f.style.width=pct+'%';
+  f.style.background=pct>50?'linear-gradient(90deg,#e86070,#ff90a0)':pct>25?'linear-gradient(90deg,#c05828,#e07848)':'linear-gradient(90deg,#780018,#b83838)';
+  document.getElementById('hpn').textContent=`${Math.max(0,G.c.hp)}/${G.c.mhp}`;
+  const kp=document.getElementById('kps');kp.innerHTML='';
+  for(let i=0;i<G.tk;i++){const d=document.createElement('div');d.className='kpip'+(i<G.k?' got':'');kp.appendChild(d);}
+  updateFP();
+}
+function enBtn(on){document.querySelectorAll('.cb').forEach(b=>b.disabled=!on);}
+function flashEl(cls){
+  const o=document.getElementById('flash');o.className=cls;setTimeout(()=>o.className='',700);
+  if(cls==='red'){const g=document.getElementById('sc-game');g.style.animation='shake .4s ease';setTimeout(()=>g.style.animation='',450);}
+}
+function showGhost(gh,dmg){
+  document.getElementById('gm-e').textContent=gh.emoji;
+  document.getElementById('gm-n').textContent=gh.name;
+  document.getElementById('gm-d').textContent=gh.desc;
+  document.getElementById('gm-dmg').textContent=`体力 -${dmg}`;
+  document.getElementById('ghost-modal').classList.add('show');
+  flashEl('red');
+}
+function closeGM(){
+  document.getElementById('ghost-modal').classList.remove('show');
+  upStat();if(G&&G.c.hp<=0)setTimeout(()=>gameOver(),400);
+}
+function lg(m,c=''){
+  const p=document.getElementById('lp');const e=document.createElement('div');
+  e.className='le '+(c||'');e.textContent=m;
+  p.insertBefore(e,p.firstChild);if(p.children.length>20)p.removeChild(p.lastChild);
+}
+
+// ════════════════════════════════════════
+// 勝利・敗北
+// ════════════════════════════════════════
+function gameWin(){
+  G.done=true;
+  document.getElementById('sc-game').style.display='none';
+  const r=document.getElementById('sc-res');r.style.display='flex';
+  const elapsed=Date.now()-G.st;
+  document.getElementById('re2').textContent='🎉';
+  document.getElementById('rt2').textContent='脱出成功！';
+  document.getElementById('rm2').textContent=`${G.c.name}はお化け屋敷からの脱出に成功した！\nおめでとうございます！`;
+  document.getElementById('rs2').innerHTML=`
+    <div>キャラクター<span>${G.c.emoji} ${G.c.name}</span></div>
+    <div>クリアターン<span>${G.turn}ターン</span></div>
+    <div>残り体力<span>❤️ ${G.c.hp}/${G.c.mhp}</span></div>
+    <div>プレイ時間<span>${fmtTime(elapsed)}</span></div>`;
+  renderRank('res-rank-list');renderColl('res-coll-grid');
+}
+function gameOver(){
+  if(G.done)return;G.done=true;flashEl('red');
+  setTimeout(()=>{
+    document.getElementById('sc-game').style.display='none';
+    const r=document.getElementById('sc-res');r.style.display='flex';
+    document.getElementById('re2').textContent='💀';
+    document.getElementById('rt2').textContent='ゲームオーバー…';
+    document.getElementById('rm2').textContent=`${G.c.name}の体力が尽きてしまった…\nまた挑戦してみよう！`;
+    const cur=MAP_ROOMS[G.pos];
+    document.getElementById('rs2').innerHTML=`
+      <div>キャラクター<span>${G.c.emoji} ${G.c.name}</span></div>
+      <div>到達ターン<span>${G.turn}ターン</span></div>
+      <div>最後の場所<span>${cur?cur.e+cur.n:''}</span></div>
+      <div>集めた鍵<span>🗝️ ${G.k}/${G.tk}本</span></div>`;
+    renderRank('res-rank-list');renderColl('res-coll-grid');
+  },800);
+}
+
+initChars();
+</script>
+</body>
+</html>
