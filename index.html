@@ -476,17 +476,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <button class="ttab" onclick="switchTab('rank')">🏆 ランキング</button>
   </div>
   <div class="tc on" id="tc-play">
-    <div class="t-rule" style="margin-bottom:10px">
+    <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:18px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
+    <div class="cgrid" id="cgrid"></div>
+    <button class="btnp" id="btn-s" disabled onclick="startGame()" style="margin-top:12px">🚪 ゲームスタート</button>
+    <div class="t-rule" style="margin-top:12px">
       <b>🎮 遊び方</b><br>
       <b>STEP 1：</b>ミニマップの<b>緑に光る部屋</b>をタップして移動<br>
       <b>STEP 2：</b>扉の開け方を2択から選ぶ<br>
       🥾 <b>蹴破る</b>… 報酬×2・リスク×2<br>
       🤲 <b>そっと開ける</b>… 報酬×1・リスク×1<br>
-      😨 <b>恐怖3個でお化け登場！</b>　🗝️ <b>鍵5本で出口へ！</b><br>
+      🗝️ <b>鍵を集めて出口へ！</b><br>
       😱 <b>恐怖2個以上でマップが見えなくなるよ！</b>
     </div>
-    <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:18px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
-    <div class="cgrid" id="cgrid"></div>
   </div>
   <div class="tc" id="tc-coll">
     <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:18px;text-align:center;margin-bottom:10px">脱出成功するとお化けが仲間になる！</div>
@@ -496,7 +497,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div style="font-family:'Zen Kurenaido',cursive;color:var(--ac);font-size:18px;text-align:center;margin-bottom:10px">脱出タイムランキング（ベスト5）</div>
     <div class="rank-list" id="rank-list"></div>
   </div>
-  <button class="btnp" id="btn-s" disabled onclick="startGame()">🚪 ゲームスタート</button>
 </div>
 
 <!-- ゲーム -->
@@ -594,9 +594,9 @@ const STAGES = {
     emoji: '🏚️',
     startPos: 'r1-0-0',
     targetKeys: 3,
-    bossHp: 3,
+    bossHp: 5,
     fearLimit: 3,
-    desc: '4×4マップ・鍵3本・ボスHP3\nまずは屋敷に慣れよう！',
+    desc: '4×4マップ・鍵3本・ボスHP5\nまずは屋敷に慣れよう！',
     bgColor: '#0a0318',
   },
   2: {
@@ -605,9 +605,9 @@ const STAGES = {
     emoji: '🌑',
     startPos: 'r2-0-0',
     targetKeys: 5,
-    bossHp: 6,
+    bossHp: 8,
     fearLimit: 3,
-    desc: '5×4マップ・鍵5本・ボスHP6\n仲間が助けてくれる！',
+    desc: '5×4マップ・鍵5本・ボスHP8\n仲間が助けてくれる！',
     bgColor: '#070210',
     hasBuddy: true,
   },
@@ -617,9 +617,9 @@ const STAGES = {
     emoji: '💀',
     startPos: 'r3-0-0',
     targetKeys: 7,
-    bossHp: 10,
+    bossHp: 12,
     fearLimit: 2,
-    desc: '5×5マップ・鍵7本・ボスHP10\n恐怖2個でお化け登場！\n最後の戦いだ！',
+    desc: '5×5マップ・鍵7本・ボスHP12\n恐怖2個でお化け登場！\n最後の戦いだ！',
     bgColor: '#050108',
   },
 };
@@ -794,9 +794,7 @@ function switchTab(t){
   document.querySelectorAll('.ttab').forEach((el,i)=>el.className='ttab'+(t===['play','coll','rank'][i]?' on':''));
   document.querySelectorAll('.tc').forEach(el=>el.classList.remove('on'));
   document.getElementById('tc-'+t).classList.add('on');
-  // スタートボタンはplayタブのときのみ表示
-  const btnS=document.getElementById('btn-s');
-  if(btnS)btnS.style.display=t==='play'?'block':'none';
+
   if(t==='coll')renderColl('coll-grid');
   if(t==='rank')renderRank('rank-list');
 }
@@ -927,10 +925,13 @@ function renderMap(){
           html+='<div class="map-cell unvisited" style="opacity:.35;cursor:default"><span class="mr-e">🌫️</span><div class="mr-n">???</div></div>';
         } else {
           const curCls=isCur?' current':'';
+          const fearHideExit=G.fear>=2&&!isCur;
+          const exitE=fearHideExit?'😱':room.e;
+          const exitN=fearHideExit?'???':room.n;
           if(isReach){
-            html+=`<div class="map-cell exit-cell reachable${curCls}" onclick="selectRoom_exit()" style="cursor:pointer;border-color:#f0d060;box-shadow:0 0 12px #f0d06080"><span class="mr-e">${room.e}</span><div class="mr-n">${room.n}</div></div>`;
+            html+=`<div class="map-cell exit-cell reachable${curCls}" onclick="selectRoom_exit()" style="cursor:pointer;border-color:#f0d060;box-shadow:0 0 12px #f0d06080"><span class="mr-e">${exitE}</span><div class="mr-n">${exitN}</div></div>`;
           } else {
-            html+=`<div class="map-cell exit-cell${curCls}" style="cursor:default"><span class="mr-e">${room.e}</span><div class="mr-n">${room.n}</div></div>`;
+            html+=`<div class="map-cell exit-cell${curCls}" style="cursor:default"><span class="mr-e">${exitE}</span><div class="mr-n">${exitN}</div></div>`;
           }
         }
         continue;
