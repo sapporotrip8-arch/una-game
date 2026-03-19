@@ -1139,7 +1139,7 @@ function resolveRoom(rid,type,sb){
     G.c.hp=Math.min(G.c.hp+h,G.c.mhp);logs.push(`💚体力+${h}`);flashEl('gold');
   }
   if(r.rw.k>0){
-    const kn=r.rw.k*mul;G.k=Math.min(G.k+kn,99);logs.push(`🗝️鍵+${kn}`);
+    const kn=r.rw.k*mul;const prevK=G.k;G.k=Math.min(G.k+kn,G.tk);const actualKn=G.k-prevK;logs.push(`🗝️鍵+${actualKn}`);
   }
   if(r.rs.lk&&mul>0){G.k=Math.max(0,G.k-mul);logs.push(`😱鍵-${mul}`);}
 
@@ -1659,7 +1659,6 @@ function confirmUndo(){
 function cancelUndo(){
   clearTimeout(_undoTimer);
   document.getElementById('undo-overlay').classList.remove('show');
-  G.canChange=false;
   _pendingType=null;_pendingCard=null;
   nextTurn();
 }
