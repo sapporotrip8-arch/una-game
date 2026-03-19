@@ -145,6 +145,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .boss-run:hover{background:#0e2010;box-shadow:0 0 12px #70c89050}
 
 /* フレンドモーダル */
+#friend-modal{z-index:1100}
 #friend-modal .mcard{background:linear-gradient(160deg,#0a2030,#040d18);border:3px solid var(--gd);box-shadow:0 0 60px #f0d06080}
 .friend-e{font-size:80px;display:block;animation:friend-pop .6s cubic-bezier(.34,1.56,.64,1) forwards;line-height:1.1}
 .friend-badge{font-size:15px;color:var(--gd);letter-spacing:3px;margin:10px 0 4px}
@@ -752,10 +753,9 @@ function getStageRoomIds() {
 }
 
 const CHARS=[
-  {id:'una', name:'una', emoji:'🎀',role:'バランス型',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:12,col:'#e8a0d0'},
-  {id:'huna',name:'huna',emoji:'👑',role:'堅実型',     ability:'🍫 チョコ：各ステージ1回だけ体力+2回復できる',hp:8,col:'#a0c0f0'},
-  {id:'mea', name:'メア',emoji:'🐴',role:'タフ型',     ability:'体力ダメージを常に1軽減する',hp:14,col:'#c08050'},
-  {id:'kon', name:'コン',emoji:'🐿️',role:'情報型',    ability:'移動前にリスクをチラ見できる（3回まで）',hp:8,col:'#e09050'},
+  {id:'una', name:'una', emoji:'👧🏽',role:'ふつう',ability:'✨ 不思議な直感：結果を見てから1回だけやり直せる！',hp:15,col:'#e8a0d0'},
+  {id:'huna',name:'huna',emoji:'👱‍♀️',role:'むずかしい',ability:'🍫 チョコ：各ステージ1回だけ体力+2回復できる',hp:12,col:'#a0c0f0'},
+  {id:'mea', name:'うま', emoji:'🐴',role:'やさしい',  ability:'体力ダメージを常に1軽減する',hp:20,col:'#c08050'},
 ];
 const GHOSTS=[
   {id:'g0',name:'さ迷える霊',  emoji:'👻',desc:'廊下をふらふらと漂っている。',          dmg:2,fd:'かわいいおばけ。霧のようにふわふわ漂う。',        buddyEffect:{type:'hp',  amount:3, icon:'💚',label:'体力を3回復'}},
@@ -784,7 +784,7 @@ function addColl(id){const c=getColl();if(!c.includes(id)){c.push(id);saveColl(c
 function addRank(e){let r=getRank();r.push(e);r.sort((a,b)=>a.time-b.time);r=r.slice(0,5);saveRank(r);}
 function fmtTime(ms){const s=Math.floor(ms/1000);return`${Math.floor(s/60)}分${s%60}秒`;}
 
-let G=null, sel=null, _undoTimer=null, _pendingType=null, _pendingCard=null, _undoSnapshot=null;
+let G=null, sel=null, _undoTimer=null, _pendingType=null, _pendingCard=null, _undoSnapshot=null, _friendCallback=null;
 
 // ════════════════════════════════════════
 // タブ
@@ -829,7 +829,7 @@ function initChars(){
   document.getElementById('cgrid').innerHTML=CHARS.map(ch=>`
     <div class="cbtn" data-id="${ch.id}" id="cb-${ch.id}" style="border-color:${ch.col}20">
       <span class="ce">${ch.emoji}</span><div class="cn">${ch.name}</div>
-      <div class="cr">${ch.role}</div><div class="ca">${ch.ability}</div>
+      <div class="cr">難易度：${ch.role}</div><div class="ca">${ch.ability}</div>
     </div>`).join('');
   document.querySelectorAll('.cbtn').forEach(el=>{
     el.addEventListener('click',()=>selChar(el.dataset.id));
@@ -888,7 +888,7 @@ function startGame(stageNum=1, prevData=null){
     visited:new Set([stageData.startPos]),
     ghosts:{},  // 実行時に設定
     canChange:ch.id==='una',
-    peek:ch.id==='kon'?3:0,
+    peek:0,
     done:false,st:Date.now(),
     streak:{type:null,count:0},
     boss:null,bossHp:0,bossReady:false,
@@ -1055,32 +1055,17 @@ function selectRoom(rid){
   document.getElementById('rd-name').textContent=r.n;
   document.getElementById('rd-desc').textContent=r.d;
 
-  // コン：チラ見でリスク表示
-  const showRisk=G.c.id==='kon'&&G.peek>0;
-  document.getElementById('rd-chips').innerHTML=buildChips(r,1,showRisk);
+  document.getElementById('rd-chips').innerHTML=buildChips(r,1,false);
 
   // ヒント
   const hint=document.getElementById('rd-hint');
-  if(G.c.id==='kon'&&G.peek>0){
-    hint.innerHTML=`👀 <button onclick="doPeek('${rid}')" style="font-size:15px;padding:3px 10px;border-radius:7px;border:1px solid var(--ac);background:#160a28;color:var(--wh);cursor:pointer">チラ見する（残り${G.peek}回）</button>`;
-    hint.style.display='block';
-  } else {
-    hint.style.display='none';
-  }
+  hint.style.display='none';
 
   // 3択表示
   document.getElementById('choices').style.display='grid';
   updateFP();
 }
 
-function doPeek(rid){
-  if(G.peek<=0)return;
-  G.peek--;
-  const r=MAP_ROOMS[rid];
-  document.getElementById('rd-chips').innerHTML=buildChips(r,1,true);
-  document.getElementById('rd-hint').innerHTML=`👀 リスクが見えた！（残り${G.peek}回）`;
-  lg('👀 コンがリスクをチラ見した！','pu');
-}
 
 function buildChips(r,mul,showRisk){
   const chips=[];
@@ -1424,9 +1409,9 @@ let _selectedBuddy=null;
 
 function stageClear(){
   const stage=G.stage;
-  // 最終ステージならフレンドゲット→勝利
+  // 最終ステージ：先に脱出成功を表示、その後フレンドゲット
   if(stage>=3){
-    triggerFriend();return;
+    showWinOverlay();return;
   }
 
   // ステージクリアモーダル表示
@@ -1434,67 +1419,58 @@ function stageClear(){
   document.getElementById('stage-e').textContent=stage===1?'🎊':'🌟';
   document.getElementById('stage-clear-badge').textContent=`STAGE ${stage} クリア！`;
   document.getElementById('stage-next-title').textContent=`ステージ${stage+1}へ進む`;
-  const nextStage=STAGES[stage+1];
-  document.getElementById('stage-desc').textContent=nextStage.desc;
+  document.getElementById('stage-desc').textContent='';
 
-  // ステージ2に進む場合：仲間選択
   if(stage===1){
-    const owned=getColl();
-    const friendArea=document.getElementById('stage-friend-area');
-    const friendList=document.getElementById('stage-friend-list');
-    if(owned.length>0){
-      friendArea.style.display='block';
-      _selectedBuddy=null;
-      document.getElementById('btn-stage-next').disabled=true;
-      const pick=shuf([...owned]).slice(0,2);
-      friendList.innerHTML=pick.map(id=>{
-        const gh=GHOSTS.find(g=>g.id===id);
-        if(!gh)return'';
-        return`<div class="sfl-item" id="sfl-${id}" onclick="selectBuddy('${id}')">
-          <span class="sfl-e">${gh.emoji}</span>
-          <div class="sfl-n">${gh.name}</div>
-          <div class="sfl-ability">${gh.buddyEffect.icon} ${gh.buddyEffect.label}</div>
-        </div>`;
-      }).join('');
-    } else {
-      friendArea.style.display='none';
-      _selectedBuddy=null;
-      document.getElementById('btn-stage-next').disabled=false;
-      document.getElementById('stage-desc').textContent=nextStage.desc+'\n（仲間はまだいません）';
-    }
+    // ステージ1：まずクリアモーダルを表示（仲間選択は後）
+    document.getElementById('stage-friend-area').style.display='none';
+    _selectedBuddy=null;
+    document.getElementById('btn-stage-next').disabled=true;
+    modal.classList.add('show');
+    launchFW();
+    // 少し後に仲間加入モーダルを表示
+    setTimeout(()=>{
+      const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
+      const isNew=addColl(gh.id);
+      document.getElementById('fm-e').textContent=gh.emoji;
+      document.getElementById('fm-n').textContent=gh.name;
+      document.getElementById('fm-d').textContent=isNew?`${gh.fd}\n✨初めてのゲット！`:gh.fd;
+      _friendCallback=()=>{
+        // 仲間モーダルを閉じた後に仲間選択エリアを表示
+        const owned=getColl();
+        const friendArea=document.getElementById('stage-friend-area');
+        const friendList=document.getElementById('stage-friend-list');
+        if(owned.length>0){
+          friendArea.style.display='block';
+          const pick=shuf([...owned]).slice(0,2);
+          friendList.innerHTML=pick.map(id=>{
+            const g=GHOSTS.find(g=>g.id===id);if(!g)return'';
+            return`<div class="sfl-item" id="sfl-${id}" data-id="${id}">
+              <span class="sfl-e">${g.emoji}</span>
+              <div class="sfl-n">${g.name}</div>
+              <div class="sfl-ability">${g.buddyEffect.icon} ${g.buddyEffect.label}</div>
+            </div>`;
+          }).join('');
+          friendList.querySelectorAll('.sfl-item').forEach(el=>{
+            el.addEventListener('click',()=>selectBuddy(el.dataset.id));
+          });
+        } else {
+          document.getElementById('btn-stage-next').disabled=false;
+          document.getElementById('stage-desc').textContent=nextStage.desc+'\n（仲間はまだいません）';
+        }
+        lg(`👻 【${gh.name}】が仲間になった！次のステージに連れていこう！`,'gld');
+      };
+      document.getElementById('friend-modal').classList.add('show');
+      flashEl('gold');
+    },1600);
   } else {
-    // ステージ3：仲間引き継ぎ（前ステージの仲間を引き継ぐ）
+    // ステージ2→3：仲間引き継ぎ
     document.getElementById('stage-friend-area').style.display='none';
     _selectedBuddy=G.buddy;
     document.getElementById('btn-stage-next').disabled=false;
+    modal.classList.add('show');
+    launchFW();
   }
-
-  // フレンドゲット（ステージ1クリア時にお化けが仲間になる）
-  if(stage===1){
-    const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
-    addColl(gh.id);
-    // 仲間リストを更新
-    setTimeout(()=>{
-      const owned=getColl();
-      const friendList=document.getElementById('stage-friend-list');
-      document.getElementById('stage-friend-area').style.display='block';
-      friendList.innerHTML=owned.map(id=>{
-        const g=GHOSTS.find(g=>g.id===id);if(!g)return'';
-        return`<div class="sfl-item" id="sfl-${id}" data-id="${id}">
-          <span class="sfl-e">${g.emoji}</span>
-          <div class="sfl-n">${g.name}</div>
-          <div class="sfl-ability">${g.buddyEffect.icon} ${g.buddyEffect.label}</div>
-        </div>`;
-      }).join('');
-      friendList.querySelectorAll('.sfl-item').forEach(el=>{
-        el.addEventListener('click',()=>selectBuddy(el.dataset.id));
-      });
-      lg(`👻 【${gh.name}】が仲間になった！次のステージに連れていこう！`,'gld');
-    },300);
-  }
-
-  modal.classList.add('show');
-  launchFW();
 }
 
 function selectBuddy(id){
@@ -1614,12 +1590,15 @@ function triggerFriend(){
   document.getElementById('fm-e').textContent=gh.emoji;
   document.getElementById('fm-n').textContent=gh.name;
   document.getElementById('fm-d').textContent=isNew?`${gh.fd}\n✨初めてのゲット！`:gh.fd;
+  _friendCallback=gameWin;
   document.getElementById('friend-modal').classList.add('show');
   flashEl('gold');
 }
 function closeFriend(){
   document.getElementById('friend-modal').classList.remove('show');
-  showWinOverlay();
+  const cb=_friendCallback;
+  _friendCallback=null;
+  if(cb) cb();
 }
 
 // ════════════════════════════════════════
@@ -1704,7 +1683,7 @@ function launchFW(){
 }
 function closeWin(){
   document.getElementById('win-overlay').classList.remove('show');
-  gameWin();
+  triggerFriend();
 }
 
 // ════════════════════════════════════════
