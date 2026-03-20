@@ -310,11 +310,30 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .rtab{flex:1;padding:7px;border-radius:9px;border:1px solid #3a2a5a;background:#0e0520;color:var(--gr);font-family:'Zen Kurenaido',cursive;font-size:18px;cursor:pointer;transition:all .2s}
 .rtab.on{background:#1e0840;border-color:var(--ac);color:var(--wh)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#080318}::-webkit-scrollbar-thumb{background:#4a2a7a;border-radius:3px}
+
+/* ── サウンドボタン ── */
+#snd-btn{position:fixed;top:10px;right:10px;z-index:2000;background:#0e0520;border:1px solid #3a2a5a;border-radius:8px;color:var(--wh);font-size:18px;cursor:pointer;padding:4px 8px;transition:all .2s;line-height:1}
+#snd-btn:hover{border-color:var(--ac);background:#1a0830}
+
+/* ── BGM選択 ── */
+.bgm-area{background:#08021a;border:1px solid #2a1a4a;border-radius:12px;padding:10px 12px;width:100%}
+.bgm-atitle{font-family:'Zen Kurenaido',cursive;font-size:14px;color:var(--ac);margin-bottom:7px;text-align:center}
+.bgm-row{display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:8px;cursor:pointer;transition:background .15s}
+.bgm-row:hover{background:#120330}
+.bgm-row.sel{background:#1a0440}
+.bgm-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid #4a2a7a;flex-shrink:0;transition:all .15s}
+.bgm-row.sel .bgm-dot{background:var(--ac);border-color:var(--ac);box-shadow:0 0 6px #e8a0d080}
+.bgm-name{flex:1;font-size:13.5px;color:#b0a0d0;font-family:'Zen Kurenaido',cursive}
+.bgm-row.sel .bgm-name{color:var(--wh)}
+.bgm-prv{width:26px;height:26px;border-radius:6px;background:transparent;border:1px solid #3a2a5a;color:#7060a0;font-size:11px;cursor:pointer;transition:all .15s;flex-shrink:0;line-height:1}
+.bgm-prv:hover{border-color:var(--ac);color:var(--ac)}
+.bgm-prv.on{background:#2a0858;border-color:var(--ac);color:var(--ac)}
 </style>
 </head>
 <body>
 <div id="flash"></div>
 <div id="kick-effect">🥾</div>
+<button id="snd-btn" onclick="toggleSound()" title="サウンドON/OFF">🔊</button>
 
 <!-- ステージクリアモーダル -->
 <div id="stage-modal">
@@ -484,6 +503,31 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div style="font-family:'Zen Kurenaido',cursive;color:var(--gd);font-size:18px;margin-bottom:8px;text-align:center">👤 キャラクターを選んでください</div>
     <div class="cgrid" id="cgrid"></div>
     <button class="btnp" id="btn-s" disabled onclick="startGame()" style="margin-top:12px">🚪 ゲームスタート</button>
+    <div class="bgm-area" style="margin-top:10px">
+      <div class="bgm-atitle">🎵 ゲーム中のBGMを選ぶ</div>
+      <div id="bgm-opts">
+        <div class="bgm-row" id="bgmr-g1" onclick="selectBgmOpt('g1')">
+          <div class="bgm-dot"></div><span class="bgm-name">ダーク・アンビエント</span>
+          <button class="bgm-prv" id="bgmp-g1" onclick="event.stopPropagation();previewBgmOpt('g1',this)" title="試聴">▶</button>
+        </div>
+        <div class="bgm-row sel" id="bgmr-g2" onclick="selectBgmOpt('g2')">
+          <div class="bgm-dot"></div><span class="bgm-name">ホラー・ウォーキングベース</span>
+          <button class="bgm-prv" id="bgmp-g2" onclick="event.stopPropagation();previewBgmOpt('g2',this)" title="試聴">▶</button>
+        </div>
+        <div class="bgm-row" id="bgmr-g3" onclick="selectBgmOpt('g3')">
+          <div class="bgm-dot"></div><span class="bgm-name">8ビット・ホラー</span>
+          <button class="bgm-prv" id="bgmp-g3" onclick="event.stopPropagation();previewBgmOpt('g3',this)" title="試聴">▶</button>
+        </div>
+        <div class="bgm-row" id="bgmr-g4" onclick="selectBgmOpt('g4')">
+          <div class="bgm-dot"></div><span class="bgm-name">オスティナート・スリラー</span>
+          <button class="bgm-prv" id="bgmp-g4" onclick="event.stopPropagation();previewBgmOpt('g4',this)" title="試聴">▶</button>
+        </div>
+        <div class="bgm-row" id="bgmr-g5" onclick="selectBgmOpt('g5')">
+          <div class="bgm-dot"></div><span class="bgm-name">ゴシック・マーチ</span>
+          <button class="bgm-prv" id="bgmp-g5" onclick="event.stopPropagation();previewBgmOpt('g5',this)" title="試聴">▶</button>
+        </div>
+      </div>
+    </div>
     <div class="t-rule" style="margin-top:12px">
       <b>🎮 遊び方</b><br>
       <b>STEP 1：</b>ミニマップの<b>緑に光る部屋</b>をタップして移動<br>
@@ -586,6 +630,249 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   </div>
   <button class="btnp" onclick="location.reload()">🔄 もう一度遊ぶ</button>
 </div>
+
+<script>
+// ════════════════════════════════════════
+// サウンドエンジン（Web Audio API）
+// ════════════════════════════════════════
+const SND=(()=>{
+  let C=null,mg=null,seg=null,bg=null,mut=false,bt=null,bc=null;
+
+  function init(){
+    if(C)return;
+    C=new(window.AudioContext||window.webkitAudioContext)();
+    mg=C.createGain();mg.gain.value=1;mg.connect(C.destination);
+    seg=C.createGain();seg.gain.value=0.4;seg.connect(mg);
+  }
+  function ensureCtx(){init();if(C.state==='suspended')C.resume();}
+
+  function tone(f,d,tp,v,dl,dest){
+    tp=tp||'sine';v=v||.3;dl=dl||0;
+    if(mut||!C)return;
+    const o=C.createOscillator(),g=C.createGain();
+    o.connect(g);g.connect(dest||seg);
+    o.type=tp;o.frequency.value=f;
+    const t=C.currentTime+dl,att=Math.min(.02,d*.1),rel=Math.min(.06,d*.3);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+att);
+    g.gain.setValueAtTime(v,t+d-rel);g.gain.linearRampToValueAtTime(0,t+d);
+    o.start(t);o.stop(t+d+.05);
+  }
+  function noise(d,v,dl){
+    v=v||.2;dl=dl||0;
+    if(mut||!C)return;
+    const n=Math.ceil(C.sampleRate*d),buf=C.createBuffer(1,n,C.sampleRate),dat=buf.getChannelData(0);
+    for(let i=0;i<n;i++)dat[i]=Math.random()*2-1;
+    const s=C.createBufferSource(),g=C.createGain();
+    s.buffer=buf;s.connect(g);g.connect(seg);
+    const t=C.currentTime+dl;
+    g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+    s.start(t);s.stop(t+d+.05);
+  }
+
+  // ── SE ──
+  function seKick(){ensureCtx();noise(.18,.3);tone(75,.35,'triangle',.45);tone(55,.25,'sine',.3,.1);}
+  function seOpen(){ensureCtx();noise(.22,.06);tone(320,.4,'sine',.12,.07);tone(520,.3,'sine',.07,.2);}
+  function seGhost(){
+    ensureCtx();
+    const t=C.currentTime;
+    [[800,180,.3,0],[1100,320,.18,.12]].forEach(function(a){
+      const s=a[0],e=a[1],v=a[2],dl=a[3];
+      const o=C.createOscillator(),g=C.createGain();
+      o.connect(g);g.connect(seg);o.type='sine';
+      o.frequency.setValueAtTime(s,t+dl);o.frequency.exponentialRampToValueAtTime(e,t+dl+.8);
+      g.gain.setValueAtTime(0,t+dl);g.gain.linearRampToValueAtTime(v,t+dl+.05);
+      g.gain.linearRampToValueAtTime(0,t+dl+.8);o.start(t+dl);o.stop(t+dl+.85);
+    });
+  }
+  function seKey(){ensureCtx();[523.25,659.25,783.99].forEach(function(f,i){tone(f,.2,'sine',.22,i*.13);});}
+  function seHeal(){ensureCtx();[440,523.25,659.25].forEach(function(f,i){tone(f,.28,'sine',.18,i*.1);});}
+  function seDamage(){ensureCtx();noise(.12,.28);tone(150,.28,'sawtooth',.22);tone(100,.32,'sawtooth',.18,.1);}
+  function seFear(){
+    ensureCtx();
+    const o=C.createOscillator(),g=C.createGain();
+    o.connect(g);g.connect(seg);o.type='sine';
+    const t=C.currentTime;
+    for(let i=0;i<6;i++)o.frequency.setValueAtTime(i%2?415.3:440,t+i*.1);
+    g.gain.setValueAtTime(.18,t);g.gain.linearRampToValueAtTime(0,t+.6);
+    o.start(t);o.stop(t+.65);
+  }
+  function seBoss(){
+    ensureCtx();noise(.6,.22);
+    for(let i=0;i<4;i++)tone(55+i*5,.45,'sawtooth',.12,i*.1);
+    tone(440,.55,'square',.14,.45);
+  }
+  function seDice(){
+    ensureCtx();
+    for(let i=0;i<6;i++){noise(.05,.12,i*.07);tone(600+Math.random()*600,.06,'square',.1,i*.07);}
+  }
+  function seBossDmg(){ensureCtx();tone(220,.12,'square',.2);tone(277.18,.12,'square',.18,.1);tone(220,.18,'square',.15,.2);}
+  function seStageClear(){
+    ensureCtx();
+    [261.63,329.63,392,523.25,659.25,783.99].forEach(function(f,i){tone(f,.45,'sine',.22,i*.1);});
+  }
+  function seGameOver(){
+    ensureCtx();
+    [220,207.65,196,185,174.61,164.81].forEach(function(f,i){
+      tone(f,.55,'sine',.22,i*.3);tone(f*.5,.55,'sine',.12,i*.3);
+    });
+  }
+
+  // ── BGM ──
+  const BGM={
+    title:{
+      p:[[220,.5],[261.63,.5],[329.63,.5],[392,.5],[329.63,.5],[261.63,.5],[220,.5],[174.61,.5],
+         [196,.5],[233.08,.5],[293.66,.5],[349.23,.5],[293.66,.5],[233.08,.5],[196,.5],[220,1]],
+      w:'sine',v:.07
+    },
+    boss:{
+      p:[[110,.1],[155.56,.1],[0,.05],[110,.1],[0,.05],
+         [123.47,.1],[0,.05],[110,.15],[0,.05],[82.41,.22],[0,.1],
+         [110,.1],[155.56,.1],[0,.05],[110,.1],[0,.05],
+         [116.54,.1],[0,.05],[110,.1],[0,.05],[77.78,.28],[0,.15]],
+      w:'sawtooth',v:.07
+    },
+    win:{
+      p:[[261.63,.15],[329.63,.15],[392,.15],[523.25,.38],[0,.1],
+         [523.25,.15],[587.33,.15],[659.25,.15],[783.99,.52],[0,.2],
+         [659.25,.15],[587.33,.15],[523.25,.15],[392,.38],[0,.1],
+         [523.25,.78],[0,.5]],
+      w:'sine',v:.12
+    },
+    // ── ゲームBGM 5種類 ──
+    g1:{ layers:[  // ダーク・アンビエント
+      {w:'sine',v:.16,p:[[55,3],[55,2],[55,2.5],[41.2,2.5],[41.2,3],[46.25,2],[55,4]]},
+      {w:'sine',v:.11,p:[[220,1.5],[0,.5],[196,1],[0,.5],[220,1.5],[0,.5],[261.63,2],[0,.5],
+                         [233.08,1.5],[0,.5],[220,1.5],[0,.5],[174.61,1],[0,.5],[196,3],[0,1]]}
+    ]},
+    g2:{ layers:[  // ホラー・ウォーキングベース
+      {w:'triangle',v:.15,p:[
+        [110,.22],[0,.05],[116.54,.18],[0,.05],[123.47,.22],[0,.05],[130.81,.22],[0,.05],
+        [123.47,.18],[0,.05],[116.54,.22],[0,.08],[110,.22],[0,.05],[103.83,.18],[0,.05],
+        [98,.22],[0,.05],[103.83,.22],[0,.08],
+        [110,.22],[0,.05],[116.54,.18],[0,.05],[123.47,.22],[0,.05],[116.54,.22],[0,.05],
+        [110,.55],[0,.35]
+      ]},
+      {w:'sine',v:.08,p:[
+        [0,1.3],[329.63,.12],[0,.08],[349.23,.12],[0,.08],[329.63,.28],[0,.42],
+        [0,1.4],[293.66,.12],[0,.08],[261.63,.28],[0,.52],[0,.2]
+      ]}
+    ]},
+    g3:{ layers:[  // 8ビット・ホラー
+      {w:'square',v:.09,p:[
+        [293.66,.12],[0,.04],[349.23,.12],[0,.04],[440,.12],[0,.04],[523.25,.12],[0,.04],
+        [440,.12],[0,.04],[415.3,.12],[0,.04],[440,.28],[0,.12],
+        [261.63,.12],[0,.04],[329.63,.12],[0,.04],[392,.12],[0,.04],[493.88,.12],[0,.04],
+        [392,.12],[0,.04],[369.99,.12],[0,.04],[392,.28],[0,.12],
+        [246.94,.12],[0,.04],[293.66,.12],[0,.04],[349.23,.12],[0,.04],[440,.12],[0,.04],
+        [523.25,.12],[0,.04],[493.88,.12],[0,.04],[440,.12],[0,.04],[415.3,.12],[0,.04],
+        [440,.55],[0,.15]
+      ]},
+      {w:'square',v:.12,p:[
+        [146.83,.25],[0,.25],[146.83,.25],[0,.25],[130.81,.25],[0,.25],[130.81,.25],[0,.25],
+        [123.47,.25],[0,.25],[116.54,.25],[0,.25],[110,.5],[0,.5],
+        [110,.25],[0,.25],[110,.25],[0,.25],[98,.25],[0,.25],[110,.25],[0,.25]
+      ]}
+    ]},
+    g4:{ layers:[  // オスティナート・スリラー
+      {w:'sawtooth',v:.09,p:[
+        [110,.1],[0,.05],[110,.1],[0,.05],[155.56,.18],[0,.07],[110,.1],[0,.05],
+        [123.47,.1],[0,.05],[110,.22],[0,.13],
+        [110,.1],[0,.05],[110,.1],[0,.05],[155.56,.1],[0,.05],[164.81,.1],[0,.05],
+        [155.56,.1],[0,.05],[110,.32],[0,.18]
+      ]},
+      {w:'sine',v:.1,p:[
+        [0,.35],[440,.09],[0,.06],[466.16,.09],[0,.06],[440,.18],[0,.32],
+        [0,.7],[415.3,.09],[0,.06],[440,.09],[0,.06],[415.3,.18],[0,.37]
+      ]}
+    ]},
+    g5:{ layers:[  // ゴシック・マーチ
+      {w:'triangle',v:.17,p:[
+        [110,.4],[82.41,.2],[82.41,.2],[116.54,.4],[87.31,.2],[87.31,.2],
+        [123.47,.4],[92.5,.2],[92.5,.2],[110,.55],[0,.25],
+        [103.83,.4],[77.78,.2],[77.78,.2],[98,.4],[73.42,.2],[73.42,.2],
+        [103.83,.4],[77.78,.2],[82.41,.2],[110,.75],[0,.45]
+      ]},
+      {w:'sine',v:.1,p:[
+        [220,.35],[0,.05],[0,.4],[233.08,.35],[0,.05],[0,.4],[246.94,.35],[0,.05],[0,.4],
+        [220,.5],[0,.3],
+        [207.65,.35],[0,.05],[0,.4],[196,.35],[0,.05],[0,.4],[207.65,.35],[0,.05],[0,.4],
+        [220,.7],[0,.5]
+      ]}
+    ]}
+  };
+
+  function schedBgm(patt,wt,vol,t0,ig){
+    let t=t0;
+    patt.forEach(function(note){
+      const f=note[0],d=note[1];
+      if(f>0&&!mut){
+        const o=C.createOscillator(),g=C.createGain();
+        o.connect(g);g.connect(ig);o.type=wt;o.frequency.value=f;
+        const att=Math.min(.02,d*.1),rel=Math.min(.06,d*.3);
+        g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);
+        g.gain.setValueAtTime(vol,t+d-rel);g.gain.linearRampToValueAtTime(0,t+d);
+        o.start(t);o.stop(t+d+.05);
+      }
+      t+=d;
+    });
+  }
+
+  function startBgm(tp){
+    stopBgm();bc=tp;
+    if(mut)return;
+    ensureCtx();
+    const def=BGM[tp];if(!def)return;
+    const ig=C.createGain();ig.gain.value=0;ig.connect(mg);
+    ig.gain.linearRampToValueAtTime(.4,C.currentTime+.3);
+    bg=ig;
+    const cap=tp;
+    const lyrs=def.layers||[{p:def.p,w:def.w,v:def.v}];
+    const loopLen=lyrs.reduce(function(mx,ly){
+      return Math.max(mx,ly.p.reduce(function(s,n){return s+n[1];},0));
+    },0);
+    function loop(t0){
+      if(bc!==cap)return;
+      lyrs.forEach(function(ly){schedBgm(ly.p,ly.w,ly.v,t0,ig);});
+      bt=setTimeout(function(){loop(t0+loopLen);},Math.max(10,(t0+loopLen-C.currentTime-.25)*1000));
+    }
+    loop(C.currentTime+.15);
+  }
+
+  function stopBgm(){
+    clearTimeout(bt);bt=null;bc=null;
+    if(bg&&C){
+      const n=C.currentTime;
+      bg.gain.cancelScheduledValues(n);bg.gain.setValueAtTime(bg.gain.value,n);
+      bg.gain.linearRampToValueAtTime(0,n+.3);
+      const old=bg;setTimeout(function(){try{old.disconnect();}catch(e){}},500);
+      bg=null;
+    }
+  }
+
+  function playBgm(tp){if(bc===tp)return;startBgm(tp);}
+
+  function toggleMute(){
+    ensureCtx();mut=!mut;
+    if(mg){
+      const n=C.currentTime;
+      mg.gain.cancelScheduledValues(n);mg.gain.setValueAtTime(mg.gain.value,n);
+      mg.gain.linearRampToValueAtTime(mut?0:1,n+.15);
+    }
+    if(!mut&&bc)startBgm(bc);
+    return mut;
+  }
+
+  return{ensureCtx,seKick,seOpen,seGhost,seKey,seHeal,seDamage,seFear,
+         seBoss,seDice,seBossDmg,seStageClear,seGameOver,
+         startBgm,stopBgm,playBgm,toggleMute,get isPlaying(){return!!bc;}};
+})();
+
+function toggleSound(){
+  SND.ensureCtx();
+  const m=SND.toggleMute();
+  document.getElementById('snd-btn').textContent=m?'🔇':'🔊';
+}
+</script>
 
 <script>
 
@@ -934,6 +1221,7 @@ function startGame(stageNum=1, prevData=null){
   if(stageData.fearLimit<3) lg(`⚠️ 恐怖${stageData.fearLimit}個でお化け登場！気をつけろ！`,'dng');
   if(G.buddy) lg(`👻 仲間の【${G.buddy.name}】が一緒にいる！ピンチのとき呼ぼう！`,'pu');
   lg('💡 緑に光る部屋をタップして移動しよう！','');
+  SND.playBgm(gameBgmKey);
   // スタート時に出口と同じ???表示にするランダム部屋を決定（出口を隠すため）
   const allRoomIds=getStageRoomIds();
   const hiddenCandidates=allRoomIds.filter(id=>id!==stageData.startPos&&id!=='exit-room');
@@ -1112,6 +1400,7 @@ function choose(type){
   if(G.done||!G.selectedRoom)return;
   const rid=G.selectedRoom;
   enBtn(false);
+  SND.ensureCtx();if(type==='kick')SND.seKick();else SND.seOpen();
 
   const mul=type==='kick'?2:1;
   const sb=getStreakBonus(type);
@@ -1150,10 +1439,10 @@ function resolveRoom(rid,type,sb){
   // 報酬
   if(r.rw.hp>0){
     const h=r.rw.hp===999?G.c.mhp-G.c.hp:r.rw.hp*mul+extraRw;
-    G.c.hp=Math.min(G.c.hp+h,G.c.mhp);logs.push(`💚体力+${h}`);flashEl('gold');
+    G.c.hp=Math.min(G.c.hp+h,G.c.mhp);logs.push(`💚体力+${h}`);flashEl('gold');SND.seHeal();
   }
   if(r.rw.k>0){
-    const kn=r.rw.k*mul;const prevK=G.k;G.k=Math.min(G.k+kn,G.tk);const actualKn=G.k-prevK;logs.push(`🗝️鍵+${actualKn}`);
+    const kn=r.rw.k*mul;const prevK=G.k;G.k=Math.min(G.k+kn,G.tk);const actualKn=G.k-prevK;logs.push(`🗝️鍵+${actualKn}`);if(actualKn>0)SND.seKey();
   }
   if(r.rs.lk&&mul>0){G.k=Math.max(0,G.k-mul);logs.push(`😱鍵-${mul}`);}
 
@@ -1161,10 +1450,10 @@ function resolveRoom(rid,type,sb){
   if(r.rs.hp>0){
     let d=(r.rs.hp+extraRs)*mul;
     if(G.c.id==='mea')d=Math.max(0,d-1);
-    if(d>0){G.c.hp-=d;logs.push(`💢体力-${d}`);flashEl('red');}
+    if(d>0){G.c.hp-=d;logs.push(`💢体力-${d}`);flashEl('red');SND.seDamage();}
   }
   if(r.rs.f>0){
-    const f=r.rs.f*mul;G.fear+=f;logs.push(`😨恐怖+${f}`);updateFP();
+    const f=r.rs.f*mul;G.fear+=f;logs.push(`😨恐怖+${f}`);updateFP();SND.seFear();
     if(G.fear>=G.fearLimit){
       const gh=GHOSTS[Math.floor(Math.random()*GHOSTS.length)];
       let d=gh.dmg;if(G.c.id==='mea')d=Math.max(0,d-1);
@@ -1288,6 +1577,7 @@ function triggerBoss(){
   _bossRoll=0;
   document.getElementById('boss-modal').classList.add('show');
   flashEl('pu');
+  SND.playBgm('boss');SND.seBoss();
   lg(`👹 【${boss.name}】が現れた！ボス戦開始！`,'boss');
 }
 // ボス戦のサイコロの目を保存
@@ -1297,7 +1587,7 @@ function bossRoll(){
   const btn=document.getElementById('btn-roll');
   const dEl=document.getElementById('dice-face');
   const rEl=document.getElementById('dice-result');
-  btn.disabled=true;
+  btn.disabled=true;SND.seDice();
   document.getElementById('boss-choices').style.display='none';
   document.getElementById('bc-even-area').style.display='none';
   document.getElementById('bc-odd-area').style.display='none';
@@ -1344,14 +1634,14 @@ function bossUseRoll(type){
   if(type==='atk'){
     // 偶数確定：そのままボスにダメージ
     G.bossHp=Math.max(0,G.bossHp-roll);
-    flashEl('gold');
+    flashEl('gold');SND.seBossDmg();
     lg('⚔️ '+roll+'（偶数）→ ボスに'+roll+'ダメージ！（残り'+G.bossHp+'）','gld');
   } else if(type==='def'){
     // 偶数→逃げる
     flashEl('pu');
     lg('💨 ボスから逃げた！','dng');
     document.getElementById('boss-modal').classList.remove('show');
-    G.bossReady=false;
+    G.bossReady=false;SND.playBgm('game');
     G.k=Math.max(0,G.k-1);
     upStat();
     nextTurn();
@@ -1408,6 +1698,7 @@ function bossEscape(){
   G.k=Math.max(0,G.k-1);
   G.bossReady=false;
   document.getElementById('boss-modal').classList.remove('show');
+  SND.playBgm('game');
   lg('💨 ボスから逃げた！鍵-1…もう一度挑もう！','dng');
   // ランダムに1体のお化けをマップに配置（スタート部屋と出口以外）
   const bossEscapeRoomIds=getStageRoomIds();
@@ -1432,6 +1723,7 @@ let _selectedBuddy=null;
 
 function stageClear(){
   const stage=G.stage;
+  SND.stopBgm();SND.seStageClear();
   // 最終ステージ：先に脱出成功を表示、その後フレンドゲット
   if(stage>=3){
     showWinOverlay();return;
@@ -1675,6 +1967,7 @@ function cancelUndo(){
 // 勝利演出
 // ════════════════════════════════════════
 function showWinOverlay(){
+  SND.startBgm('win');
   const elapsed=Date.now()-G.st;
   addRank({char:G.c.emoji,time:elapsed,turn:G.turn,keys:G.k,hp:G.c.hp});
   document.getElementById('win-e').style.animation='win-pop .6s cubic-bezier(.34,1.56,.64,1) forwards';
@@ -1782,7 +2075,7 @@ function showGhost(gh,dmg){
   document.getElementById('gm-d').textContent=gh.desc;
   document.getElementById('gm-dmg').textContent=`体力 -${dmg}`;
   document.getElementById('ghost-modal').classList.add('show');
-  flashEl('red');
+  flashEl('red');SND.seGhost();
 }
 function closeGM(){
   document.getElementById('ghost-modal').classList.remove('show');
@@ -1814,6 +2107,7 @@ function gameWin(){
 }
 function gameOver(){
   if(G.done)return;G.done=true;flashEl('red');
+  SND.stopBgm();SND.seGameOver();
   setTimeout(()=>{
     document.getElementById('sc-game').style.display='none';
     const r=document.getElementById('sc-res');r.style.display='flex';
@@ -1830,7 +2124,41 @@ function gameOver(){
   },800);
 }
 
+// ════════════════════════════════════════
+// BGM選択
+// ════════════════════════════════════════
+let gameBgmKey='g2';
+
+function selectBgmOpt(key){
+  gameBgmKey=key;
+  document.querySelectorAll('.bgm-row').forEach(function(el){el.classList.remove('sel');});
+  const row=document.getElementById('bgmr-'+key);
+  if(row)row.classList.add('sel');
+  SND.ensureCtx();SND.playBgm(key);
+  document.querySelectorAll('.bgm-prv').forEach(function(el){el.textContent='▶';el.classList.remove('on');});
+  const prv=document.getElementById('bgmp-'+key);
+  if(prv){prv.textContent='■';prv.classList.add('on');}
+}
+
+function previewBgmOpt(key,btn){
+  SND.ensureCtx();
+  if(btn.classList.contains('on')){
+    SND.stopBgm();
+    btn.textContent='▶';btn.classList.remove('on');
+    return;
+  }
+  selectBgmOpt(key);
+}
+
 initChars();
+
+// 最初のユーザー操作でAudioContextを初期化してタイトルBGMを開始
+// setTimeout(0)でBGM選択ボタンのクリックと競合しないようにする
+document.addEventListener('click',function _sndInit(){
+  SND.ensureCtx();
+  setTimeout(function(){if(!SND.isPlaying)SND.playBgm('title');},0);
+  document.removeEventListener('click',_sndInit,true);
+},true);
 </script>
 </body>
 </html>
